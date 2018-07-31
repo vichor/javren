@@ -23,28 +23,92 @@ public class MainGameLoop {
 		StaticShader shader = new StaticShader();
 		Renderer renderer = new Renderer(shader);
 		
-		// Modeling & entities
-		float[] vertices = {
-				-0.5f, 0.5f, 0f,	// V0
-				-0.5f, -0.5f, 0f,	// V1
-				0.5f, -0.5f, 0f,	// V2
-				0.5f, 0.5f, 0f		// V3
+		// Cube model (vertices, texture coordinates and indices)
+		float[] vertices = {			
+				-0.5f,0.5f,-0.5f,	
+				-0.5f,-0.5f,-0.5f,	
+				0.5f,-0.5f,-0.5f,	
+				0.5f,0.5f,-0.5f,		
+				
+				-0.5f,0.5f,0.5f,	
+				-0.5f,-0.5f,0.5f,	
+				0.5f,-0.5f,0.5f,	
+				0.5f,0.5f,0.5f,
+				
+				0.5f,0.5f,-0.5f,	
+				0.5f,-0.5f,-0.5f,	
+				0.5f,-0.5f,0.5f,	
+				0.5f,0.5f,0.5f,
+				
+				-0.5f,0.5f,-0.5f,	
+				-0.5f,-0.5f,-0.5f,	
+				-0.5f,-0.5f,0.5f,	
+				-0.5f,0.5f,0.5f,
+				
+				-0.5f,0.5f,0.5f,
+				-0.5f,0.5f,-0.5f,
+				0.5f,0.5f,-0.5f,
+				0.5f,0.5f,0.5f,
+				
+				-0.5f,-0.5f,0.5f,
+				-0.5f,-0.5f,-0.5f,
+				0.5f,-0.5f,-0.5f,
+				0.5f,-0.5f,0.5f
+				
 		};
-		int[] indices = {
-				0, 1, 3, // top left triangle
-				3, 1, 2  // bottom right triangle
-		};
+		
 		float[] textureCoords = {
-				0, 0,	// V0
-				0, 1,	// V1
-				1, 1,	// V2
-				1, 0	// V3
+				
+				0,0,
+				0,1,
+				1,1,
+				1,0,			
+				0,0,
+				0,1,
+				1,1,
+				1,0,			
+				0,0,
+				0,1,
+				1,1,
+				1,0,
+				0,0,
+				0,1,
+				1,1,
+				1,0,
+				0,0,
+				0,1,
+				1,1,
+				1,0,
+				0,0,
+				0,1,
+				1,1,
+				1,0
+
+				
 		};
+		
+		int[] indices = {
+				0,1,3,	
+				3,1,2,	
+				4,5,7,
+				7,5,6,
+				8,9,11,
+				11,9,10,
+				12,13,15,
+				15,13,14,	
+				16,17,19,
+				19,17,18,
+				20,21,23,
+				23,21,22
+
+		};
+		
+		// Entity definition
 		Entity entity = new Entity(
 				new TexturedModel( 													// textured model
 						loader.loadToVAO(vertices,  textureCoords,  indices),		//		raw model 
 						new ModelTexture(loader.loadTexture("image")) ), 			//		texture
-				new Vector3f(0,0,-1), 												// position
+				new Vector3f(0,0,-5), 												// position
 				0, 0, 0,															// rotation 
 				1);																	// scale
 		Camera camera = new Camera();
@@ -53,6 +117,7 @@ public class MainGameLoop {
 		// game loop
 		while(!Display.isCloseRequested() ) {
 			// some game logic
+			entity.increaseRotation(1, 1, 0);
 			camera.move();
 			camera.roll();
 			
