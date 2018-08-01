@@ -99,7 +99,7 @@ public class OBJLoader {
 		}
 
 		// ... and create the raw model from data extracted from obj file
-		return loader.loadToVAO(verticesArray, textureArray, indicesArray);
+		return loader.loadToVAO(verticesArray, textureArray, normalsArray, indicesArray);
 
 	}	
 		

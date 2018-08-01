@@ -1,10 +1,12 @@
 package engineTester;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
+import entities.Light;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
@@ -18,30 +20,36 @@ public class MainGameLoop {
 
 	public static void main(String[] args) {
 
-		// engine init
+		// Engine init
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		StaticShader shader = new StaticShader();
 		Renderer renderer = new Renderer(shader);
 		
-		// Cube model (vertices, texture coordinates and indices)
-
-		
-		// Entity definition
+		// Entities definition
 		Entity entity = new Entity(
 				new TexturedModel( 													// textured model
-						OBJLoader.loadObjModel("stall", loader),					// 		raw model obtained from OBJ file
-						new ModelTexture(loader.loadTexture("stallTexture")) ),		// 		texture
+						OBJLoader.loadObjModel("dragon/dragon", loader),				// raw model obtained from OBJ file
+						new ModelTexture(loader.loadTexture("dragon/skin")) ),			// texture
 				new Vector3f(0,0,-25), 												// position
 				0, 0, 0,															// rotation 
 				1);																	// scale
+
+		Light light = new Light(new Vector3f(0, 0, -20), new Vector3f(1,1,1));		// White light placed in front of starting point of model
+
 		Camera camera = new Camera();
 		
 
-		// game loop
+		// Game loop
+		boolean paused = false;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
-			//entity.increaseRotation(0, 1, 0);
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				paused = !paused;
+			}
+			if (!paused) {
+				entity.increaseRotation(0, 1, 0);
+			}
 			entity.move();
 			entity.roll();
 			camera.move();
@@ -50,6 +58,7 @@ public class MainGameLoop {
 			// call the render engine
 			renderer.prepare();
 			shader.start();
+			shader.loadLight(light);
 			shader.loadViewMatrix(camera);
 			renderer.render(entity, shader);
 			shader.stop();
