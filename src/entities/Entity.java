@@ -1,5 +1,6 @@
 package entities;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.TexturedModel;
@@ -95,6 +96,50 @@ public class Entity {
 	public void setScale(float scale) {
 		this.scale = scale;
 	}
+
 	
+	// ENTITY MOVEMENT -- Only for test, to be removed
+	private static final float INC_POSITION = 0.1f;
+	public void move() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+			position.y -= INC_POSITION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			position.y += INC_POSITION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+			position.x -= INC_POSITION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+			position.x += INC_POSITION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD7)) {
+			position.z -= INC_POSITION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD9)) {
+			position.z += INC_POSITION;
+		}
+	}
+	private static final float INC_ROTATION = 1f;
+	public void roll() {
+		if (Keyboard.isKeyDown(Keyboard.KEY_HOME)) {
+			this.rotX -= INC_ROTATION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_END)) {
+			this.rotX += INC_ROTATION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
+			this.rotY -= INC_ROTATION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_PRIOR)) {
+			this.rotY += INC_ROTATION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_INSERT)) {
+			this.rotZ -= INC_ROTATION;
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_NEXT)) {
+			this.rotZ += INC_ROTATION;
+		}	
+	}
 	
 }
