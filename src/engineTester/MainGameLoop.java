@@ -39,6 +39,11 @@ public class MainGameLoop {
 
 		Camera camera = new Camera();
 		
+		// Define material properties of the texture
+		ModelTexture texture = entity.getModel().getTexture();
+		texture.setReflectivity(1);
+		texture.setShineDamper(10);
+		
 
 		// Game loop
 		boolean paused = false;
