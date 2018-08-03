@@ -20,16 +20,20 @@ void main(void) {
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
 	gl_Position = projectionMatrix * viewMatrix * worldPosition;
 
-	// Texturing
-	pass_textureCoords = textureCoords;
+	// Texturing & tiling
+	// The texture coordinates gets multiplied by 40 so that there is an
+	// overflow when getting a coordinate (they range [0,1]). This has
+	// the consequence of having the texture repeated once and over again.
+	// This is a nice trick to get tiling of the textures.
+	pass_textureCoords = textureCoords * 40.0;
 
 	// LIGHTING
 	// Applying light affects color of the fragments and thus is calculated
-	// by the fragement shader. The calculations, though, need vectors
+	// by the fragment shader. The calculations, though, need vectors
 	// extracted from vertex, lights and camera positions and these vectors
 	// are calculated here, at the vertex shader.
 
-	// Difuse lighting
+	// Diffuse lighting
 	// We need the surface normal vector which is obtained from the vertex
 	// normal vector applying to it the transformation
 	// Also needed a vector pointing to the light source and this is
