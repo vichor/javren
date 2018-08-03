@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -17,8 +16,7 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.Renderer;
-import shaders.StaticShader;
+import terrains.Terrain;
 import textures.ModelTexture;
 
 public class MainGameLoop {
@@ -29,58 +27,45 @@ public class MainGameLoop {
 		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		Camera camera = new Camera();
+		Camera camera = new Camera(new Vector3f(0,10,0), 0, 10, 0);
 		MasterRenderer renderer = new MasterRenderer();
 		
 		// ENTITIES DEFINITION
 		
 		// Entities containers and tools
-		List<Entity> dragons = new ArrayList<Entity>();
-		List<Entity> stalls = new ArrayList<Entity>();
+        List<Entity> entities = new ArrayList<Entity>();
 		Random random = new Random();
 		
-		// Dragon entities 
-		RawModel rawModelDragon = OBJLoader.loadObjModel("dragon/dragon", loader);
-		ModelTexture textureDragon = new ModelTexture(loader.loadTexture("dragon/skin"));
-		textureDragon.setReflectivity(1);	// texture material properties
-		textureDragon.setShineDamper(10);
-		TexturedModel modelDragon = new TexturedModel(rawModelDragon, textureDragon);
-		for (int i = 0; i < 50; i++) {
-			Vector3f position = new Vector3f(random.nextFloat()*100-50, random.nextFloat()*100,  random.nextFloat()*-300); 												// position
-			Vector3f rotation = new Vector3f(random.nextFloat()*180f,   random.nextFloat()*180f, 0f);
-			dragons.add(new Entity(modelDragon, position, rotation.x, rotation.y, rotation.z, 1));
-		}
+		// ENTITIES
 		
-		// Stall entities
-		RawModel rawModelStall = OBJLoader.loadObjModel("stall/stall", loader);
-		ModelTexture textureStall = new ModelTexture(loader.loadTexture("stall/stallTexture"));
-		textureStall.setReflectivity(0.1f);
-		textureStall.setShineDamper(0.2f);
-		TexturedModel modelStall = new TexturedModel(rawModelStall, textureStall);
-		for (int i = 0; i < 50; i++) {
-			Vector3f position = new Vector3f(random.nextFloat()*100-50, random.nextFloat()*100,  random.nextFloat()*-300); 												// position
-			Vector3f rotation = new Vector3f(random.nextFloat()*180f,   random.nextFloat()*180f, 0f);
-			stalls.add(new Entity(modelStall, position, rotation.x, rotation.y, rotation.z, 1));
-		}
+		// Trees
+        RawModel model = OBJLoader.loadObjModel("tree/tree", loader);
+        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree/tree")));
+        for(int i=0;i<500;i++){
+            entities.add(new Entity(staticModel, new Vector3f(random.nextFloat()*800 - 400,0,random.nextFloat() * -600),0,0,0,3));
+        }
+		
+		// TERRAIN
+		Terrain terrain1 = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
+		Terrain terrain2 = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
 		
 		// ENVIRONMENT
-		Light light = new Light(new Vector3f(0, 0, -20), new Vector3f(1,1,1));		// White light placed in front of starting point of model
+		Light sun = new Light(new Vector3f(20000,20000,2000),new Vector3f(1,1,1));
 		
 		// GAME LOOP
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			camera.move();
 			
-			// push entities into render system
-			for (Entity dragon:dragons) {
-				renderer.processEntity(dragon);
-			}
-			for (Entity stall:stalls) {
-				renderer.processEntity(stall);
+			// push terrains and entities into render system
+			renderer.processTerrain(terrain1);
+			renderer.processTerrain(terrain2);
+			for (Entity entity:entities) {
+				renderer.processEntity(entity);
 			}
 
 			// call the render engine
-			renderer.render(light, camera);
+			renderer.render(sun, camera);
 			DisplayManager.updateDisplay();			
 		}
 		
