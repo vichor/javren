@@ -21,5 +21,5 @@ Check [ThinMatrix tutorial on how to set up](https://www.youtube.com/watch?v=Jdk
 ### Other tools
 #### 3D models
 3D models will be loaded from Waveform OBJ file format. Blender can be used to
-generate the models using this format. Check [ThinMatrix - tutorial 9 ](https://www.youtube.com/watch?annotation_id=annotation_3023189627&feature=iv&src_vid=50Y9u7K0PZo&v=KMWUjNE0fYI) for a very brief introduction of how to use Blender in this way.
+generate the models using this format. Check [ThinMatrix - tutorial 9 ](https://www.youtube.com/watch?annotation_id=annotation_3023189627&feature=iv&src_vid=50Y9u7K0PZo&v=KMWUjNE0fYI) for a very brief introduction on how to use Blender in this way.
 
