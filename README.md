@@ -1,5 +1,5 @@
 # JAVA RENDER ENGINE
-Javren is a java render engine built from [ThinMatrix tutorial](https://www.you tube.com/user/ThinMatrix) (quite a copy from it).
+Javren is a java render engine built from [ThinMatrix tutorial](https://www.youtube.com/user/ThinMatrix) (quite a copy from it).
 
 ## Versions and change log
 
