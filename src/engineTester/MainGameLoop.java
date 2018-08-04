@@ -1,18 +1,22 @@
 package engineTester;
 
-import org.lwjgl.input.Keyboard;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
+import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.Renderer;
-import shaders.StaticShader;
+import terrains.Terrain;
 import textures.ModelTexture;
 
 public class MainGameLoop {
@@ -20,58 +24,53 @@ public class MainGameLoop {
 
 	public static void main(String[] args) {
 
-		// Engine init
+		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		StaticShader shader = new StaticShader();
-		Renderer renderer = new Renderer(shader);
+		Camera camera = new Camera(new Vector3f(0,10,0), 0, 10, 0);
+		MasterRenderer renderer = new MasterRenderer();
 		
-		// Entities definition
-		Entity entity = new Entity(
-				new TexturedModel( 													// textured model
-						OBJLoader.loadObjModel("dragon/dragon", loader),				// raw model obtained from OBJ file
-						new ModelTexture(loader.loadTexture("dragon/skin")) ),			// texture
-				new Vector3f(0,0,-25), 												// position
-				0, 0, 0,															// rotation 
-				1);																	// scale
-
-		Light light = new Light(new Vector3f(0, 0, -20), new Vector3f(1,1,1));		// White light placed in front of starting point of model
-
-		Camera camera = new Camera();
+		// ENTITIES DEFINITION
 		
-		// Define material properties of the texture
-		ModelTexture texture = entity.getModel().getTexture();
-		texture.setReflectivity(1);
-		texture.setShineDamper(10);
+		// Entities containers and tools
+        List<Entity> entities = new ArrayList<Entity>();
+		Random random = new Random();
 		
-
-		// Game loop
-		boolean paused = false;
+		// ENTITIES
+		
+		// Trees
+        RawModel model = OBJLoader.loadObjModel("tree/tree", loader);
+        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("tree/tree")));
+        for(int i=0;i<500;i++){
+            entities.add(new Entity(staticModel, new Vector3f(random.nextFloat()*800 - 400,0,random.nextFloat() * -600),0,0,0,3));
+        }
+		
+		// TERRAIN
+		Terrain terrain1 = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
+		Terrain terrain2 = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
+		
+		// ENVIRONMENT
+		Light sun = new Light(new Vector3f(20000,20000,2000),new Vector3f(1,1,1));
+		
+		// GAME LOOP
 		while(!Display.isCloseRequested() ) {
 			// some game logic
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-				paused = !paused;
-			}
-			if (!paused) {
-				entity.increaseRotation(0, 1, 0);
-			}
-			entity.move();
-			entity.roll();
 			camera.move();
-			camera.roll();
 			
+			// push terrains and entities into render system
+			renderer.processTerrain(terrain1);
+			renderer.processTerrain(terrain2);
+			for (Entity entity:entities) {
+				renderer.processEntity(entity);
+			}
+
 			// call the render engine
-			renderer.prepare();
-			shader.start();
-			shader.loadLight(light);
-			shader.loadViewMatrix(camera);
-			renderer.render(entity, shader);
-			shader.stop();
+			renderer.render(sun, camera);
 			DisplayManager.updateDisplay();			
 		}
 		
 		// closing
-		shader.cleanUp();
+		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 	}
