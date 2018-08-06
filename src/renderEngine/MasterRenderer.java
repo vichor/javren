@@ -38,9 +38,8 @@ public class MasterRenderer {
 	
 	public MasterRenderer() {
 		// don't render back faces
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-
+		enableCulling();
+		
 		// setup projection matrix
 		createProjectionMatrix();	
 
@@ -53,11 +52,21 @@ public class MasterRenderer {
 		this.terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 	}
 	
+	
+	public static void disableCulling() {
+		GL11.glDisable(GL11.GL_CULL_FACE);
+	}
+	
+	
+	public static void enableCulling() {
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+	}
 
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0.85f, 0.85f, 1);
+		GL11.glClearColor(0, 0.85f, 1, 1);
 	}
 	
 	

@@ -13,6 +13,7 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
+uniform float useFakeLighting;
 
 void main(void) {
 
@@ -29,6 +30,19 @@ void main(void) {
 	// extracted from vertex, lights and camera positions and these vectors
 	// are calculated here, at the vertex shader.
 
+	// Fake Lighting
+	// Vegetation may be modeled using two intersected quads. The normals of
+	// these quads point horizontally with respect the terrain and one quad
+	// differ 90 degrees respect the other. This causes an unreal effect on
+	// the leaves of the vegetation, causing one side to be lighted and the
+	// other being in the shadows. Fixing this is to fake the normals of
+	// the surface so that all of it points in the up direction.
+
+	vec3 actualNormal = normal;
+	if (useFakeLighting > 0.5){
+		actualNormal = vec3(0.0, 1.0, 0.0);
+	}
+
 	// Difuse lighting
 	// We need the surface normal vector which is obtained from the vertex
 	// normal vector applying to it the transformation
@@ -36,7 +50,7 @@ void main(void) {
 	// obtained subtracting the vertex world position from the light
 	// source position.
 
-	surfaceNormal = (transformationMatrix * vec4(normal, 0.0)).xyz;
+	surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;
 	toLightVector = lightPosition - worldPosition.xyz;
 
 

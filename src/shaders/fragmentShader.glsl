@@ -54,10 +54,23 @@ void main(void) {
 	vec3 specularLight = damperFactor * reflectivity * lightColor;
 
 
+	// Texture Transparency management
+	// High grass, ferns and other vegetation may be modeled as quads and use
+	// a texture png file containing the drawing of the vegetation with a background
+	// color. When rendering, this background color also gets rendered, as OpenGL 
+	// has no way of knowing it's a background to be discarded. We can easily fix 
+	// this by checking the color pulled from the texture file and command here
+	// to discard it if one of its components do not reach a specific value.
+	vec4 textureColor = texture(textureSampler, pass_textureCoords);
+	if (textureColor.a < 0.5){
+		discard;
+	}
+	
+
 	// Fragment color:
 	// Calculate the final color of the fragment mixing up the texture
 	// data with the light calculated before
 
-	out_Color = vec4(diffuseLight, 1.0) * texture(textureSampler, pass_textureCoords) + vec4(specularLight, 1.0);
+	out_Color = vec4(diffuseLight, 1.0) * textureColor + vec4(specularLight, 1.0);
 
 }

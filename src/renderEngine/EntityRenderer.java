@@ -58,6 +58,10 @@ public class EntityRenderer {
 
 		// Manage texture material properties (specular light) and enable texturing
 		ModelTexture texture = model.getTexture();
+		if (texture.isHasTransparency()) {
+			MasterRenderer.disableCulling();
+		}
+		shader.loadFakeLightingVariable(texture.isUseFakeLighting());
 		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity());
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getID());
@@ -73,6 +77,7 @@ public class EntityRenderer {
 	
 	
 	private void unbindTexturedModel() {
+		MasterRenderer.enableCulling();
 		// Unbind VBOs and then the VAO
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
