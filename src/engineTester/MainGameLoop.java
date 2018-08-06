@@ -1,5 +1,6 @@
 package engineTester;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +13,7 @@ import entities.Entity;
 import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
+import platform.Library;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -23,6 +25,9 @@ public class MainGameLoop {
 
 
 	public static void main(String[] args) {
+		
+		// SETUP PLATFORM ENVIRONMENT
+		Library.LibraryPathConfiguration(Paths.get("lib", "natives"));
 
 		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
