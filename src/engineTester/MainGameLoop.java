@@ -13,11 +13,13 @@ import entities.Entity;
 import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
+import objconverter.ModelData;
+import objconverter.OBJFileLoader;
+import objconverter.OBJLoader;
 import platform.Library;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
-import renderEngine.OBJLoader;
 import terrains.Terrain;
 import textures.ModelTexture;
 
@@ -44,8 +46,10 @@ public class MainGameLoop {
 		// ENTITIES
 		
 		// Textured models
-        RawModel model = OBJLoader.loadObjModel("vegetation/tree", loader);
-        TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("vegetation/tree")));
+        RawModel firTreeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/tree"));
+        TexturedModel firTreeModel = new TexturedModel(firTreeRawModel,new ModelTexture(loader.loadTexture("vegetation/tree")));
+        RawModel treeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/lowpolytree"));
+        TexturedModel treeModel = new TexturedModel(treeRawModel,new ModelTexture(loader.loadTexture("vegetation/lowpolytree")));
         
         TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassmodel", loader), 
         		new ModelTexture(loader.loadTexture("vegetation/grassTexture")));
@@ -61,10 +65,13 @@ public class MainGameLoop {
         
 		// Instances
         for(int i=0;i<500;i++){
-            entities.add(new Entity(staticModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
-            entities.add(new Entity(grass,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            entities.add(new Entity(fern,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            entities.add(new Entity(flower,      new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
+            entities.add(new Entity(firTreeModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
+            if (i%4 == 0) {
+            	entities.add(new Entity(treeModel,    new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,0.6f));
+            }
+            entities.add(new Entity(grass,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
+            entities.add(new Entity(fern,         new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
+            entities.add(new Entity(flower,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
         }
 		
 		// TERRAIN

@@ -1,4 +1,4 @@
-package renderEngine;
+package objconverter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
+import renderEngine.Loader;
 
 public class OBJLoader {
 

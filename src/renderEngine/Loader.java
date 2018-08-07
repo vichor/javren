@@ -17,6 +17,7 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 import models.RawModel;
+import objconverter.ModelData;
 
 public class Loader {
 	
@@ -32,6 +33,11 @@ public class Loader {
 		storeDataInAttributeList(2, 3, normals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);		
+	}
+	
+	
+	public RawModel loadToVAO(ModelData data) {
+		return loadToVAO (data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
 	}
 	
 	
