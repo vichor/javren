@@ -54,12 +54,17 @@ public class MainGameLoop {
         TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("vegetation/fern", loader), 
         		new ModelTexture(loader.loadTexture("vegetation/fern")));
         fern.getTexture().setHasTransparency(true);
+        TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassmodel", loader), 
+        		new ModelTexture(loader.loadTexture("vegetation/flower")));
+        flower.getTexture().setHasTransparency(true);
+        flower.getTexture().setUseFakeLighting(true);
         
 		// Instances
         for(int i=0;i<500;i++){
             entities.add(new Entity(staticModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
             entities.add(new Entity(grass,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
             entities.add(new Entity(fern,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
+            entities.add(new Entity(flower,      new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
         }
 		
 		// TERRAIN

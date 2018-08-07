@@ -4,6 +4,7 @@ in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
 in vec3 toCameraVector;
+in float visibility;
 
 out vec4 out_Color;
 
@@ -11,6 +12,7 @@ uniform sampler2D textureSampler;
 uniform vec3 lightColor;
 uniform float shineDamper;
 uniform float reflectivity;
+uniform vec3 skyColor;
 
 void main(void) {
 
@@ -71,6 +73,9 @@ void main(void) {
 	// Calculate the final color of the fragment mixing up the texture
 	// data with the light calculated before
 
-	out_Color = vec4(diffuseLight, 1.0) * textureColor + vec4(specularLight, 1.0);
+	vec4 fragmentColor = vec4(diffuseLight, 1.0) * textureColor + vec4(specularLight, 1.0);
 
+
+	// Fog
+	out_Color = mix(vec4(skyColor, 1.0), fragmentColor, visibility);
 }

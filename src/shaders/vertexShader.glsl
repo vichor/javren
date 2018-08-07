@@ -8,6 +8,7 @@ out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
 out vec3 toLightVector;
 out vec3 toCameraVector;
+out float visibility;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
@@ -15,18 +16,22 @@ uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 uniform float useFakeLighting;
 
+const float density = 0.0035;
+const float gradient = 5.0;
+
 void main(void) {
 
 	// Positioning
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
-	gl_Position = projectionMatrix * viewMatrix * worldPosition;
+	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
+	gl_Position = projectionMatrix * positionRelativeToCamera;
 
 	// Texturing
 	pass_textureCoords = textureCoords;
 
 	// LIGHTING
 	// Applying light affects color of the fragments and thus is calculated
-	// by the fragement shader. The calculations, though, need vectors
+	// by the fragment shader. The calculations, though, need vectors
 	// extracted from vertex, lights and camera positions and these vectors
 	// are calculated here, at the vertex shader.
 
@@ -35,8 +40,8 @@ void main(void) {
 	// these quads point horizontally with respect the terrain and one quad
 	// differ 90 degrees respect the other. This causes an unreal effect on
 	// the leaves of the vegetation, causing one side to be lighted and the
-	// other being in the shadows. Fixing this is to fake the normals of
-	// the surface so that all of it points in the up direction.
+	// other being in the shadows. This can be fixed by faking the normals of
+	// the surface so that all of them point in the up direction when needed.
 
 	vec3 actualNormal = normal;
 	if (useFakeLighting > 0.5){
@@ -64,4 +69,10 @@ void main(void) {
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 
 
+	// Fog
+	// Fog increases following an exponential formula depending on a density
+	// and a gradient. These two parameters simulates how thick the fog is.
+	float distance = length(positionRelativeToCamera.xyz);
+	visibility = exp(-pow((distance*density), gradient));
+	visibility = clamp(visibility, 0.0, 1.0);
 }

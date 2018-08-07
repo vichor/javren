@@ -19,6 +19,11 @@ import terrains.Terrain;
 
 public class MasterRenderer {
 
+	// Fog
+	private static final float SKYCOLOR_RED = 0.0f;
+	private static final float SKYCOLOR_GREEN = 0.85f;
+	private static final float SKYCOLOR_BLUE = 0.95f;
+	
 	// Projection matrix 
 	private static final float FOV = 70;
 	private static final float NEAR_PLANE = 0.1f;
@@ -66,7 +71,7 @@ public class MasterRenderer {
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0, 0.85f, 1, 1);
+		GL11.glClearColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE, 1);
 	}
 	
 	
@@ -78,6 +83,7 @@ public class MasterRenderer {
 		// each cycle, the entities to be rendered change, so they are removed from the hash map.
 		// the application shall push them again each cycle.
 		entityShader.start();
+		entityShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		entityShader.loadLight(sun);
 		entityShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
@@ -89,6 +95,7 @@ public class MasterRenderer {
 		// the application shall push them again each cycle.
 		terrainShader.start();
 		terrainShader.loadLight(sun);
+		terrainShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
