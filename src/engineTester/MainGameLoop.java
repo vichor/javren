@@ -13,7 +13,6 @@ import entities.Entity;
 import entities.Light;
 import models.RawModel;
 import models.TexturedModel;
-import objconverter.ModelData;
 import objconverter.OBJFileLoader;
 import objconverter.OBJLoader;
 import platform.Library;
@@ -22,6 +21,8 @@ import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
 import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 public class MainGameLoop {
 
@@ -75,8 +76,17 @@ public class MainGameLoop {
         }
 		
 		// TERRAIN
-		Terrain terrain1 = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
-		Terrain terrain2 = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("terrains/grass")));
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("terrains/dirt"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("terrains/pinkFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("terrains/path"));
+        
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
+        
+		Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap);
+		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
 		
 		// ENVIRONMENT
 		Light sun = new Light(new Vector3f(20000,20000,2000),new Vector3f(1,1,1));

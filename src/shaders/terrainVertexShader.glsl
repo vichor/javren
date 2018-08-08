@@ -26,11 +26,10 @@ void main(void) {
 	gl_Position = projectionMatrix * positionRelativeToCamera;
 
 	// Texturing & tiling
-	// The texture coordinates gets multiplied by 40 so that there is an
-	// overflow when getting a coordinate (they range [0,1]). This has
-	// the consequence of having the texture repeated once and over again.
-	// This is a nice trick to get tiling of the textures.
-	pass_textureCoords = textureCoords * 40.0;
+	// To use blend maps, the texture coordinate to pass to the fragment
+	// shader is directly extracted from the texture. Tiling will be managed
+	// lately by the fragment shader.
+	pass_textureCoords = textureCoords;
 
 	// LIGHTING
 	// Applying light affects color of the fragments and thus is calculated

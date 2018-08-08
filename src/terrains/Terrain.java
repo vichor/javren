@@ -2,7 +2,8 @@ package terrains;
 
 import models.RawModel;
 import renderEngine.Loader;
-import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 public class Terrain {
 
@@ -13,7 +14,8 @@ public class Terrain {
 	private float x;
 	private float z;
 	private RawModel model;
-	private ModelTexture texture;
+	private TerrainTexturePack texturePack;
+	private TerrainTexture blendMap;
 	
 	// WARNING:
 	// make sure that your camera is in a position that allows you to see the 
@@ -21,8 +23,9 @@ public class Terrain {
 	// that the terrain is in front of the camera (either move the camera back,
 	// rotate the camera around, or choose negative gridx & gridz values when 
 	// calling the terrain constructor).
-	public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture) {
-		this.texture = texture;
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap) {
+		this.texturePack = texturePack;
+		this.blendMap = blendMap;
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
 		this.model = generateTerrain(loader);
@@ -45,8 +48,13 @@ public class Terrain {
 	}
 
 
-	public ModelTexture getTexture() {
-		return texture;
+	public TerrainTexturePack getTexturePack() {
+		return texturePack;
+	}
+
+
+	public TerrainTexture getBlendMap() {
+		return blendMap;
 	}
 
 
