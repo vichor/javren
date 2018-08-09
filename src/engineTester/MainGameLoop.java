@@ -11,6 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.RawModel;
 import models.TexturedModel;
 import objconverter.OBJFileLoader;
@@ -35,7 +36,7 @@ public class MainGameLoop {
 		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		Camera camera = new Camera(new Vector3f(0,10,0), 0, 10, 0);
+		Camera camera = new Camera(new Vector3f(0,30,0), 15, 0, 0);
 		MasterRenderer renderer = new MasterRenderer();
 		
 		// ENTITIES DEFINITION
@@ -74,6 +75,14 @@ public class MainGameLoop {
             entities.add(new Entity(fern,         new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
             entities.add(new Entity(flower,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
         }
+        
+
+        // PLAYER
+        TexturedModel bunny = new TexturedModel(OBJLoader.loadObjModel("players/bunny", loader), 
+        		new ModelTexture(loader.loadTexture("players/white")));
+        Player player = new Player(bunny, new Vector3f(0, 0, -50), 0, 0, 0, 1);
+        player.getModel().getTexture().setReflectivity(0.75f);
+
 		
 		// TERRAIN
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
@@ -95,8 +104,10 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			camera.move();
+			player.move();
 			
-			// push terrains and entities into render system
+			// push players, terrains and entities into render system
+			renderer.processEntity(player);
 			renderer.processTerrain(terrain1);
 			renderer.processTerrain(terrain2);
 			for (Entity entity:entities) {
