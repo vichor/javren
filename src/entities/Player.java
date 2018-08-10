@@ -15,10 +15,6 @@ public class Player extends Entity {
 	
 	private static final float TERRAIN_HEIGHT = 0;
 	
-	// The model is drawn in blender looking 90 degrees rotated (its look at front
-	// position is not ok). Added 90 degrees of offset to correct it.
-	private static final float LOOK_AT_FRONT_OFFSET = 90;
-	
 	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
 	private float upwardsSpeed = 0;
@@ -33,15 +29,19 @@ public class Player extends Entity {
 	public void move() {
 		// Get move commands
 		checkInputs();
+
 		// Rotate
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+
 		// Move forward: movement on X and Z axis. The distance moved on each
 		// of the axis will depend on the direction the player is looking to
 		// (its rotation angle in Y axis). 
 		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
-		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY()+LOOK_AT_FRONT_OFFSET)));
-		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY()+LOOK_AT_FRONT_OFFSET)));
+		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
+		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
 		super.increasePosition(dx, 0, dz);
+		
+		// Jump management
 		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, upwardsSpeed*DisplayManager.getFrameTimeSeconds(), 0);
 		if (super.getPosition().y < TERRAIN_HEIGHT) {
@@ -62,9 +62,9 @@ public class Player extends Entity {
 	
 	private void checkInputs() {
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			currentSpeed = RUN_SPEED;
-		} else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			currentSpeed = -RUN_SPEED;
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			currentSpeed = RUN_SPEED;
 		} else {
 			currentSpeed = 0;
 		}

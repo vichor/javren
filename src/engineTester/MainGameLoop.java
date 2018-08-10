@@ -36,7 +36,6 @@ public class MainGameLoop {
 		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		Camera camera = new Camera(new Vector3f(0,30,0), 15, 0, 0);
 		MasterRenderer renderer = new MasterRenderer();
 		
 		// ENTITIES DEFINITION
@@ -78,10 +77,12 @@ public class MainGameLoop {
         
 
         // PLAYER
-        TexturedModel bunny = new TexturedModel(OBJLoader.loadObjModel("players/bunny", loader), 
-        		new ModelTexture(loader.loadTexture("players/white")));
-        Player player = new Player(bunny, new Vector3f(0, 0, -50), 0, 0, 0, 1);
-        player.getModel().getTexture().setReflectivity(0.75f);
+        TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), 
+        		new ModelTexture(loader.loadTexture("players/playerTexture")));
+        Player player = new Player(playerModel, new Vector3f(100, 0, -50), 0, 180, 0, 0.6f);
+        
+        // CAMERA
+        Camera camera = new Camera(player);
 
 		
 		// TERRAIN
@@ -98,7 +99,7 @@ public class MainGameLoop {
 		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
 		
 		// ENVIRONMENT
-		Light sun = new Light(new Vector3f(20000,20000,2000),new Vector3f(1,1,1));
+		Light sun = new Light(new Vector3f(20000,40000,2000),new Vector3f(1,1,1));
 		
 		// GAME LOOP
 		while(!Display.isCloseRequested() ) {
