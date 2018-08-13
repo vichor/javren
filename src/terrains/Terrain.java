@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
@@ -89,9 +91,10 @@ public class Terrain {
 				vertices[vertexPointer*3] = (float)j/((float)vertexCount - 1) * SIZE;	// distribute vertices along terrain side; SIZE is the size of each tile side
 				vertices[vertexPointer*3+1] = getHeight(j, i, image);
 				vertices[vertexPointer*3+2] = (float)i/((float)vertexCount - 1) * SIZE;
-				normals[vertexPointer*3] = 0;
-				normals[vertexPointer*3+1] = 1;
-				normals[vertexPointer*3+2] = 0;
+				Vector3f normal = calculateNormal(j, i, image);
+				normals[vertexPointer*3] = normal.x;
+				normals[vertexPointer*3+1] = normal.y;
+				normals[vertexPointer*3+2] = normal.z;
 				textureCoords[vertexPointer*2] = (float)j/((float)vertexCount - 1);
 				textureCoords[vertexPointer*2+1] = (float)i/((float)vertexCount - 1);
 				vertexPointer++;
@@ -117,7 +120,7 @@ public class Terrain {
 	
 	
 	private float getHeight(int x, int z, BufferedImage image) {
-		if (x < 0 || x > image.getHeight() || z < 0 || z > image.getHeight()) {
+		if (x < 0 || x >= image.getHeight() || z < 0 || z >= image.getHeight()) {
 			return 0; // out of bounds.
 		}
 		float height = image.getRGB(x, z);
@@ -125,6 +128,17 @@ public class Terrain {
 		height /= MAX_PIXEL_COLOR/2f;  // height range becomes [-1, 1]
 		height *= MAX_HEIGHT;  // height range becomes [-MAX_HEIGHT, MAX_HEIGHT]
 		return height;
+	}
+	
+	
+	private Vector3f calculateNormal(int x, int z, BufferedImage image) {
+		float heightL = getHeight(x-1, z, image); //left
+		float heightR = getHeight(x+1, z, image); //right
+		float heightD = getHeight(x, z-1, image); //down
+		float heightU = getHeight(x, z+1, image); //up
+		Vector3f normal = new Vector3f(heightL-heightR, 2f, heightD-heightU);
+		normal.normalise();
+		return normal;
 	}
 
 	
