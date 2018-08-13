@@ -64,15 +64,22 @@ public class MainGameLoop {
         flower.getTexture().setHasTransparency(true);
         flower.getTexture().setUseFakeLighting(true);
         
+        TexturedModel box = new TexturedModel(OBJLoader.loadObjModel("objects/box", loader),
+        		new ModelTexture(loader.loadTexture("objects/box")));
+        
 		// Instances
         for(int i=0;i<500;i++){
-            entities.add(new Entity(firTreeModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
-            if (i%4 == 0) {
+        	if (i%6 == 0) {
+        		entities.add(new Entity(firTreeModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
+        	}
+            if (i%10 == 0) {
             	entities.add(new Entity(treeModel,    new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,0.6f));
             }
-            entities.add(new Entity(grass,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            entities.add(new Entity(fern,         new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            entities.add(new Entity(flower,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
+            if (i%4==0) {
+            	entities.add(new Entity(grass,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
+            	entities.add(new Entity(fern,         new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
+            	entities.add(new Entity(flower,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
+            }
         }
         
 
@@ -80,6 +87,15 @@ public class MainGameLoop {
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture")));
         Player player = new Player(playerModel, new Vector3f(100, 0, -50), 0, 180, 0, 0.6f);
+        
+        // Add boxes close to player
+        for (int i = 0; i < 10; i++) {
+        	Vector3f boxPosition = new Vector3f(
+        			(float) (player.getPosition().x-(20-(10*i*Math.sin(Math.toRadians(30))))), // left to the player but getting closer to draw a diagonal line
+        			player.getPosition().y+8, 
+        			player.getPosition().z-(20*i));
+        	entities.add(new Entity(box, boxPosition,0,0,0,6));
+        }
         
         // CAMERA
         Camera camera = new Camera(player);
