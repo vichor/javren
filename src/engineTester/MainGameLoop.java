@@ -111,8 +111,8 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap);
-		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap);
+		Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap, "maps/heightMap");
+		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
 		
 		// ENVIRONMENT
 		Light sun = new Light(new Vector3f(20000,40000,2000),new Vector3f(1,1,1));
