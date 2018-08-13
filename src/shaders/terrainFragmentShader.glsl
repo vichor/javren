@@ -66,7 +66,7 @@ void main(void) {
 	vec3 unitSurfaceNormal  = normalize(surfaceNormal);
 	vec3 unitVectorToLight  = normalize(toLightVector);
 	float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
-	float brightness = max(nDotProd, 1);	// Ambient light made by ensuring difuse light is above 0.2
+	float brightness = max(nDotProd, 0.3);	// Ambient light made by ensuring diffuse light is above 0.3
 	vec3 diffuseLight = brightness * lightColor;
 	
 	
