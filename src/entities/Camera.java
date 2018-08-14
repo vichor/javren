@@ -11,10 +11,11 @@ public class Camera {
 	private float roll = 0;		// rotation Z
 	
 	private Player player;
-	private float distanceFromPlayer = 50;
+	private float distanceFromPlayer =50;
 	private float angleAroundPlayer = 0;
 	
-	private static final float POINT_TO_PLAYER_BODY_OFFSET = 5;
+	private static final float POINT_TO_PLAYER_BODY_OFFSET = 5;		// This causes to zoom towards the body, not the feet
+	private static final float POINT_TO_PLAYER_FORWARD_OFFSET = 15; // this is to place the player in the lower area of the viewport
 	
 
 	public Camera(Player player) {
@@ -73,13 +74,15 @@ public class Camera {
 		position.y = player.getPosition().y + verticalDistance + POINT_TO_PLAYER_BODY_OFFSET;
 		position.z = player.getPosition().z - offsetZ;
 	}
+	
+	
 	private float calculateHorizontalDistance() {
-		return (float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch)));
+		return (float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch+POINT_TO_PLAYER_FORWARD_OFFSET)));
 	}
 	
 
 	private float calculateVerticalDistance() {
-		return (float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch)));
+		return (float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch+POINT_TO_PLAYER_FORWARD_OFFSET)));
 	}
 	
 	
