@@ -115,13 +115,21 @@ public class MainGameLoop {
 		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
 		
 		// ENVIRONMENT
-		Light sun = new Light(new Vector3f(20000,40000,20000),new Vector3f(1,1,1));
+		Light sun = new Light(new Vector3f(0,0,20000),new Vector3f(1,1,1));
 		
 		// GAME LOOP
+		float sunAngle = 90f;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			camera.move();
 			player.move();
+			Vector3f sunPos = sun.getPosition();
+			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
+			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
+			sunAngle+=0.1f;
+			if (sunAngle >360f) {
+				sunAngle = 0f;
+			}
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
