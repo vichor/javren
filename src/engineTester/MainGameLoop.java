@@ -38,6 +38,20 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer();
 		
+		
+		// TERRAIN
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("terrains/dirt"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("terrains/pinkFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("terrains/path"));
+        
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
+        
+		Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "maps/heightMap");
+		
+		
 		// ENTITIES DEFINITION
 		
 		// Entities containers and tools
@@ -69,16 +83,35 @@ public class MainGameLoop {
         
 		// Instances
         for(int i=0;i<500;i++){
-        	if (i%6 == 0) {
-        		entities.add(new Entity(firTreeModel, new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,5));
+        	if (i%10 == 0) {
+        		float x = random.nextFloat()*800-400; 
+        		float z = random.nextFloat()*-600; 
+        		float y = terrain.getHeightOfTerrain(x, z);
+        		entities.add(new Entity(firTreeModel, new Vector3f(x, y, z),0,0,0,5));
         	}
-            if (i%10 == 0) {
-            	entities.add(new Entity(treeModel,    new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,0.6f));
+            if (i%30 == 0) {
+        		float x = random.nextFloat()*800-400; 
+        		float z = random.nextFloat()*-600; 
+        		float y = terrain.getHeightOfTerrain(x, z);
+            	entities.add(new Entity(treeModel,    new Vector3f(x, y, z),0,0,0,0.6f));
             }
-            if (i%4==0) {
-            	entities.add(new Entity(grass,        new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            	entities.add(new Entity(fern,         new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,1));
-            	entities.add(new Entity(flower,       new Vector3f(random.nextFloat()*800-400, 0, random.nextFloat()*-600),0,0,0,2));
+            if (i%5==0) {
+        		float x = random.nextFloat()*800-400; 
+        		float z = random.nextFloat()*-600; 
+        		float y = terrain.getHeightOfTerrain(x, z);
+            	entities.add(new Entity(grass,        new Vector3f(x, y, z),0,0,0,1));
+            }
+            if (i%7==0) {
+        		float x = random.nextFloat()*800-400; 
+        		float z = random.nextFloat()*-600; 
+        		float y = terrain.getHeightOfTerrain(x, z);
+            	entities.add(new Entity(flower,       new Vector3f(x, y, z),0,0,0,2));
+            }
+            if(i%15==0) {
+        		float x = random.nextFloat()*800-400; 
+        		float z = random.nextFloat()*-600; 
+        		float y = terrain.getHeightOfTerrain(x, z);
+            	entities.add(new Entity(fern,         new Vector3f(x, y, z),0,0,0,1));
             }
         }
         
@@ -99,20 +132,6 @@ public class MainGameLoop {
         
         // CAMERA
         Camera camera = new Camera(player);
-
-		
-		// TERRAIN
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
-        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("terrains/dirt"));
-        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("terrains/pinkFlowers"));
-        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("terrains/path"));
-        
-        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-        
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
-        
-		Terrain terrain1 = new Terrain(-1, -1, loader, texturePack, blendMap, "maps/heightMap");
-		Terrain terrain2 = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
 		
 		// ENVIRONMENT
 		Light sun = new Light(new Vector3f(0,0,20000),new Vector3f(1,1,1));
@@ -122,19 +141,18 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			camera.move();
-			player.move();
+			player.move(terrain);
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
-			sunAngle+=0.1f;
+			//sunAngle+=0.1f;
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
-			renderer.processTerrain(terrain1);
-			renderer.processTerrain(terrain2);
+			renderer.processTerrain(terrain);
 			for (Entity entity:entities) {
 				renderer.processEntity(entity);
 			}
