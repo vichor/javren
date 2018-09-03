@@ -140,8 +140,8 @@ public class MainGameLoop {
 		float sunAngle = 90f;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
-			camera.move();
 			player.move(terrain);
+			camera.move();
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
