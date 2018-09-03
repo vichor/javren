@@ -15,6 +15,8 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
 uniform float useFakeLighting;
+uniform float numberOfRows;
+uniform vec2 offset;
 
 const float density = 0.0035;
 const float gradient = 5.0;
@@ -26,8 +28,8 @@ void main(void) {
 	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCamera;
 
-	// Texturing
-	pass_textureCoords = textureCoords;
+	// Texturing extracted from the texture atlas
+	pass_textureCoords = (textureCoords / numberOfRows) + offset;
 
 	// LIGHTING
 	// Applying light affects color of the fragments and thus is calculated

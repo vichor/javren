@@ -70,16 +70,19 @@ public class MainGameLoop {
         		new ModelTexture(loader.loadTexture("vegetation/grassTexture")));
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().setUseFakeLighting(true);
-        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("vegetation/fern", loader), 
-        		new ModelTexture(loader.loadTexture("vegetation/fern")));
-        fern.getTexture().setHasTransparency(true);
+
         TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassmodel", loader), 
         		new ModelTexture(loader.loadTexture("vegetation/flower")));
         flower.getTexture().setHasTransparency(true);
         flower.getTexture().setUseFakeLighting(true);
-        
         TexturedModel box = new TexturedModel(OBJLoader.loadObjModel("objects/box", loader),
         		new ModelTexture(loader.loadTexture("objects/box")));
+        
+        // Atlas textures
+        ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("vegetation/fern"));
+        fernTextureAtlas.setNumberOfRows(2);
+        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("vegetation/fern", loader), fernTextureAtlas);
+        fern.getTexture().setHasTransparency(true);
         
 		// Instances
         for(int i=0;i<500;i++){
@@ -87,31 +90,32 @@ public class MainGameLoop {
         		float x = random.nextFloat()*800-400; 
         		float z = random.nextFloat()*-600; 
         		float y = terrain.getHeightOfTerrain(x, z);
-        		entities.add(new Entity(firTreeModel, new Vector3f(x, y, z),0,0,0,5));
+        		entities.add(new Entity(firTreeModel,new Vector3f(x, y, z),0,0,0,5));
         	}
             if (i%30 == 0) {
         		float x = random.nextFloat()*800-400; 
         		float z = random.nextFloat()*-600; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(treeModel,    new Vector3f(x, y, z),0,0,0,0.6f));
+            	entities.add(new Entity(treeModel,new Vector3f(x, y, z),0,0,0,0.6f));
             }
             if (i%5==0) {
         		float x = random.nextFloat()*800-400; 
         		float z = random.nextFloat()*-600; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(grass,        new Vector3f(x, y, z),0,0,0,1));
+            	entities.add(new Entity(grass,new Vector3f(x, y, z),0,0,0,1));
             }
             if (i%7==0) {
         		float x = random.nextFloat()*800-400; 
         		float z = random.nextFloat()*-600; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(flower,       new Vector3f(x, y, z),0,0,0,2));
+            	entities.add(new Entity(flower,new Vector3f(x, y, z),0,0,0,2));
             }
-            if(i%15==0) {
+            if(i%5==0) {
         		float x = random.nextFloat()*800-400; 
         		float z = random.nextFloat()*-600; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(fern,         new Vector3f(x, y, z),0,0,0,1));
+        		// create the entity using alternate constructor to choose which texture index is to be used
+            	entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z),0,0,0,1));
             }
         }
         
