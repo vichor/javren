@@ -6,18 +6,21 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
 import objconverter.OBJFileLoader;
 import objconverter.OBJLoader;
 import platform.Library;
 import renderEngine.DisplayManager;
+import renderEngine.GuiRenderer;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
@@ -128,7 +131,7 @@ public class MainGameLoop {
         // Add boxes close to player
         for (int i = 0; i < 10; i++) {
         	Vector3f boxPosition = new Vector3f(
-        			(float) (player.getPosition().x-(20-(10*i*Math.sin(Math.toRadians(30))))), // left to the player but getting closer to draw a diagonal line
+        			(float) (player.getPosition().x-(20-(10*Math.sin(Math.toRadians(30+(5*i)))))), // left to the player but getting closer to draw a diagonal line
         			player.getPosition().y+8, 
         			player.getPosition().z-(20*i));
         	entities.add(new Entity(box, boxPosition,0,0,0,6));
@@ -140,6 +143,15 @@ public class MainGameLoop {
 		// ENVIRONMENT
 		Light sun = new Light(new Vector3f(0,0,20000),new Vector3f(1,1,1));
 		
+		// GUI
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		GuiTexture gui = new GuiTexture(loader.loadTexture("gui/socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.15f, 0.15f));
+		GuiTexture gui2 = new GuiTexture(loader.loadTexture("gui/health"), new Vector2f(0.4f, 0.48f), new Vector2f(0.15f, 0.15f));
+		guis.add(gui);
+		guis.add(gui2);
+		
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		
 		// GAME LOOP
 		float sunAngle = 90f;
 		while(!Display.isCloseRequested() ) {
@@ -149,7 +161,7 @@ public class MainGameLoop {
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
-			//sunAngle+=0.1f;
+			sunAngle+=0.1f;
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
@@ -163,10 +175,12 @@ public class MainGameLoop {
 
 			// call the render engine
 			renderer.render(sun, camera);
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();			
 		}
 		
 		// closing
+		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
