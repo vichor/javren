@@ -75,7 +75,7 @@ public class MasterRenderer {
 	}
 	
 	
-	public void render(Light sun, Camera camera) {
+	public void render(List<Light> lights, Camera camera) {
 		// A new render cycle is about to start
 		prepare();
 
@@ -84,7 +84,7 @@ public class MasterRenderer {
 		// the application shall push them again each cycle.
 		entityShader.start();
 		entityShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
-		entityShader.loadLight(sun);
+		entityShader.loadLights(lights);
 		entityShader.loadViewMatrix(camera);
 		entityRenderer.render(entities);
 		entityShader.stop();
@@ -94,6 +94,7 @@ public class MasterRenderer {
 		// each cycle, the terrain to be rendered change, so they are removed from the list.
 		// the application shall push them again each cycle.
 		terrainShader.start();
+		Light sun = lights.get(0);
 		terrainShader.loadLight(sun);
 		terrainShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		terrainShader.loadViewMatrix(camera);

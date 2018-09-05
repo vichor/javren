@@ -141,7 +141,11 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT
-		Light sun = new Light(new Vector3f(0,0,20000),new Vector3f(1,1,1));
+		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
+		List<Light> lights = new ArrayList<Light>();
+		lights.add(sun);
+		lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0)));
+		lights.add(new Light(new Vector3f(200,10,200), new Vector3f(0,0,10)));
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -158,6 +162,7 @@ public class MainGameLoop {
 			// some game logic
 			player.move(terrain);
 			camera.move();
+			/*
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
@@ -165,6 +170,7 @@ public class MainGameLoop {
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
+			*/
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
@@ -174,7 +180,7 @@ public class MainGameLoop {
 			}
 
 			// call the render engine
-			renderer.render(sun, camera);
+			renderer.render(lights, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();			
 		}

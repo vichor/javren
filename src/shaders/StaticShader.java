@@ -1,5 +1,7 @@
 package shaders;
 
+import java.util.List;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -10,14 +12,16 @@ import toolbox.Maths;
 
 public class StaticShader extends ShaderProgram {
 
+	private static final int MAX_LIGHTS = 4;
+
 	private static final String VERTEX_FILE = "src/shaders/vertexShader.glsl";
 	private static final String FRAGMENT_FILE = "src/shaders/fragmentShader.glsl";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
-	private int location_lightPosition;
-	private int location_lightColor;
+	private int location_lightPosition[];
+	private int location_lightColor[];
 	private int location_shineDamper;
 	private int location_reflectivity;
 	private int location_useFakeLighting;
@@ -41,14 +45,20 @@ public class StaticShader extends ShaderProgram {
 		location_transformationMatrix = super.getUniformLocation("transformationMatrix");
 		location_projectionMatrix = super.getUniformLocation("projectionMatrix");
 		location_viewMatrix = super.getUniformLocation("viewMatrix");
-		location_lightPosition = super.getUniformLocation("lightPosition");
-		location_lightColor = super.getUniformLocation("lightColor");
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColor = super.getUniformLocation("skyColor");
 		location_numberOfRows = super.getUniformLocation("numberOfRows");
 		location_offset = super.getUniformLocation("offset");
+		
+		location_lightPosition = new int[MAX_LIGHTS];
+		location_lightColor = new int[MAX_LIGHTS];
+		for (int i=0; i<MAX_LIGHTS; i++) {
+			location_lightPosition[i] = super.getUniformLocation("lightPosition["+i+"]");
+			location_lightColor[i] = super.getUniformLocation("lightColor["+i+"]");
+			
+		}
 	}
 	
 	
@@ -68,9 +78,16 @@ public class StaticShader extends ShaderProgram {
 	}
 	
 	
-	public void loadLight(Light light) {
-		super.loadVector(location_lightPosition, light.getPosition());
-		super.loadVector(location_lightColor, light.getColor());
+	public void loadLights(List<Light> lights) {
+		for (int i=0; i<MAX_LIGHTS; i++) {
+			if(i<lights.size()) {
+				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
+				super.loadVector(location_lightColor[i], lights.get(i).getColor());
+			}else {
+				super.loadVector(location_lightPosition[i], new Vector3f(0,0,0));
+				super.loadVector(location_lightColor[i], new Vector3f(0,0,0));
+			}
+		}
 	}
 	
 	

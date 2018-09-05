@@ -6,14 +6,14 @@ in vec3 normal;
 
 out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
-out vec3 toLightVector;
+out vec3 toLightVector[4]; // Vector pointing to light sources has to be an array if we have multiple ligths affecting our scene
 out vec3 toCameraVector;
 out float visibility;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform vec3 lightPosition;
+uniform vec3 lightPosition[4]; // light position has to be an array if we have multiple ligths affecting our scene
 uniform float useFakeLighting;
 uniform float numberOfRows;
 uniform vec2 offset;
@@ -53,12 +53,14 @@ void main(void) {
 	// Difuse lighting
 	// We need the surface normal vector which is obtained from the vertex
 	// normal vector applying to it the transformation
-	// Also needed a vector pointing to the light source and this is
+	// Also needed the vectors pointing to the light sources and this is
 	// obtained subtracting the vertex world position from the light
-	// source position.
+	// source positions.
 
 	surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;
-	toLightVector = lightPosition - worldPosition.xyz;
+	for (int i = 0; i < 4; i++){
+		toLightVector[i] = lightPosition[i] - worldPosition.xyz;
+	}
 
 
 	// Specular lighting
