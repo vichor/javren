@@ -140,12 +140,12 @@ public class MainGameLoop {
         // CAMERA
         Camera camera = new Camera(player);
 		
-		// ENVIRONMENT
+		// ENVIRONMENT / LIGHTS
 		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
-		lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(10,0,0)));
-		lights.add(new Light(new Vector3f(200,10,200), new Vector3f(0,0,10)));
+		lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(1,0,0)));
+		lights.add(new Light(new Vector3f(200,10,200), new Vector3f(0,0,1)));
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -157,7 +157,7 @@ public class MainGameLoop {
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// GAME LOOP
-		float sunAngle = 90f;
+		//float sunAngle = 90f;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);

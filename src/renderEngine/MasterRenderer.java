@@ -94,8 +94,7 @@ public class MasterRenderer {
 		// each cycle, the terrain to be rendered change, so they are removed from the list.
 		// the application shall push them again each cycle.
 		terrainShader.start();
-		Light sun = lights.get(0);
-		terrainShader.loadLight(sun);
+		terrainShader.loadLights(lights);
 		terrainShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);

@@ -22,7 +22,7 @@ void main(void) {
 	vec3 unitSurfaceNormal  = normalize(surfaceNormal);
 	vec3 unitVectorToCamera = normalize(toCameraVector);
 
-	// Difuse and Specular light calculation. One for each light sources.
+	// Diffuse and Specular light calculation. One for each light sources.
 	vec3 totalDiffuseLight = vec3(0.0);
 	vec3 totalSpecularLight = vec3(0.0);
 	for (int i = 0; i < 4; i++){

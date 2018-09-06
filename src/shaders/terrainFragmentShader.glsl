@@ -2,7 +2,7 @@
 
 in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
-in vec3 toLightVector;
+in vec3 toLightVector[4];
 in vec3 toCameraVector;
 in float visibility;
 
@@ -17,7 +17,7 @@ uniform sampler2D bTexture;				// Texture to use when the pixel in the blend map
 uniform sampler2D blendMap;				// ... and the blend map texture
 
 
-uniform vec3 lightColor;
+uniform vec3 lightColor[4];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -57,52 +57,60 @@ void main(void) {
 	// Final terrain color is the mix of each of the colors from previous calculation
 	vec4 blendedColor = backgroundTextureColor + rTextureColor + gTextureColor + bTextureColor;
 
-
-	// DIFUSE LIGHT:
-	// Calculate how much light is receiving the fragment by doing the dot 
-	// product of the normalized surface normal vector with the normalized
-	// vector pointing from the surface to the light
-
+	// Vector normalization for light calculations below
 	vec3 unitSurfaceNormal  = normalize(surfaceNormal);
-	vec3 unitVectorToLight  = normalize(toLightVector);
-	float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
-	float brightness = max(nDotProd, 0.2);	// Ambient light made by ensuring diffuse light is above 0.2
-	vec3 diffuseLight = brightness * lightColor;
-	
-	
-	// SPECULAR LIGHT:
-	// this light is the reflected light from a fragment towards the camera.
-	// Depending where the camera is located and where the fragment is pointing
-	// to, the camera will receive more or less specular light.
-	// It is calculated with the dot product of the fragment-to-camera vector 
-	// and the reflected-light-vector.
-	// - The fragment-to-camera vector is an input from the vertex shader
-	// - The reflected light for the fragment is obtained using the GLSL reflect 
-	// function using the light direction and the surface normal.
-	// 		The light direction, or the vector poiting from light to fragment, 
-	// 		is the negative of the vector pointing to the light source.
-	// Then the material damping has to be applied by powering the calculated
-	// specular factor to the shine damper (obtained from an uniform variable).
-	// The final specular light will get the shine damping value multiplied by the 
-	// reflectivity and the light color.
 
-	vec3 unitVectorToCamera = normalize(toCameraVector);
-	vec3 lightDirection = -unitVectorToLight;
-	vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
+	// Diffuse and Specular light calculation. One for each light sources.
+	vec3 totalDiffuseLight = vec3(0.0);
+	vec3 totalSpecularLight = vec3(0.0);
+	for(int i=0; i<4; i++){
+		// Vector normalization depending on light source
+		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 
-	float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
-	specularFactor = max(specularFactor, 0.0);
+		// Diffuse light:
+		// Calculate how much light is receiving the fragment by doing the dot
+		// product of the normalized surface normal vector with the normalized
+		// vector pointing from the surface to the light
+		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
+		float brightness = max(nDotProd, 0.2);	// Ambient light made by ensuring diffuse light is above 0.2
+		vec3 diffuseLight = brightness * lightColor[i];
+		totalDiffuseLight += diffuseLight;
 
-	float damperFactor = pow(specularFactor, shineDamper);
-	
-	vec3 specularLight = damperFactor * reflectivity * lightColor;
+		// Specular light:
+		// This light is the reflected light from a fragment towards the camera.
+		// Depending where the camera is located and where the fragment is pointing
+		// to, the camera will receive more or less specular light.
+		// It is calculated with the dot product of the fragment-to-camera vector
+		// and the reflected-light-vector.
+		// - The fragment-to-camera vector is an input from the vertex shader
+		// - The reflected light for the fragment is obtained using the GLSL reflect
+		// function using the light direction and the surface normal.
+		// 		The light direction, or the vector poiting from light to fragment,
+		// 		is the negative of the vector pointing to the light source.
+		// Then the material damping has to be applied by powering the calculated
+		// specular factor to the shine damper (obtained from an uniform variable).
+		// The final specular light will get the shine damping value multiplied by the
+		// reflectivity and the light color.
+
+		vec3 unitVectorToCamera = normalize(toCameraVector);
+		vec3 lightDirection = -unitVectorToLight;
+		vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
+
+		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
+		specularFactor = max(specularFactor, 0.0);
+
+		float damperFactor = pow(specularFactor, shineDamper);
+
+		vec3 specularLight = damperFactor * reflectivity * lightColor[i];
+		totalSpecularLight += specularLight;
+	}
 
 
 	// FRAGMENT COLOR:
 	// Calculate the final color of the fragment mixing up the texture
 	// data with the light calculated before
 
-	vec4 fragmentColor = vec4(diffuseLight, 1.0) * blendedColor + vec4(specularLight, 1.0);
+	vec4 fragmentColor = vec4(totalDiffuseLight, 1.0) * blendedColor + vec4(totalSpecularLight, 1.0);
 
 
 	// FOG
