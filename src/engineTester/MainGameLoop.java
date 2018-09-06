@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -142,10 +143,13 @@ public class MainGameLoop {
 		
 		// ENVIRONMENT / LIGHTS
 		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
+		Light red = new Light(new Vector3f(-200,10,-200), new Vector3f(1,0,0));
+		Light blue = new Light(new Vector3f(200,10,200), new Vector3f(0,0,1)); 
+		Light yellow = new Light(new Vector3f(0,10,1000), new Vector3f(0,1,1)); 
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
-		lights.add(new Light(new Vector3f(-200,10,-200), new Vector3f(1,0,0)));
-		lights.add(new Light(new Vector3f(200,10,200), new Vector3f(0,0,1)));
+		lights.add(red);
+		lights.add(blue);
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -157,20 +161,38 @@ public class MainGameLoop {
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// GAME LOOP
-		//float sunAngle = 90f;
+		float sunAngle = 90f;
+		boolean keyAttended = false;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);
 			camera.move();
-			/*
+			
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
+			//sun.setPosition(sunPos);
 			sunAngle+=0.1f;
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
-			*/
+			// Add/remove yellow light when pressing L key
+			boolean toggleYellow = false;
+			if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
+				if (!keyAttended) {
+					toggleYellow = true;
+					keyAttended = true;
+				}
+			} else {
+				keyAttended = false;
+			}
+			if (toggleYellow) {
+				if (!lights.contains(yellow)) {
+					lights.add(yellow);
+				} else {
+					lights.remove(yellow);
+				}
+			}
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);

@@ -31,8 +31,14 @@ public class TerrainShader extends ShaderProgram {
 	private int location_bTexture;
 	private int location_blendMap;
 	
+	private Light loadedLights[];
+	private Light zeroLight;
+	
+
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
+		loadedLights = new Light[MAX_LIGHTS];
+		zeroLight = new Light(new Vector3f(0,0,0), new Vector3f(0,0,0));
 	}
 	
 	@Override
@@ -81,15 +87,33 @@ public class TerrainShader extends ShaderProgram {
 	
 	
 	public void loadLights(List<Light> lights) {
+		
 		for (int i=0; i<MAX_LIGHTS; i++) {
 			if(i<lights.size()) {
-				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
-				super.loadVector(location_lightColor[i], lights.get(i).getColor());
+				Light light = lights.get(i);
+				if (!lightLoaded(light)) {
+					super.loadVector(location_lightPosition[i], light.getPosition());
+					super.loadVector(location_lightColor[i], light.getColor());
+				}
+				loadedLights[i] = light;
 			}else {
-				super.loadVector(location_lightPosition[i], new Vector3f(0,0,0));
-				super.loadVector(location_lightColor[i], new Vector3f(0,0,0));
+				if (!lightLoaded(zeroLight)){
+					super.loadVector(location_lightPosition[i], zeroLight.getPosition());
+					super.loadVector(location_lightColor[i], zeroLight.getColor());
+				}
+				loadedLights[i] = zeroLight;
+			}
+		}	
+	}
+	
+	
+	private boolean lightLoaded(Light light) {
+		for (int i=0; i<MAX_LIGHTS; i++) {
+			if (loadedLights[i] == light) {
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	
