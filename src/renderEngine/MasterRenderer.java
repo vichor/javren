@@ -21,8 +21,8 @@ public class MasterRenderer {
 
 	// Fog
 	private static final float SKYCOLOR_RED = 0.0f;
-	private static final float SKYCOLOR_GREEN = 0.85f;
-	private static final float SKYCOLOR_BLUE = 0.95f;
+	private static final float SKYCOLOR_GREEN = 0.85f*0.25f;
+	private static final float SKYCOLOR_BLUE = 0.95f*0.25f;
 	
 	// Projection matrix 
 	private static final float FOV = 70;
