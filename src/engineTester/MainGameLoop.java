@@ -67,15 +67,15 @@ public class MainGameLoop {
 		// Textured models
         RawModel firTreeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/tree"));
         TexturedModel firTreeModel = new TexturedModel(firTreeRawModel,new ModelTexture(loader.loadTexture("vegetation/tree")));
-        RawModel treeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/lowpolytree"));
-        TexturedModel treeModel = new TexturedModel(treeRawModel,new ModelTexture(loader.loadTexture("vegetation/lowpolytree")));
+        RawModel treeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/lowPolyTree"));
+        TexturedModel treeModel = new TexturedModel(treeRawModel,new ModelTexture(loader.loadTexture("vegetation/lowPolyTree")));
         
-        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassmodel", loader), 
+        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassModel", loader), 
         		new ModelTexture(loader.loadTexture("vegetation/grassTexture")));
         grass.getTexture().setHasTransparency(true);
         grass.getTexture().setUseFakeLighting(true);
 
-        TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassmodel", loader), 
+        TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassModel", loader), 
         		new ModelTexture(loader.loadTexture("vegetation/flower")));
         flower.getTexture().setHasTransparency(true);
         flower.getTexture().setUseFakeLighting(true);
@@ -94,32 +94,32 @@ public class MainGameLoop {
 		// Instances
         for(int i=0;i<500;i++){
         	if (i%10 == 0) {
-        		float x = random.nextFloat()*800-400; 
-        		float z = random.nextFloat()*-600; 
+        		float x = random.nextFloat()*800; 
+        		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
         		entities.add(new Entity(firTreeModel,new Vector3f(x, y, z),0,0,0,5));
         	}
             if (i%30 == 0) {
-        		float x = random.nextFloat()*800-400; 
-        		float z = random.nextFloat()*-600; 
+        		float x = random.nextFloat()*800; 
+        		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
             	entities.add(new Entity(treeModel,new Vector3f(x, y, z),0,0,0,0.6f));
             }
             if (i%5==0) {
-        		float x = random.nextFloat()*800-400; 
-        		float z = random.nextFloat()*-600; 
+        		float x = random.nextFloat()*800; 
+        		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
             	entities.add(new Entity(grass,new Vector3f(x, y, z),0,0,0,1));
             }
             if (i%7==0) {
-        		float x = random.nextFloat()*800-400; 
-        		float z = random.nextFloat()*-600; 
+        		float x = random.nextFloat()*800; 
+        		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
             	entities.add(new Entity(flower,new Vector3f(x, y, z),0,0,0,2));
             }
             if(i%5==0) {
-        		float x = random.nextFloat()*800-400; 
-        		float z = random.nextFloat()*-600; 
+        		float x = random.nextFloat()*800; 
+        		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
         		// create the entity using alternate constructor to choose which texture index is to be used
             	entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z),0,0,0,1));
@@ -136,7 +136,7 @@ public class MainGameLoop {
         for (int i = 0; i < 10; i++) {
         	Vector3f boxPosition = new Vector3f(
         			(float) (player.getPosition().x-(20-(10*Math.sin(Math.toRadians(30+(5*i)))))), // left to the player but getting closer to draw a diagonal line
-        			player.getPosition().y+8, 
+        			player.getPosition().y, 
         			player.getPosition().z-(20*i));
         	entities.add(new Entity(box, boxPosition,0,0,0,6));
         }
@@ -145,10 +145,10 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun1 = new Light(new Vector3f(0, 1000, -7000), new Vector3f(1, 1, 1));
-		Light sun2 = new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
+		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
+		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
-		lights.add(sun2);
+		lights.add(sun);
 		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
 		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
 		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
@@ -168,10 +168,27 @@ public class MainGameLoop {
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// GAME LOOP
+		float sunAngle = 90f;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);
 			camera.move();
+			
+			Vector3f sunPos = sun.getPosition();
+			sunPos.x = (float) (800*Math.cos(Math.toRadians(sunAngle)));
+			sunPos.y = (float) (10000*Math.sin(Math.toRadians(sunAngle)));
+			sun.setPosition(sunPos);
+			sunAngle+=0.1f;
+			if (sunAngle >360f) {
+				sunAngle = 0f;
+			}
+			Vector3f sunColor = sun.getColor();
+			sunColor.x = (float)Math.sin(Math.toRadians(sunAngle));
+			if (sunColor.x < 0f) { 
+				sunColor.x = 0f; 
+			}
+			sunColor.y = sunColor.x;
+			sunColor.z = sunColor.x;
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
