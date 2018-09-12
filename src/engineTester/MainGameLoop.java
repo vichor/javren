@@ -53,7 +53,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new Terrain(-1, -1, loader, texturePack, blendMap, "maps/heightMap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
 		
 		
 		// ENTITIES DEFINITION
@@ -81,6 +81,9 @@ public class MainGameLoop {
         flower.getTexture().setUseFakeLighting(true);
         TexturedModel box = new TexturedModel(OBJLoader.loadObjModel("objects/box", loader),
         		new ModelTexture(loader.loadTexture("objects/box")));
+        TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lights/lamp", loader),
+        		new ModelTexture(loader.loadTexture("lights/lamp")));
+        lamp.getTexture().setUseFakeLighting(true);
         
         // Atlas textures
         ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("vegetation/fern"));
@@ -142,14 +145,18 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
-		Light red = new Light(new Vector3f(-200,10,-200), new Vector3f(1,0,0));
-		Light blue = new Light(new Vector3f(200,10,200), new Vector3f(0,0,1)); 
-		Light yellow = new Light(new Vector3f(0,10,1000), new Vector3f(0,1,1)); 
+		Light sun1 = new Light(new Vector3f(0, 1000, -7000), new Vector3f(1, 1, 1));
+		Light sun2 = new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f, 0.4f, 0.4f));
 		List<Light> lights = new ArrayList<Light>();
-		lights.add(sun);
-		lights.add(red);
-		lights.add(blue);
+		lights.add(sun2);
+		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		
+		// adding lamp entities
+		entities.add(new Entity(lamp, new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
+		entities.add(new Entity(lamp, new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
+		entities.add(new Entity(lamp, new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -161,38 +168,10 @@ public class MainGameLoop {
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// GAME LOOP
-		float sunAngle = 90f;
-		boolean keyAttended = false;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);
 			camera.move();
-			
-			Vector3f sunPos = sun.getPosition();
-			sunPos.x = (float) (20000*Math.cos(Math.toRadians(sunAngle)));
-			sunPos.y = (float) (40000*Math.sin(Math.toRadians(sunAngle)));
-			//sun.setPosition(sunPos);
-			sunAngle+=0.1f;
-			if (sunAngle >360f) {
-				sunAngle = 0f;
-			}
-			// Add/remove yellow light when pressing L key
-			boolean toggleYellow = false;
-			if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
-				if (!keyAttended) {
-					toggleYellow = true;
-					keyAttended = true;
-				}
-			} else {
-				keyAttended = false;
-			}
-			if (toggleYellow) {
-				if (!lights.contains(yellow)) {
-					lights.add(yellow);
-				} else {
-					lights.remove(yellow);
-				}
-			}
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
