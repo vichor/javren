@@ -16,6 +16,7 @@ import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flower;
 import engineTester.gameEntities.GameEntity;
 import engineTester.gameEntities.Grass;
+import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Tree;
 import entities.Camera;
 import entities.Light;
@@ -101,13 +102,21 @@ public class MainGameLoop {
             }
         }
         
+        // Lamps
+		Lamp lamp1 = new Lamp(new Vector3f(185, -4.7f, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp2 = new Lamp(new Vector3f(370, 4.2f, -300),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp3 = new Lamp(new Vector3f(293, -6.8f, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
+		entities.add(lamp1);
+		entities.add(lamp2);
+		entities.add(lamp3);
+        
 
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture")));
         Player player = new Player(playerModel, new Vector3f(100, 0, -50), 0, 180, 0, 0.6f);
         
-        // Add boxes close to player
+        // Add boxes entities close to player
         for (int i = 0; i < 10; i++) {
            float x = (float) (player.getPosition().x-(20*i)); // left to the player but getting closer to draw a diagonal line
            float z = player.getPosition().z-(20*i);
@@ -119,18 +128,13 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
-		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
+		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
+		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
-		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
-		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
-		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
-		
-		// adding lamp entities
-		entities.add(new Entity(lamp, new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
-		entities.add(new Entity(lamp, new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
-		entities.add(new Entity(lamp, new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
+		lights.add(lamp1.getLightSource());
+		lights.add(lamp2.getLightSource());
+		lights.add(lamp3.getLightSource());
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -145,10 +149,11 @@ public class MainGameLoop {
 		float sunAngle = 90f;
 		boolean wireframeKey = false;
 		while(!Display.isCloseRequested() ) {
-			// some game logic
+			// Movements
 			player.move(terrain);
 			camera.move();
 			
+			// Moving sun
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (800*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (10000*Math.sin(Math.toRadians(sunAngle)));
@@ -157,6 +162,7 @@ public class MainGameLoop {
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
+			// Sun gets dimmer at dusk/dawn
 			Vector3f sunColor = sun.getColor();
 			sunColor.x = (float)Math.sin(Math.toRadians(sunAngle));
 			if (sunColor.x < 0f) { 
@@ -164,14 +170,8 @@ public class MainGameLoop {
 			}
 			sunColor.y = sunColor.x;
 			sunColor.z = sunColor.x;
-			
-			// push players, terrains and entities into render system
-			renderer.processEntity(player);
-			renderer.processTerrain(terrain);
-			for (GameEntity entity:entities) {
-				renderer.processEntity(entity.getRenderEntity());
-			}
-			
+
+			// Wireframe 
 			if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
 				if (!wireframeKey) {
 					renderer.toggleWireframeMode();
@@ -180,8 +180,14 @@ public class MainGameLoop {
 			} else {
 				wireframeKey = false;
 			}
-			
 
+			// push players, terrains and entities into render system
+			renderer.processEntity(player);
+			renderer.processTerrain(terrain);
+			for (GameEntity entity:entities) {
+				renderer.processEntity(entity.getRenderEntity());
+			}
+			
 			// call the render engine
 			renderer.render(lights, camera);
 			guiRenderer.render(guis);
