@@ -10,14 +10,18 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import engineTester.gameEntities.Box;
+import engineTester.gameEntities.Fern;
+import engineTester.gameEntities.FirTree;
+import engineTester.gameEntities.Flower;
+import engineTester.gameEntities.GameEntity;
+import engineTester.gameEntities.Grass;
+import engineTester.gameEntities.Tree;
 import entities.Camera;
-import entities.Entity;
 import entities.Light;
 import entities.Player;
 import guis.GuiTexture;
-import models.RawModel;
 import models.TexturedModel;
-import objconverter.OBJFileLoader;
 import objconverter.OBJLoader;
 import platform.Library;
 import renderEngine.DisplayManager;
@@ -59,67 +63,41 @@ public class MainGameLoop {
 		// ENTITIES DEFINITION
 		
 		// Entities containers and tools
-        List<Entity> entities = new ArrayList<Entity>();
+        List<GameEntity> entities = new ArrayList<GameEntity>();
 		Random random = new Random();
 		
-		// ENTITIES
-		
-		// Textured models
-        RawModel firTreeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/tree"));
-        TexturedModel firTreeModel = new TexturedModel(firTreeRawModel,new ModelTexture(loader.loadTexture("vegetation/tree")));
-        RawModel treeRawModel = loader.loadToVAO(OBJFileLoader.loadOBJ("vegetation/lowPolyTree"));
-        TexturedModel treeModel = new TexturedModel(treeRawModel,new ModelTexture(loader.loadTexture("vegetation/lowPolyTree")));
-        
-        TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassModel", loader), 
-        		new ModelTexture(loader.loadTexture("vegetation/grassTexture")));
-        grass.getTexture().setHasTransparency(true);
-        grass.getTexture().setUseFakeLighting(true);
-
-        TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("vegetation/grassModel", loader), 
-        		new ModelTexture(loader.loadTexture("vegetation/flower")));
-        flower.getTexture().setHasTransparency(true);
-        flower.getTexture().setUseFakeLighting(true);
-        TexturedModel box = new TexturedModel(OBJLoader.loadObjModel("objects/box", loader),
-        		new ModelTexture(loader.loadTexture("objects/box")));
-        
-        // Atlas textures
-        ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("vegetation/fern"));
-        fernTextureAtlas.setNumberOfRows(2);
-        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("vegetation/fern", loader), fernTextureAtlas);
-        fern.getTexture().setHasTransparency(true);
-        
-		// Instances
+		// Game entities instances
+		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
         	if (i%10 == 0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-        		entities.add(new Entity(firTreeModel,new Vector3f(x, y, z),0,0,0,5));
+               entities.add(new FirTree(new Vector3f(x,y,z)));
         	}
             if (i%30 == 0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(treeModel,new Vector3f(x, y, z),0,0,0,0.6f));
+               entities.add(new Tree(new Vector3f(x, y, z)));
             }
             if (i%5==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(grass,new Vector3f(x, y, z),0,0,0,1));
+               entities.add(new Grass(new Vector3f(x, y, z)));
             }
             if (i%7==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-            	entities.add(new Entity(flower,new Vector3f(x, y, z),0,0,0,2));
+               entities.add(new Flower(new Vector3f(x, y, z)));
             }
             if(i%5==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-        		// create the entity using alternate constructor to choose which texture index is to be used
-            	entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z),0,0,0,1));
+               entities.add(new Fern(new Vector3f(x, y, z)));
             }
         }
         
@@ -131,11 +109,10 @@ public class MainGameLoop {
         
         // Add boxes close to player
         for (int i = 0; i < 10; i++) {
-        	Vector3f boxPosition = new Vector3f(
-        			(float) (player.getPosition().x-(20-(10*Math.sin(Math.toRadians(30+(5*i)))))), // left to the player but getting closer to draw a diagonal line
-        			player.getPosition().y, 
-        			player.getPosition().z-(20*i));
-        	entities.add(new Entity(box, boxPosition,0,0,0,6));
+           float x = (float) (player.getPosition().x-(20*i)); // left to the player but getting closer to draw a diagonal line
+           float z = player.getPosition().z-(20*i);
+           Vector3f boxPosition = new Vector3f(x, terrain.getHeightOfTerrain(x, z)+7, z);
+           entities.add(new Box(boxPosition));
         }
         
         // CAMERA
@@ -198,8 +175,8 @@ public class MainGameLoop {
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
 			renderer.processTerrain(terrain);
-			for (Entity entity:entities) {
-				renderer.processEntity(entity);
+			for (GameEntity entity:entities) {
+				renderer.processEntity(entity.getRenderEntity());
 			}
 
 			// call the render engine
