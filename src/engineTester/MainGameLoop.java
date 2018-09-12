@@ -169,6 +169,7 @@ public class MainGameLoop {
 		
 		// GAME LOOP
 		float sunAngle = 90f;
+		boolean wireframeKey = false;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);
@@ -196,6 +197,16 @@ public class MainGameLoop {
 			for (Entity entity:entities) {
 				renderer.processEntity(entity);
 			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+				if (!wireframeKey) {
+					renderer.toggleWireframeMode();
+					wireframeKey = true;
+				}
+			} else {
+				wireframeKey = false;
+			}
+			
 
 			// call the render engine
 			renderer.render(lights, camera);

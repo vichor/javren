@@ -40,6 +40,9 @@ public class MasterRenderer {
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader;
 	
+	// Wireframe
+	boolean wireframeMode = false;
+	
 	
 	public MasterRenderer() {
 		// don't render back faces
@@ -72,6 +75,7 @@ public class MasterRenderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE, 1);
+		configureWireframeMode();
 	}
 	
 	
@@ -141,5 +145,20 @@ public class MasterRenderer {
 	public void cleanUp() {
 		entityShader.cleanUp();
 		terrainShader.cleanUp();
+	}
+	
+	public void toggleWireframeMode() {
+		wireframeMode = !wireframeMode;
+	}
+	
+	private void configureWireframeMode() {
+		if (wireframeMode) {
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}else{
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
+		
 	}
 }
