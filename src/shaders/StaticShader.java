@@ -22,6 +22,7 @@ public class StaticShader extends ShaderProgram {
 	private int location_viewMatrix;
 	private int location_lightPosition[];
 	private int location_lightColor[];
+	private int location_lightAttenuation[];
 	private int location_shineDamper;
 	private int location_reflectivity;
 	private int location_useFakeLighting;
@@ -29,13 +30,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_numberOfRows;
 	private int location_offset;
 	
-	private Light loadedLights[];
-	private Light zeroLight;
-	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
-		loadedLights = new Light[MAX_LIGHTS];
-		zeroLight = new Light(new Vector3f(0,0,0), new Vector3f(0,0,0));
 	}
 	
 	@Override
@@ -59,10 +55,11 @@ public class StaticShader extends ShaderProgram {
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
+		location_lightAttenuation = new int[MAX_LIGHTS];
 		for (int i=0; i<MAX_LIGHTS; i++) {
 			location_lightPosition[i] = super.getUniformLocation("lightPosition["+i+"]");
 			location_lightColor[i] = super.getUniformLocation("lightColor["+i+"]");
-			
+			location_lightAttenuation[i] = super.getUniformLocation("lightAttenuation["+i+"]");
 		}
 	}
 	
@@ -86,33 +83,18 @@ public class StaticShader extends ShaderProgram {
 	public void loadLights(List<Light> lights) {
 		for (int i=0; i<MAX_LIGHTS; i++) {
 			if(i<lights.size()) {
-				Light light = lights.get(i);
-				if (!lightLoaded(light)) {
-					super.loadVector(location_lightPosition[i], light.getPosition());
-					super.loadVector(location_lightColor[i], light.getColor());
-				}
-				loadedLights[i] = light;
+				super.loadVector(location_lightPosition[i], lights.get(i).getPosition());
+				super.loadVector(location_lightColor[i], lights.get(i).getColor());
+				super.loadVector(location_lightAttenuation[i], lights.get(i).getAttenuation());
 			}else {
-				if (!lightLoaded(zeroLight)){
-					super.loadVector(location_lightPosition[i], zeroLight.getPosition());
-					super.loadVector(location_lightColor[i], zeroLight.getColor());
-				}
-				loadedLights[i] = zeroLight;
+				super.loadVector(location_lightPosition[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_lightColor[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_lightAttenuation[i], new Vector3f(1, 0, 0));
 			}
 		}
 	}
 
 
-	private boolean lightLoaded(Light light) {
-		for (int i=0; i<MAX_LIGHTS; i++) {
-			if (loadedLights[i] == light) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	
 	public void loadShineVariables(float shineDamper, float reflectivity) {
 		super.loadFloat(location_shineDamper, shineDamper);
 		super.loadFloat(location_reflectivity, reflectivity);

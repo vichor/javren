@@ -18,6 +18,7 @@ uniform sampler2D blendMap;				// ... and the blend map texture
 
 
 uniform vec3 lightColor[4];
+uniform vec3 lightAttenuation[4];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -67,14 +68,20 @@ void main(void) {
 		// Vector normalization depending on light source
 		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 
+		// Attenuation:
+		// Defined as 3 component values (stored in a vec3) which depends from the distance
+		// The final brightness of the light will be inverse of the attenuation
+		// (brightness=brightness/attenuationFactor)
+		float distance = length(toLightVector[i]);
+		float attenuationFactor = lightAttenuation[i].x + (lightAttenuation[i].y * distance) + (lightAttenuation[i].z * distance * distance);
+
 		// Diffuse light:
 		// Calculate how much light is receiving the fragment by doing the dot
 		// product of the normalized surface normal vector with the normalized
 		// vector pointing from the surface to the light
 		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
 		float brightness = max(nDotProd, 0.2);	// Ambient light made by ensuring diffuse light is above 0.2
-		vec3 diffuseLight = brightness * lightColor[i];
-		totalDiffuseLight += diffuseLight;
+		totalDiffuseLight = totalDiffuseLight + (brightness * lightColor[i])/attenuationFactor;
 
 		// Specular light:
 		// This light is the reflected light from a fragment towards the camera.
@@ -95,14 +102,10 @@ void main(void) {
 		vec3 unitVectorToCamera = normalize(toCameraVector);
 		vec3 lightDirection = -unitVectorToLight;
 		vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
-
 		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 		specularFactor = max(specularFactor, 0.0);
-
 		float damperFactor = pow(specularFactor, shineDamper);
-
-		vec3 specularLight = damperFactor * reflectivity * lightColor[i];
-		totalSpecularLight += specularLight;
+		totalSpecularLight = totalSpecularLight + (damperFactor * reflectivity * lightColor[i])/attenuationFactor;
 	}
 
 
