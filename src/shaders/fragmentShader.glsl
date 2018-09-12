@@ -11,6 +11,7 @@ out vec4 out_Color;
 
 uniform sampler2D textureSampler;
 uniform vec3 lightColor[4];
+uniform vec3 lightAttenuation[4];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -23,9 +24,17 @@ void main(void) {
 	vec3 unitVectorToCamera = normalize(toCameraVector);
 
 	// Diffuse and Specular light calculation. One for each light sources.
+	// Also deal with the attenuation of the light
 	vec3 totalDiffuseLight = vec3(0.0);
 	vec3 totalSpecularLight = vec3(0.0);
 	for (int i = 0; i < 4; i++){
+		// Attenuation:
+		// Defined as 3 component values (stored in a vec3) which depends from the distance
+		// The final brightness of the light will be inverse of the attenuation 
+		// (brightness=brightness/attenuationFactor)
+		float distance = length(toLightVector[i]);
+		float attenuationFactor = lightAttenuation[i].x + (lightAttenuation[i].y * distance) + (lightAttenuation[i].z * distance * distance);
+
 		// Difuse Light:
 		// Calculate how much light is receiving the fragment by doing the dot 
 		// product of the normalized surface normal vector with the normalized
@@ -34,8 +43,7 @@ void main(void) {
 		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
 		float brightness = max(nDotProd, 0.0);	
-		vec3 diffuseLight = brightness * lightColor[i];
-		totalDiffuseLight += diffuseLight;
+		totalDiffuseLight = totalDiffuseLight + (brightness * lightColor[i])/attenuationFactor;
 	
 	
 		// Specular Light:
@@ -56,14 +64,10 @@ void main(void) {
 
 		vec3 lightDirection = -unitVectorToLight;
 		vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
-
 		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 		specularFactor = max(specularFactor, 0.0);
-
 		float damperFactor = pow(specularFactor, shineDamper);
-		
-		vec3 specularLight = damperFactor * reflectivity * lightColor[i];
-		totalSpecularLight += specularLight;
+		totalSpecularLight = totalSpecularLight + (damperFactor * reflectivity * lightColor[i])/attenuationFactor;
 	}
 	
 	// Apply ambient lighting to the calculated diffuse light

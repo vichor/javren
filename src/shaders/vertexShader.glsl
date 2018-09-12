@@ -44,6 +44,12 @@ void main(void) {
 	// the leaves of the vegetation, causing one side to be lighted and the
 	// other being in the shadows. This can be fixed by faking the normals of
 	// the surface so that all of them point in the up direction when needed.
+	// This effect can be also used in other situations. For instance, a lamp
+	// has a light source positioned inside the bulb. The glass of the lamp
+	// is expected to be seen as the color of the light source, but it's not
+	// the case because the visible face are not receiving light. Using
+	// fake lighting will modify the normals so that the faces of the lamp face
+	// up and thus receive light.
 
 	vec3 actualNormal = normal;
 	if (useFakeLighting > 0.5){

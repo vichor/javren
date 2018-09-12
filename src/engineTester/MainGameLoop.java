@@ -119,14 +119,18 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
-		Light red = new Light(new Vector3f(-200,10,-200), new Vector3f(1,0,0));
-		Light blue = new Light(new Vector3f(200,10,200), new Vector3f(0,0,1)); 
-		Light yellow = new Light(new Vector3f(0,10,1000), new Vector3f(0,1,1)); 
+		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
+		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
-		lights.add(red);
-		lights.add(blue);
+		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+		
+		// adding lamp entities
+		entities.add(new Entity(lamp, new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
+		entities.add(new Entity(lamp, new Vector3f(370, 4.2f, -300), 0, 0, 0, 1));
+		entities.add(new Entity(lamp, new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -139,7 +143,7 @@ public class MainGameLoop {
 		
 		// GAME LOOP
 		float sunAngle = 90f;
-		boolean keyAttended = false;
+		boolean wireframeKey = false;
 		while(!Display.isCloseRequested() ) {
 			// some game logic
 			player.move(terrain);
@@ -153,24 +157,13 @@ public class MainGameLoop {
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
-			System.out.println(sun.getPosition()+ " " + sunAngle);
-			// Add/remove yellow light when pressing L key
-			boolean toggleYellow = false;
-			if (Keyboard.isKeyDown(Keyboard.KEY_L)) {
-				if (!keyAttended) {
-					toggleYellow = true;
-					keyAttended = true;
-				}
-			} else {
-				keyAttended = false;
+			Vector3f sunColor = sun.getColor();
+			sunColor.x = (float)Math.sin(Math.toRadians(sunAngle));
+			if (sunColor.x < 0f) { 
+				sunColor.x = 0f; 
 			}
-			if (toggleYellow) {
-				if (!lights.contains(yellow)) {
-					lights.add(yellow);
-				} else {
-					lights.remove(yellow);
-				}
-			}
+			sunColor.y = sunColor.x;
+			sunColor.z = sunColor.x;
 			
 			// push players, terrains and entities into render system
 			renderer.processEntity(player);
@@ -178,6 +171,16 @@ public class MainGameLoop {
 			for (GameEntity entity:entities) {
 				renderer.processEntity(entity.getRenderEntity());
 			}
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+				if (!wireframeKey) {
+					renderer.toggleWireframeMode();
+					wireframeKey = true;
+				}
+			} else {
+				wireframeKey = false;
+			}
+			
 
 			// call the render engine
 			renderer.render(lights, camera);

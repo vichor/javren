@@ -51,6 +51,9 @@ public class Player extends Entity {
 			super.getPosition().y = terrainHeight;
 		}
 		
+		// Debug position
+		//System.out.println(super.getPosition());
+		
 	}
 	
 	
