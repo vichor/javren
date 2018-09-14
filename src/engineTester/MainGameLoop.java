@@ -45,7 +45,7 @@ public class MainGameLoop {
 		// RENDER SYSTEM CREATION
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 		
 		
 		// TERRAIN

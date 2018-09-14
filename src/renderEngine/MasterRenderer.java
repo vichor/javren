@@ -15,14 +15,15 @@ import entities.Light;
 import models.TexturedModel;
 import shaders.StaticShader;
 import shaders.TerrainShader;
+import skybox.SkyboxRenderer;
 import terrains.Terrain;
 
 public class MasterRenderer {
 
 	// Fog
-	private static final float SKYCOLOR_RED = 0.0f;
-	private static final float SKYCOLOR_GREEN = 0.85f*0.25f;
-	private static final float SKYCOLOR_BLUE = 0.95f*0.25f;
+	private static final float SKYCOLOR_RED = 0.5444f;
+	private static final float SKYCOLOR_GREEN = 0.62f;
+	private static final float SKYCOLOR_BLUE = 0.69f;
 	
 	// Projection matrix 
 	private static final float FOV = 70;
@@ -40,11 +41,14 @@ public class MasterRenderer {
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader;
 	
+	// Skybox renderer
+	private SkyboxRenderer skyboxRenderer;
+	
 	// Wireframe
 	boolean wireframeMode = false;
 	
 	
-	public MasterRenderer() {
+	public MasterRenderer(Loader loader) {
 		// don't render back faces
 		enableCulling();
 		
@@ -58,6 +62,9 @@ public class MasterRenderer {
 		// Terrain renderer setup
 		this.terrainShader = new TerrainShader();
 		this.terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+
+		// Skybox renderer setup
+		this.skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
 	
 	
@@ -104,6 +111,9 @@ public class MasterRenderer {
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
 		terrains.clear();
+		
+		// Render skybox
+		skyboxRenderer.render(camera);
 	}
 	
 	
