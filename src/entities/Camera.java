@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private Vector3f position = new Vector3f(0,0,0);
-	private float pitch = 20;	// rotation X
+	private float pitch = 0;	// rotation X
 	private float yaw = 0;		// rotation Y
 	private float roll = 0;		// rotation Z
 	
@@ -101,8 +101,8 @@ public class Camera {
 			float pitchChange = Mouse.getDY() * 0.1f;
 			pitch -= pitchChange;
 			// Limit the pitch to avoid looking "below" the terrain and "above" player top-view
-			if (pitch < 3) { 
-				pitch = 3;
+			if (pitch < -10) { 
+				pitch = -10;
 			} else if (pitch > 90) { 
 				pitch = 90;
 			}
