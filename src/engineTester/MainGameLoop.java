@@ -146,7 +146,7 @@ public class MainGameLoop {
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
 		// GAME LOOP
-		float sunAngle = 90f;
+		//float sunAngle = 90f;
 		boolean wireframeKey = false;
 		while(!Display.isCloseRequested() ) {
 			// Movements
@@ -154,6 +154,7 @@ public class MainGameLoop {
 			camera.move();
 			
 			// Moving sun
+			/*
 			Vector3f sunPos = sun.getPosition();
 			sunPos.x = (float) (800*Math.cos(Math.toRadians(sunAngle)));
 			sunPos.y = (float) (10000*Math.sin(Math.toRadians(sunAngle)));
@@ -162,7 +163,9 @@ public class MainGameLoop {
 			if (sunAngle >360f) {
 				sunAngle = 0f;
 			}
+			*/
 			// Sun gets dimmer at dusk/dawn
+			/*
 			Vector3f sunColor = sun.getColor();
 			sunColor.x = (float)Math.sin(Math.toRadians(sunAngle));
 			if (sunColor.x < 0f) { 
@@ -170,6 +173,7 @@ public class MainGameLoop {
 			}
 			sunColor.y = sunColor.x;
 			sunColor.z = sunColor.x;
+			*/
 
 			// Wireframe 
 			if (Keyboard.isKeyDown(Keyboard.KEY_M)) {

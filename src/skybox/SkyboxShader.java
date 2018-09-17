@@ -18,6 +18,9 @@ public class SkyboxShader extends ShaderProgram{
     private int location_projectionMatrix;
     private int location_viewMatrix;
     private int location_fogColor;
+    private int location_blendFactor;
+    private int location_cubeMap;
+    private int location_cubeMap2;
      
     private float rotation = 0f;
     
@@ -50,6 +53,9 @@ public class SkyboxShader extends ShaderProgram{
         location_projectionMatrix = super.getUniformLocation("projectionMatrix");
         location_viewMatrix = super.getUniformLocation("viewMatrix");
         location_fogColor = super.getUniformLocation("fogColor");
+        location_blendFactor = super.getUniformLocation("blendFactor");
+        location_cubeMap = super.getUniformLocation("cubeMap");
+        location_cubeMap2 = super.getUniformLocation("cubeMap2");
     }
  
     @Override
@@ -60,6 +66,17 @@ public class SkyboxShader extends ShaderProgram{
     
     public void loadFogColor(float r, float g, float b) {
     	super.loadVector(location_fogColor, new Vector3f(r,g,b));
+    }
+    
+    
+    public void loadBlendFactor(float value) {
+    	super.loadFloat(location_blendFactor, value);
+    }
+    
+    
+    public void connectTextureUnits() {
+    	super.loadInt(location_cubeMap, 0);
+    	super.loadInt(location_cubeMap2, 1);
     }
  
 }
