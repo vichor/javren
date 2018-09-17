@@ -30,5 +30,15 @@ public class Lamp extends GameEntity {
 		return lightSource;
 	}
 	
+	
+	public void setPosition(Vector3f position) {
+		entity.setPosition(position);
+		float ligthY = position.y+LIGHT_SOURCE_OFFSET_FROM_ENTITY;
+		Vector3f lightPosition = new Vector3f(position.x, ligthY, position.z);
+		lightSource.setPosition(lightPosition);
+	}
+	
+	
+	
 
 }

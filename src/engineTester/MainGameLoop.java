@@ -148,7 +148,7 @@ public class MainGameLoop {
 		
 
 		// MOUSE PICKER
-		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix());
+		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 		
 		
 		// GAME LOOP
@@ -160,7 +160,11 @@ public class MainGameLoop {
 			camera.move();
 			
 			mousePicker.update();
-			System.out.println(mousePicker.getCurrentRay());
+			// move lamp with mouse
+			Vector3f terrainPoint = mousePicker.getCurrentTerrainPoint();
+			if (terrainPoint != null) {
+				lamp1.setPosition(terrainPoint);
+			}
 			
 			// Moving sun
 			/*
