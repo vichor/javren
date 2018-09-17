@@ -33,6 +33,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.MousePicker;
 
 public class MainGameLoop {
 
@@ -145,6 +146,11 @@ public class MainGameLoop {
 		
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
+
+		// MOUSE PICKER
+		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix());
+		
+		
 		// GAME LOOP
 		//float sunAngle = 90f;
 		boolean wireframeKey = false;
@@ -152,6 +158,9 @@ public class MainGameLoop {
 			// Movements
 			player.move(terrain);
 			camera.move();
+			
+			mousePicker.update();
+			System.out.println(mousePicker.getCurrentRay());
 			
 			// Moving sun
 			/*

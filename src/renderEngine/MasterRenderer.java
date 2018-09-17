@@ -78,6 +78,7 @@ public class MasterRenderer {
 		GL11.glCullFace(GL11.GL_BACK);
 	}
 
+
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -121,6 +122,7 @@ public class MasterRenderer {
 		terrains.add(terrain);
 	}
 	
+
 	public void processEntity(Entity entity) {
 		// this method pushes a new entity on the has map to be rendered on next render call
 		TexturedModel entityModel = entity.getModel();
@@ -132,7 +134,6 @@ public class MasterRenderer {
 			newBatch.add(entity);
 			entities.put(entityModel, newBatch);
 		}
-		
 	}
 	
 
@@ -157,9 +158,11 @@ public class MasterRenderer {
 		terrainShader.cleanUp();
 	}
 	
+	
 	public void toggleWireframeMode() {
 		wireframeMode = !wireframeMode;
 	}
+	
 	
 	private void configureWireframeMode() {
 		if (wireframeMode) {
@@ -169,6 +172,10 @@ public class MasterRenderer {
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 		}
-		
+	}
+	
+
+	public Matrix4f getProjectionMatrix() {
+		return projectionMatrix;
 	}
 }
