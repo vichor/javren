@@ -1,7 +1,8 @@
 package skybox;
  
 import org.lwjgl.util.vector.Matrix4f;
- 
+import org.lwjgl.util.vector.Vector3f;
+
 import entities.Camera;
  
 import shaders.ShaderProgram;
@@ -14,6 +15,7 @@ public class SkyboxShader extends ShaderProgram{
      
     private int location_projectionMatrix;
     private int location_viewMatrix;
+    private int location_fogColor;
      
     public SkyboxShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -37,11 +39,17 @@ public class SkyboxShader extends ShaderProgram{
     protected void getAllUniformLocations() {
         location_projectionMatrix = super.getUniformLocation("projectionMatrix");
         location_viewMatrix = super.getUniformLocation("viewMatrix");
+        location_fogColor = super.getUniformLocation("fogColor");
     }
  
     @Override
     protected void bindAttributes() {
         super.bindAttribute(0, "position");
+    }
+    
+    
+    public void loadFogColor(float r, float g, float b) {
+    	super.loadVector(location_fogColor, new Vector3f(r,g,b));
     }
  
 }

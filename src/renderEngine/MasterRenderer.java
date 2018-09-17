@@ -113,7 +113,7 @@ public class MasterRenderer {
 		terrains.clear();
 		
 		// Render skybox
-		skyboxRenderer.render(camera);
+		skyboxRenderer.render(camera, SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 	}
 	
 	
