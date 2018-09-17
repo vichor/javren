@@ -16,6 +16,7 @@ Eclipse is used as the development platform, so you shall install and configure 
 
 - LWJGL
 - Slick utils
+- PNG Decoder
 
 Check [ThinMatrix tutorial on how to set up](https://www.youtube.com/watch?v=Jdkq-aSFEA0) this type of projects in Eclipse.
 
