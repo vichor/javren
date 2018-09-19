@@ -45,7 +45,7 @@ public class MasterRenderer {
 	private SkyboxRenderer skyboxRenderer;
 	
 	// Wireframe
-	boolean wireframeMode = false;
+	static boolean wireframeMode = false;
 	
 	
 	public MasterRenderer(Loader loader) {
@@ -84,6 +84,18 @@ public class MasterRenderer {
 		GL11.glClearColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		configureWireframeMode();
+	}
+	
+	
+	public void renderScene(List<Entity> entities, List<Terrain> terrains, 
+			List<Light> lights, Camera camera) {
+		for(Terrain terrain : terrains) {
+			processTerrain(terrain);
+		}
+		for(Entity entity : entities) {
+			processEntity(entity);
+		}
+		render(lights, camera);
 	}
 	
 	
@@ -159,7 +171,7 @@ public class MasterRenderer {
 	}
 	
 	
-	public void toggleWireframeMode() {
+	public static void toggleWireframeMode() {
 		wireframeMode = !wireframeMode;
 	}
 	

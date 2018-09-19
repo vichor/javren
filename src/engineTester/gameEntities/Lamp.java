@@ -31,6 +31,7 @@ public class Lamp extends GameEntity {
 	}
 	
 	
+	@Override
 	public void setPosition(Vector3f position) {
 		entity.setPosition(position);
 		float ligthY = position.y+LIGHT_SOURCE_OFFSET_FROM_ENTITY;

@@ -19,6 +19,7 @@ import engineTester.gameEntities.Grass;
 import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Tree;
 import entities.Camera;
+import entities.Entity;
 import entities.Light;
 import entities.Player;
 import guis.GuiTexture;
@@ -61,11 +62,14 @@ public class MainGameLoop {
         
 		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
 		
+		List<Terrain> terrains = new ArrayList<Terrain>();
+		terrains.add(terrain);
+		
 		
 		// ENTITIES DEFINITION
 		
 		// Entities containers and tools
-        List<GameEntity> entities = new ArrayList<GameEntity>();
+        List<GameEntity> gameEntities = new ArrayList<GameEntity>();
 		Random random = new Random();
 		
 		// Game entities instances
@@ -75,31 +79,31 @@ public class MainGameLoop {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-               entities.add(new FirTree(new Vector3f(x,y,z)));
+               gameEntities.add(new FirTree(new Vector3f(x,y,z)));
         	}
             if (i%30 == 0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-               entities.add(new Tree(new Vector3f(x, y, z)));
+               gameEntities.add(new Tree(new Vector3f(x, y, z)));
             }
             if (i%5==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-               entities.add(new Grass(new Vector3f(x, y, z)));
+               gameEntities.add(new Grass(new Vector3f(x, y, z)));
             }
             if (i%7==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-               entities.add(new Flower(new Vector3f(x, y, z)));
+               gameEntities.add(new Flower(new Vector3f(x, y, z)));
             }
             if(i%5==0) {
         		float x = random.nextFloat()*800; 
         		float z = random.nextFloat()*-800; 
         		float y = terrain.getHeightOfTerrain(x, z);
-               entities.add(new Fern(new Vector3f(x, y, z)));
+               gameEntities.add(new Fern(new Vector3f(x, y, z)));
             }
         }
         
@@ -107,9 +111,9 @@ public class MainGameLoop {
 		Lamp lamp1 = new Lamp(new Vector3f(185, -4.7f, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
 		Lamp lamp2 = new Lamp(new Vector3f(370, 4.2f, -300),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
 		Lamp lamp3 = new Lamp(new Vector3f(293, -6.8f, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
-		entities.add(lamp1);
-		entities.add(lamp2);
-		entities.add(lamp3);
+		gameEntities.add(lamp1);
+		gameEntities.add(lamp2);
+		gameEntities.add(lamp3);
         
 
         // PLAYER
@@ -122,7 +126,7 @@ public class MainGameLoop {
            float x = (float) (player.getPosition().x-(20*i)); // left to the player but getting closer to draw a diagonal line
            float z = player.getPosition().z-(20*i);
            Vector3f boxPosition = new Vector3f(x, terrain.getHeightOfTerrain(x, z)+7, z);
-           entities.add(new Box(boxPosition));
+           gameEntities.add(new Box(boxPosition));
         }
         
         // CAMERA
@@ -152,62 +156,27 @@ public class MainGameLoop {
 		
 		
 		// GAME LOOP
-		//float sunAngle = 90f;
-		boolean wireframeKey = false;
+		
+        /* get list of render entities needed for render engine */
+        List<Entity> entities = new ArrayList<Entity>();
+        for (GameEntity gameEntity : gameEntities) {
+        	entities.add(gameEntity.getRenderEntity());
+        }
+        entities.add(player);
+
 		while(!Display.isCloseRequested() ) {
-			// Movements
+
 			player.move(terrain);
 			camera.move();
-			
 			mousePicker.update();
-			// move lamp with mouse
-			Vector3f terrainPoint = mousePicker.getCurrentTerrainPoint();
-			if (terrainPoint != null) {
-				lamp1.setPosition(terrainPoint);
-			}
 			
-			// Moving sun
-			/*
-			Vector3f sunPos = sun.getPosition();
-			sunPos.x = (float) (800*Math.cos(Math.toRadians(sunAngle)));
-			sunPos.y = (float) (10000*Math.sin(Math.toRadians(sunAngle)));
-			sun.setPosition(sunPos);
-			sunAngle+=0.1f;
-			if (sunAngle >360f) {
-				sunAngle = 0f;
-			}
-			*/
-			// Sun gets dimmer at dusk/dawn
-			/*
-			Vector3f sunColor = sun.getColor();
-			sunColor.x = (float)Math.sin(Math.toRadians(sunAngle));
-			if (sunColor.x < 0f) { 
-				sunColor.x = 0f; 
-			}
-			sunColor.y = sunColor.x;
-			sunColor.z = sunColor.x;
-			*/
+			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
+			GameEntityMouseMover.update(mousePicker, lamp1);
+			WireframeToggler.checkAndToggle();
 
-			// Wireframe 
-			if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
-				if (!wireframeKey) {
-					renderer.toggleWireframeMode();
-					wireframeKey = true;
-				}
-			} else {
-				wireframeKey = false;
-			}
-
-			// push players, terrains and entities into render system
-			renderer.processEntity(player);
-			renderer.processTerrain(terrain);
-			for (GameEntity entity:entities) {
-				renderer.processEntity(entity.getRenderEntity());
-			}
-			
-			// call the render engine
-			renderer.render(lights, camera);
+			renderer.renderScene(entities, terrains, lights, camera);
 			guiRenderer.render(guis);
+
 			DisplayManager.updateDisplay();			
 		}
 		
