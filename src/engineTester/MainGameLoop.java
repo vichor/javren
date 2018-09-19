@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -35,6 +34,9 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterRenderer;
+import water.WaterShader;
+import water.WaterTile;
 
 public class MainGameLoop {
 
@@ -60,7 +62,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightmap");
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
@@ -121,13 +123,6 @@ public class MainGameLoop {
         		new ModelTexture(loader.loadTexture("players/playerTexture")));
         Player player = new Player(playerModel, new Vector3f(100, 0, -50), 0, 180, 0, 0.6f);
         
-        // Add boxes entities close to player
-        for (int i = 0; i < 10; i++) {
-           float x = (float) (player.getPosition().x-(20*i)); // left to the player but getting closer to draw a diagonal line
-           float z = player.getPosition().z-(20*i);
-           Vector3f boxPosition = new Vector3f(x, terrain.getHeightOfTerrain(x, z)+7, z);
-           gameEntities.add(new Box(boxPosition));
-        }
         
         // CAMERA
         Camera camera = new Camera(player);
@@ -140,6 +135,14 @@ public class MainGameLoop {
 		lights.add(lamp1.getLightSource());
 		lights.add(lamp2.getLightSource());
 		lights.add(lamp3.getLightSource());
+		
+
+		// WATER
+		WaterShader waterShader = new WaterShader();
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+		List<WaterTile> waters = new ArrayList<WaterTile>();
+		waters.add(new WaterTile(400, -400, 0));
+
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -171,16 +174,19 @@ public class MainGameLoop {
 			mousePicker.update();
 			
 			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
-			GameEntityMouseMover.update(mousePicker, lamp1);
+			//GameEntityMouseMover.update(mousePicker, lamp1);
 			WireframeToggler.checkAndToggle();
+			System.out.println(player.getPosition());
 
 			renderer.renderScene(entities, terrains, lights, camera);
+			waterRenderer.render(waters, camera);
 			guiRenderer.render(guis);
 
 			DisplayManager.updateDisplay();			
 		}
 		
 		// closing
+		waterShader.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
