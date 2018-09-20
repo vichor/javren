@@ -154,6 +154,8 @@ public class MainGameLoop {
 		waters.add(new WaterTile(400, -400, 0));
 		
 		// DEMO FBOs
+		// Create the frame buffer object which is linked with a texture. Then create a gui entity
+		// which uses this texture.
 		WaterFrameBuffers fbos = new WaterFrameBuffers();
 		GuiTexture fboDemoGui = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f,0.5f));
 		guis.add(fboDemoGui);
@@ -183,7 +185,10 @@ public class MainGameLoop {
 			WireframeToggler.checkAndToggle();
 			System.out.println(player.getPosition());
 
-			// FBO demos
+			// FBO demos: render the scene into a frame buffer object. The gui using
+			// the texture from this buffer object will present an inverted image of
+			// the rendered scene (inverted because the texture coordinates are inver
+			// ted when compared with render coordinates)
 			fbos.bindReflectionFrameBuffer();
 			renderer.renderScene(entities, terrains, lights, camera);
 			fbos.unbindCurrentFrameBuffer();
