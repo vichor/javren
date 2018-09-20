@@ -9,7 +9,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import engineTester.gameEntities.Box;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flower;
@@ -110,9 +109,9 @@ public class MainGameLoop {
         }
         
         // Lamps
-		Lamp lamp1 = new Lamp(new Vector3f(185, -4.7f, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
-		Lamp lamp2 = new Lamp(new Vector3f(370, 4.2f, -300),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
-		Lamp lamp3 = new Lamp(new Vector3f(293, -6.8f, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp1 = new Lamp(new Vector3f(120, terrain.getHeightOfTerrain(120,  -70), -70), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp2 = new Lamp(new Vector3f(170, terrain.getHeightOfTerrain(170, -90), -90),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp3 = new Lamp(new Vector3f(200, terrain.getHeightOfTerrain(200, -120), -120), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
 		gameEntities.add(lamp1);
 		gameEntities.add(lamp2);
 		gameEntities.add(lamp3);
@@ -128,7 +127,7 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(0.4f,0.4f,0.4f));
+		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
 		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
