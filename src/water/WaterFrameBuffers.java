@@ -100,12 +100,10 @@ public class WaterFrameBuffers {
 	}
 
 	private int createFrameBuffer() {
-		int frameBuffer = GL30.glGenFramebuffers();
-		//generate name for frame buffer
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBuffer);
-		//create the framebuffer
-		GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
-		//indicate that we will always render to color attachment 0
+		
+		int frameBuffer = GL30.glGenFramebuffers();					// generate name for frame buffer
+		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBuffer); 	// bind the generated framebuffer to the read&draw (or write) port
+		GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0); 				// we will render into color buffer 0
 		return frameBuffer;
 	}
 
@@ -134,6 +132,8 @@ public class WaterFrameBuffers {
 	}
 
 	private int createDepthBufferAttachment(int width, int height) {
+		// Non-texture attachments are called render buffers. So we can create texture attachments
+		// for a fbo or render buffers
 		int depthBuffer = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, depthBuffer);
 		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL11.GL_DEPTH_COMPONENT, width,
