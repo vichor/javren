@@ -33,6 +33,7 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
@@ -135,13 +136,6 @@ public class MainGameLoop {
 		lights.add(lamp2.getLightSource());
 		lights.add(lamp3.getLightSource());
 		
-
-		// WATER
-		WaterShader waterShader = new WaterShader();
-		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
-		List<WaterTile> waters = new ArrayList<WaterTile>();
-		waters.add(new WaterTile(400, -400, 0));
-
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -152,6 +146,18 @@ public class MainGameLoop {
 		
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
+
+		// WATER
+		WaterShader waterShader = new WaterShader();
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+		List<WaterTile> waters = new ArrayList<WaterTile>();
+		waters.add(new WaterTile(400, -400, 0));
+		
+		// DEMO FBOs
+		WaterFrameBuffers fbos = new WaterFrameBuffers();
+		GuiTexture fboDemoGui = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f,0.5f));
+		guis.add(fboDemoGui);
+
 
 		// MOUSE PICKER
 		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
@@ -171,12 +177,18 @@ public class MainGameLoop {
 			player.move(terrain);
 			camera.move();
 			mousePicker.update();
-			
+
 			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
 			//GameEntityMouseMover.update(mousePicker, lamp1);
 			WireframeToggler.checkAndToggle();
 			System.out.println(player.getPosition());
 
+			// FBO demos
+			fbos.bindReflectionFrameBuffer();
+			renderer.renderScene(entities, terrains, lights, camera);
+			fbos.unbindCurrentFrameBuffer();
+
+			// Rendering
 			renderer.renderScene(entities, terrains, lights, camera);
 			waterRenderer.render(waters, camera);
 			guiRenderer.render(guis);
@@ -185,6 +197,7 @@ public class MainGameLoop {
 		}
 		
 		// closing
+		fbos.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
