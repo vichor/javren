@@ -27,6 +27,6 @@ void main(void){
 	// limits will be used to define the blending process.
     float factor = (textureCoords.y - lowerLimit) / (upperLimit - lowerLimit);
     factor = clamp(factor, 0.0, 1.0); // factor between 0 and 1
-    out_Color = mix(vec4(fogColor, 1.0), textureColor, factor);
+    out_Color = mix(vec4(fogColor, 1.0), textureColor, 1);//factor);
 
 }

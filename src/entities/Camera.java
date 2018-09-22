@@ -15,7 +15,7 @@ public class Camera {
 	private float angleAroundPlayer = 0;
 	
 	private static final float POINT_TO_PLAYER_BODY_OFFSET = 5;		// This causes to zoom towards the body, not the feet
-	private static final float POINT_TO_PLAYER_FORWARD_OFFSET = 15; // this is to place the player in the lower area of the viewport
+	private static final float POINT_TO_PLAYER_FORWARD_OFFSET = 0; //15; // this is to place the player in the lower area of the viewport
 	
 
 	public Camera(Player player) {

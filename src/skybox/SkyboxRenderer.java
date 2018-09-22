@@ -13,7 +13,7 @@ import renderEngine.Loader;
 
 public class SkyboxRenderer {
 	
-	private static final float SIZE = 500f;
+	private static final float SIZE = 2500f;
 	
 	private static final float[] VERTICES = {        
 		// back quad
@@ -112,6 +112,10 @@ public class SkyboxRenderer {
 			texture2 = nightTexture;
 			blendFactor = (time - 20000)/(24000 - 20000);
 		}
+		
+		// avoid night cycle
+		texture1 = texture;
+		texture2 = texture;
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture1);
