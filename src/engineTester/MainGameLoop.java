@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
@@ -62,7 +65,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightmap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/waterheightmap");
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
@@ -128,7 +131,7 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1,1,1));
+		Light sun = new Light(new Vector3f(800,10000,800),new Vector3f(1,1,1));
 		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
@@ -151,14 +154,17 @@ public class MainGameLoop {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		waters.add(new WaterTile(400, -400, 0));
+		WaterTile water = new WaterTile(400, -400, -15);
+		waters.add(water);
 		
 		// DEMO FBOs
 		// Create the frame buffer object which is linked with a texture. Then create a gui entity
 		// which uses this texture.
-		WaterFrameBuffers fbos = new WaterFrameBuffers();
-		GuiTexture fboDemoGui = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.5f,0.5f));
-		guis.add(fboDemoGui);
+		WaterFrameBuffers frameBufferObjects = new WaterFrameBuffers();
+		GuiTexture reflection = new GuiTexture(frameBufferObjects.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f,0.25f));
+		GuiTexture refraction = new GuiTexture(frameBufferObjects.getRefractionTexture(), new Vector2f( 0.5f, 0.5f), new Vector2f(0.25f,0.25f));
+		guis.add(reflection);
+		guis.add(refraction);
 
 
 		// MOUSE PICKER
@@ -174,27 +180,62 @@ public class MainGameLoop {
         }
         entities.add(player);
 
+        // Clip planes
+        // Plane formula is Ax + By + Cz + D = 0
+        //		(A,B,C) normal of the plane
+        //		D is the distance from the origin
+        // As we want an horizontal plane for water things
+        //		(0, -1, 0) for clipping what's below the plane
+        //		(0,  1, 0) for clipping what's above the plane
+        //		D = height, choose a value depending on the height of the water
+		Vector4f masterClipPlane = new Vector4f(0, -1, 0, 10000);
+		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight());
+		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight());
+
 		while(!Display.isCloseRequested() ) {
 
 			player.move(terrain);
 			camera.move();
 			mousePicker.update();
 
+			// Refraction/Reflection needs clipping planes:
+			//    - we want to refract what it's below water level
+			//    - we want to reflect what it's above water level
+			// So we will define a clipping plane at water level to filter out 
+			// what it's not needed on each case. We need only one clipping 
+			// plane (0).
+			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+			
 			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
 			//GameEntityMouseMover.update(mousePicker, lamp1);
 			WireframeToggler.checkAndToggle();
 			System.out.println(player.getPosition());
 
-			// FBO demos: render the scene into a frame buffer object. The gui using
+			// FRAME BUFFER OBJECTS RENDERING
+			// render the scene into a frame buffer object. The gui using
 			// the texture from this buffer object will present an inverted image of
-			// the rendered scene (inverted because the texture coordinates are inver
-			// ted when compared with render coordinates)
-			fbos.bindReflectionFrameBuffer();
-			renderer.renderScene(entities, terrains, lights, camera);
-			fbos.unbindCurrentFrameBuffer();
+			// the rendered scene (inverted because the texture coordinates are inverted
+			// when compared with render coordinates)
+			
+			// render reflection texture
+			frameBufferObjects.bindReflectionFrameBuffer();
+			float distance = 2 * (camera.getPosition().y - water.getHeight());
+			camera.getPosition().y -= distance;
+			camera.invertPitch();
+			renderer.renderScene(entities, terrains, lights, camera, clipPlaneReflection);
+			camera.getPosition().y += distance;
+			camera.invertPitch();
 
-			// Rendering
-			renderer.renderScene(entities, terrains, lights, camera);
+			// render refraction texture
+			frameBufferObjects.bindRefractionFrameBuffer();
+			renderer.renderScene(entities, terrains, lights, camera, clipPlaneRefraction);
+
+			// unbind fbo
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);  // drivers may ignore this call so the masterClipPlane has to define a really high height
+			frameBufferObjects.unbindCurrentFrameBuffer();
+
+			// DEFAULT FRAME BUFFER RENDERING
+			renderer.renderScene(entities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera);
 			guiRenderer.render(guis);
 
@@ -202,7 +243,7 @@ public class MainGameLoop {
 		}
 		
 		// closing
-		fbos.cleanUp();
+		frameBufferObjects.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();

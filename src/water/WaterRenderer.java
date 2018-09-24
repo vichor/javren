@@ -10,11 +10,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import toolbox.Maths;
 import entities.Camera;
-import entities.Light;
 
 public class WaterRenderer {
 

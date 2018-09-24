@@ -117,5 +117,9 @@ public class Camera {
 		}
 	}
 
+	public void invertPitch() {
+		this.pitch = -pitch;
+	}
+
 	
 }

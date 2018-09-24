@@ -8,6 +8,7 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
 
 import entities.Camera;
 import entities.Entity;
@@ -88,18 +89,18 @@ public class MasterRenderer {
 	
 	
 	public void renderScene(List<Entity> entities, List<Terrain> terrains, 
-			List<Light> lights, Camera camera) {
+			List<Light> lights, Camera camera, Vector4f clipPlane) {
 		for(Terrain terrain : terrains) {
 			processTerrain(terrain);
 		}
 		for(Entity entity : entities) {
 			processEntity(entity);
 		}
-		render(lights, camera);
+		render(lights, camera, clipPlane);
 	}
 	
 	
-	public void render(List<Light> lights, Camera camera) {
+	public void render(List<Light> lights, Camera camera, Vector4f clipPlane) {
 		// A new render cycle is about to start
 		prepare();
 
@@ -107,6 +108,7 @@ public class MasterRenderer {
 		// each cycle, the entities to be rendered change, so they are removed from the hash map.
 		// the application shall push them again each cycle.
 		entityShader.start();
+		entityShader.loadClipPlane(clipPlane);
 		entityShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		entityShader.loadLights(lights);
 		entityShader.loadViewMatrix(camera);
@@ -118,6 +120,7 @@ public class MasterRenderer {
 		// each cycle, the terrain to be rendered change, so they are removed from the list.
 		// the application shall push them again each cycle.
 		terrainShader.start();
+		terrainShader.loadClipPlane(clipPlane);
 		terrainShader.loadLights(lights);
 		terrainShader.loadSkyColor(SKYCOLOR_RED, SKYCOLOR_GREEN, SKYCOLOR_BLUE);
 		terrainShader.loadViewMatrix(camera);
