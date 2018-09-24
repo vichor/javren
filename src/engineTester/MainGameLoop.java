@@ -153,7 +153,7 @@ public class MainGameLoop {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
 		List<WaterTile> waters = new ArrayList<WaterTile>();
-		WaterTile water = new WaterTile(400, -400, -15);
+		WaterTile water = new WaterTile(400, -400, 0);
 		waters.add(water);
 		
 		// DEMO FBOs
