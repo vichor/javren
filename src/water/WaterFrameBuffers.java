@@ -25,11 +25,10 @@ public class WaterFrameBuffers {
 	// (where the reflected image will be texturized) and the depth buffer (to do 
 	// effects based on the depth of the water).
 	
-
-	protected static final int REFLECTION_WIDTH = 320;
-	private static final int REFLECTION_HEIGHT = 180;
-	
-	protected static final int REFRACTION_WIDTH = 1280;
+	// having below values hardcoded is dangerous!
+	protected static final int REFLECTION_WIDTH = 1280;//320;		// water area in the world
+	private static final int REFLECTION_HEIGHT = 720; //180;
+	protected static final int REFRACTION_WIDTH = 1280;		// world size
 	private static final int REFRACTION_HEIGHT = 720;
 
 	private int reflectionFrameBuffer;
