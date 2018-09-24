@@ -1,3 +1,12 @@
+/*
+ * render engine changes for water tutorial
+ * 		MasterRenderer far plane set to 5000
+ * 		entity and terrain shaders fog density set to 0
+ * 		skyboxrenderer size set to 2500
+ * 		skybox renderer blend function forces always to use day texture and avoids night texture
+ * 		skybox fragment shader blend factor between skybox texture and fog set to 1.0
+ * 		camera POINT_TO_PLAYER_FORWARD_OFFSET set to 0
+ */
 package engineTester;
 
 import java.nio.file.Paths;
@@ -65,7 +74,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/waterheightmap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap2");
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
@@ -81,34 +90,24 @@ public class MainGameLoop {
 		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
         	if (i%10 == 0) {
-        		float x = random.nextFloat()*800; 
-        		float z = random.nextFloat()*-800; 
-        		float y = terrain.getHeightOfTerrain(x, z);
-               gameEntities.add(new FirTree(new Vector3f(x,y,z)));
+        		Vector3f position = getNewPosition(random, terrain);
+                gameEntities.add(new FirTree(position));
         	}
             if (i%30 == 0) {
-        		float x = random.nextFloat()*800; 
-        		float z = random.nextFloat()*-800; 
-        		float y = terrain.getHeightOfTerrain(x, z);
-               gameEntities.add(new Tree(new Vector3f(x, y, z)));
+        		Vector3f position = getNewPosition(random, terrain);
+                gameEntities.add(new Tree(position));
             }
             if (i%5==0) {
-        		float x = random.nextFloat()*800; 
-        		float z = random.nextFloat()*-800; 
-        		float y = terrain.getHeightOfTerrain(x, z);
-               gameEntities.add(new Grass(new Vector3f(x, y, z)));
+        		Vector3f position = getNewPosition(random, terrain);
+                gameEntities.add(new Grass(position));
             }
             if (i%7==0) {
-        		float x = random.nextFloat()*800; 
-        		float z = random.nextFloat()*-800; 
-        		float y = terrain.getHeightOfTerrain(x, z);
-               gameEntities.add(new Flower(new Vector3f(x, y, z)));
+        		Vector3f position = getNewPosition(random, terrain);
+                gameEntities.add(new Flower(position));
             }
             if(i%5==0) {
-        		float x = random.nextFloat()*800; 
-        		float z = random.nextFloat()*-800; 
-        		float y = terrain.getHeightOfTerrain(x, z);
-               gameEntities.add(new Fern(new Vector3f(x, y, z)));
+        		Vector3f position = getNewPosition(random, terrain);
+                gameEntities.add(new Fern(position));
             }
         }
         
@@ -142,10 +141,10 @@ public class MainGameLoop {
 		
 		// GUI
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
-		GuiTexture gui = new GuiTexture(loader.loadTexture("gui/socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.15f, 0.15f));
-		GuiTexture gui2 = new GuiTexture(loader.loadTexture("gui/health"), new Vector2f(0.4f, 0.48f), new Vector2f(0.15f, 0.15f));
-		guis.add(gui);
-		guis.add(gui2);
+		//GuiTexture gui = new GuiTexture(loader.loadTexture("gui/socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.15f, 0.15f));
+		//GuiTexture gui2 = new GuiTexture(loader.loadTexture("gui/health"), new Vector2f(0.4f, 0.48f), new Vector2f(0.15f, 0.15f));
+		//guis.add(gui);
+		//guis.add(gui2);
 		
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 		
@@ -249,6 +248,37 @@ public class MainGameLoop {
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
+	}
+	
+	
+	private static Vector3f getNewPosition(Random random, Terrain terrain) {
+		boolean done = false;
+		float x=0,y=0,z=0;
+		while (!done) {
+        	x = random.nextFloat()*800; 
+        	z = random.nextFloat()*-800; 
+        	// avoid water area by hardcoded coordinates check
+        	// water areas: 
+        	// z 638, 315	638, 196
+        	// x 670, 498	498,205
+        	if ( x<205 ) { 
+        		done = true; 
+        	} else if ( x < 498 ) {
+        		if ( z>-196 || z<-638 ) { 
+        			done = true; 
+        		}
+        	} else if ( x<670 ) {
+        		if ( z>-315 || z<-638 ) {
+        			done = true;
+        		}
+        	} else if (z<-638) {
+        		done = true;
+        	} else if ( x > 670 ) {
+        		done = true;
+        	}
+		}
+       	y = terrain.getHeightOfTerrain(x, z);
+		return new Vector3f(x,y,z);
 	}
 
 }
