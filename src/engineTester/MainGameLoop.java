@@ -150,20 +150,17 @@ public class MainGameLoop {
 		
 
 		// WATER
+
+		// Frame Buffers
+		// Create the frame buffer object which is linked with a texture. 
+		WaterFrameBuffers frameBufferObjects = new WaterFrameBuffers();
+
+		// Render system
 		WaterShader waterShader = new WaterShader();
-		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), frameBufferObjects);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
 		WaterTile water = new WaterTile(400, -400, 0);
 		waters.add(water);
-		
-		// DEMO FBOs
-		// Create the frame buffer object which is linked with a texture. Then create a gui entity
-		// which uses this texture.
-		WaterFrameBuffers frameBufferObjects = new WaterFrameBuffers();
-		GuiTexture refraction = new GuiTexture(frameBufferObjects.getRefractionTexture(), new Vector2f( 0.5f, 0.5f), new Vector2f(0.25f,0.25f));
-		GuiTexture reflection = new GuiTexture(frameBufferObjects.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f,0.25f));
-		guis.add(refraction);
-		guis.add(reflection);
 
 
 		// MOUSE PICKER
