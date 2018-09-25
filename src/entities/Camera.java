@@ -117,8 +117,9 @@ public class Camera {
 		}
 	}
 
-	public void invertPitch() {
+	public void invertPitchAndRoll() {
 		this.pitch = -pitch;
+		this.roll = -roll;
 	}
 
 	

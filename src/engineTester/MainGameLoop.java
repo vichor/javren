@@ -160,10 +160,10 @@ public class MainGameLoop {
 		// Create the frame buffer object which is linked with a texture. Then create a gui entity
 		// which uses this texture.
 		WaterFrameBuffers frameBufferObjects = new WaterFrameBuffers();
-		GuiTexture reflection = new GuiTexture(frameBufferObjects.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f,0.25f));
 		GuiTexture refraction = new GuiTexture(frameBufferObjects.getRefractionTexture(), new Vector2f( 0.5f, 0.5f), new Vector2f(0.25f,0.25f));
-		guis.add(reflection);
+		GuiTexture reflection = new GuiTexture(frameBufferObjects.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f,0.25f));
 		guis.add(refraction);
+		guis.add(reflection);
 
 
 		// MOUSE PICKER
@@ -208,7 +208,6 @@ public class MainGameLoop {
 			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
 			//GameEntityMouseMover.update(mousePicker, lamp1);
 			WireframeToggler.checkAndToggle();
-			System.out.println(player.getPosition());
 
 			// FRAME BUFFER OBJECTS RENDERING
 			// render the scene into a frame buffer object. The gui using
@@ -220,10 +219,10 @@ public class MainGameLoop {
 			frameBufferObjects.bindReflectionFrameBuffer();
 			float distance = 2 * (camera.getPosition().y - water.getHeight());
 			camera.getPosition().y -= distance;
-			camera.invertPitch();
+			camera.invertPitchAndRoll();
 			renderer.renderScene(entities, terrains, lights, camera, clipPlaneReflection);
+			camera.invertPitchAndRoll();
 			camera.getPosition().y += distance;
-			camera.invertPitch();
 
 			// render refraction texture
 			frameBufferObjects.bindRefractionFrameBuffer();
