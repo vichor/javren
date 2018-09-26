@@ -90,26 +90,32 @@ public class MainGameLoop {
 		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
         	if (i%10 == 0) {
-        		Vector3f position = getNewPosition(random, terrain);
+        		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new FirTree(position));
         	}
             if (i%30 == 0) {
-        		Vector3f position = getNewPosition(random, terrain);
+        		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Tree(position));
             }
             if (i%5==0) {
-        		Vector3f position = getNewPosition(random, terrain);
+        		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Grass(position));
             }
             if (i%7==0) {
-        		Vector3f position = getNewPosition(random, terrain);
+        		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Flower(position));
             }
             if(i%5==0) {
-        		Vector3f position = getNewPosition(random, terrain);
+        		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Fern(position));
             }
         }
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -320),-320)));
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -330),-330)));
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -340),-340)));
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -350),-350)));
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -360),-360)));
+        gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -370),-370)));
         
         // Lamps
 		Lamp lamp1 = new Lamp(new Vector3f(120, terrain.getHeightOfTerrain(120,  -70), -70), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
@@ -123,14 +129,14 @@ public class MainGameLoop {
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(100, 0, -50), 0, 180, 0, 0.6f);
+        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 180, 0, 0.6f);
         
         
         // CAMERA
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(800,10000,800),new Vector3f(1,1,1));
+		Light sun = new Light(new Vector3f(800,10000,800),new Vector3f(1.25f,1.25f,1.25f));
 		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
@@ -247,16 +253,22 @@ public class MainGameLoop {
 	}
 	
 	
-	private static Vector3f getNewPosition(Random random, Terrain terrain) {
+	private static Vector3f getNewPosition(Random random, float radius, Terrain terrain) {
 		boolean done = false;
 		float x=0,y=0,z=0;
 		while (!done) {
-        	x = random.nextFloat()*800; 
-        	z = random.nextFloat()*-800; 
+        	x = random.nextFloat()*radius; 
+        	z = random.nextFloat()*(-radius); 
         	// avoid water area by hardcoded coordinates check
-        	// water areas: 
-        	// z 638, 315	638, 196
-        	// x 670, 498	498,205
+        	// water areas (x,z)
+        	// (205,-638)  (498,-638)
+        	//     +--------+
+        	//     |        |(498, -315)
+        	//     |        +------+ (670, -315)
+        	//     |               |
+        	//     |               |
+        	//     +---------------+
+        	// (205, -196)       (670, -196)
         	if ( x<205 ) { 
         		done = true; 
         	} else if ( x < 498 ) {
