@@ -38,8 +38,8 @@ void main(void) {
 	// so now we can apply a distortion limitator which we call wave strength.
 	// Apply the distortion to the calculated refraction and reflection coords.
 	// We calculate another distortion in another direction to add more realism.
-	vec2 distortion1 = ( texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg * 20.0 - 1.0 ) * waveStrength;
-	vec2 distortion2 = ( texture(dudvMap, vec2(-textureCoords.x + moveFactor, textureCoords.y + moveFactor)).rg * 20.0 - 1.0 ) * waveStrength;
+	vec2 distortion1 = ( texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg * 2.0 - 1.0 ) * waveStrength;
+	vec2 distortion2 = ( texture(dudvMap, vec2(-textureCoords.x + moveFactor, textureCoords.y + moveFactor)).rg * 2.0 - 1.0 ) * waveStrength;
 	vec2 distortion = distortion1 + distortion2;
 	refractTexCoords += distortion;
 	reflectTexCoords += distortion;
