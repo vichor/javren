@@ -21,6 +21,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.gameEntities.Dragon;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flower;
@@ -89,6 +90,10 @@ public class MainGameLoop {
 		// Game entities instances
 		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
+        	//if (i%30 == 0) {
+        	//	Vector3f position = getNewPosition(random, 800, terrain);
+            //    gameEntities.add(new Dragon(position));
+        	//}
         	if (i%1  == 0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new FirTree(position));
@@ -127,9 +132,9 @@ public class MainGameLoop {
         
 
         // PLAYER
-        TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), 
-        		new ModelTexture(loader.loadTexture("players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 180, 0, 0.6f);
+        TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
+        		new ModelTexture(loader.loadTexture("players/playertexture"))); //players/playerTexture")));
+        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 50, 0, 0.6f);
         
         
         // CAMERA

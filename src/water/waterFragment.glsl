@@ -2,6 +2,7 @@
 
 in vec4 clipSpace;
 in vec2 textureCoords;
+in vec3 toCameraVector;
 
 out vec4 out_Color;
 
@@ -10,7 +11,8 @@ uniform sampler2D refractionTexture;
 uniform sampler2D dudvMap;
 uniform float moveFactor;
 
-const float waveStrength = 0.002;
+const float WAVESTRENGTH = 0.02;
+const float REFLECTIVITY = 10.0;
 
 void main(void) {
 
@@ -38,8 +40,8 @@ void main(void) {
 	// so now we can apply a distortion limitator which we call wave strength.
 	// Apply the distortion to the calculated refraction and reflection coords.
 	// We calculate another distortion in another direction to add more realism.
-	vec2 distortion1 = ( texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg * 2.0 - 1.0 ) * waveStrength;
-	vec2 distortion2 = ( texture(dudvMap, vec2(-textureCoords.x + moveFactor, textureCoords.y + moveFactor)).rg * 2.0 - 1.0 ) * waveStrength;
+	vec2 distortion1 = ( texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg * 2.0 - 1.0 ) * WAVESTRENGTH;
+	vec2 distortion2 = ( texture(dudvMap, vec2(-textureCoords.x + moveFactor, textureCoords.y + moveFactor)).rg * 2.0 - 1.0 ) * WAVESTRENGTH;
 	vec2 distortion = distortion1 + distortion2;
 	refractTexCoords += distortion;
 	reflectTexCoords += distortion;
@@ -56,8 +58,25 @@ void main(void) {
 	// Get the reflection and refraction textures
 	vec4 reflectColor = texture(reflectionTexture, reflectTexCoords);
 	vec4 refractColor = texture(refractionTexture, refractTexCoords);
-	// Mix the textures using 0.5 factor (mix them equally)
-	out_Color = mix(reflectColor, refractColor, 0.5);
+
+	// Fesnel effect
+	// When looked from upward, water is 100% transparent and 0% reflective
+	// When looked from the side, water is 0% transparent and 100% reflective
+	// Depending on camera position, the refracted and reflected factors change
+	// so when the camera is looking upsidedown to the water, refraction is applied
+	// and reflection is not (no objects reflected); when the camera is looking from
+	// let's say, player's head, objects are reflected on its surface while it's more
+	// difficult to see the refracted image.
+	// This is calculated by checking the dot product of the vector pointing from the
+	// water to the camera (calculated at vertex shader) with the normal of the water
+	// which right now it's asumed to be (0,1,0).
+	// Then we can apply a reflectivity modifier to configure how reflective the water is
+	vec3 viewVector = normalize(toCameraVector);
+	float refractiveFactor = dot(viewVector, vec3(0.0, 1.0, 0.0));
+	refractiveFactor = pow(refractiveFactor, REFLECTIVITY);
+
+	// Mix the textures using the refraction factor calculated by Fesnel effect
+	out_Color = mix(reflectColor, refractColor, refractiveFactor);
 
 	// Add blue tint
 	out_Color = mix(out_Color, vec4(0.0, 0.3, 0.5, 1.0), 0.2);

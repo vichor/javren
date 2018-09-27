@@ -1,5 +1,6 @@
 package entities;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -87,8 +88,14 @@ public class Camera {
 	
 	
 	private void calculateZoom() {
-		float zoomLevel = Mouse.getDWheel() * 0.1f;
-		distanceFromPlayer -= zoomLevel;
+		if (Keyboard.isKeyDown(Keyboard.KEY_Z)) { 
+			distanceFromPlayer += 5;
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_X)) { 
+			distanceFromPlayer -= 5;
+		} else {
+			float zoomLevel = Mouse.getDWheel() * 0.1f;
+			distanceFromPlayer -= zoomLevel;
+		}
 		// Limit zoom to avoid getting too close to player
 		if (distanceFromPlayer < 5) {
 			distanceFromPlayer = 5;
