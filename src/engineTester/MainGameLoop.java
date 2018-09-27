@@ -89,11 +89,11 @@ public class MainGameLoop {
 		// Game entities instances
 		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
-        	if (i%10 == 0) {
+        	if (i%1  == 0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new FirTree(position));
         	}
-            if (i%30 == 0) {
+            if (i%1  == 0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Tree(position));
             }
