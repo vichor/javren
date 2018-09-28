@@ -134,7 +134,7 @@ public class MainGameLoop {
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playertexture"))); //players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 50, 0, 0.6f);
+        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 180, 0, 0.6f);
         
         
         // CAMERA
@@ -242,7 +242,7 @@ public class MainGameLoop {
 
 			// DEFAULT FRAME BUFFER RENDERING
 			renderer.renderScene(entities, terrains, lights, camera, masterClipPlane);
-			waterRenderer.render(waters, camera);
+			waterRenderer.render(waters, camera, sun);
 			guiRenderer.render(guis);
 
 			DisplayManager.updateDisplay();			
