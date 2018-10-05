@@ -11,6 +11,7 @@ uniform sampler2D reflectionTexture;
 uniform sampler2D refractionTexture;
 uniform sampler2D dudvMap;
 uniform sampler2D normalMap;
+uniform sampler2D depthMap;
 
 uniform float moveFactor;
 uniform vec3 lightColor;
@@ -38,6 +39,27 @@ void main(void) {
 	vec2 refractTexCoords = vec2(ndc.x, ndc.y);
 	vec2 reflectTexCoords = vec2(ndc.x, -ndc.y);
 
+
+	// Depth map management step 1: distance from camera to underwater floor
+	// We read the depth buffer from the depth texture we have created in the application
+	// The depth buffer contains values from 0 to 1 (so not actually a distance) and it
+	// is in logarithmic scale (farther the object is, the smaller the increment in depth).
+	// To convert this depth value into a distance, we will need to use the near and far
+	// plane values from the projection matrix (we will use hardcoded values, so remember
+	// to update here if MasterRenderer gets updated).
+	float near = 0.1;
+	float far = 5000.0;
+	float depth = texture(depthMap, refractTexCoords).r; // information is on the first coordinate, we can ignore the other twos.
+	float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+
+	// Depth management step 2: distance from camera to water fragment
+	depth = gl_FragCoord.z;
+	float waterDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
+
+	// Depth management step 3: calculate the water depth
+	float waterDepth = floorDistance - waterDistance;
+
+
 	// Use the DuDv map to get a distortion value, then use it to calculate the
 	// distorted coordinates that will be used to get the final distortion from
 	// the DuDv map. In more detail:
@@ -50,9 +72,14 @@ void main(void) {
 	// The final distortion value will be extracted from the pixel of the DuDv map
 	// on that distortion coordinate applying a distortion strength modifier and
 	// making the value between -1 and 1 (*2-1).
+	// Finally, due to the water depth effect, the distortion of the water on the edges
+	// has to be diminished. We do this by multiplying the distortion by the waterDepth
+	// effect limited between 0.0 and 1.0 and making the transition larger than the
+	// water depth calculation (5.0 for water depth, 20.0 for the distortion) to make
+	// it softer.
 	vec2 distortedTexCoordsOffset = texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg*0.1;
 	vec2 distortedTexCoords = textureCoords + vec2(distortedTexCoordsOffset.x, distortedTexCoordsOffset.y+moveFactor);
-	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * WAVESTRENGTH;
+	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * WAVESTRENGTH * clamp(waterDepth/20.0, 0.0, 1.0);
 
 	// Apply the distortion to the refracted and reflected image
 	refractTexCoords += totalDistortion;
@@ -71,6 +98,18 @@ void main(void) {
 	vec4 reflectColor = texture(reflectionTexture, reflectTexCoords);
 	vec4 refractColor = texture(refractionTexture, refractTexCoords);
 
+	// Get the normal from the distorted coordinates calculated above
+	// The normal is calculated by extracting the color from the normal map texture
+	// and then using the blue color (which is the dominant color on the texture) as
+	// the y coordinate of the normal, while using the red and green colors as the
+	// x and z coordinates. Besides, the y coordinate we want to be always positive
+	// (normal always facing the sky) but the x and z we want it to be from -1 to 1
+	// so we will * 2.0 - 1.0 to get that values.
+	// To make the normals softer, we can enhance the y component
+	vec4 normalMapColor = texture(normalMap, distortedTexCoords);
+	vec3 normal = vec3(normalMapColor.r*2.0 - 1.0, normalMapColor.b * 1.25, normalMapColor.g * 2.0 - 1.0);
+	normal = normalize(normal);
+
 	// Fresnel effect
 	// When looked from upward, water is 100% transparent and 0% reflective
 	// When looked from the side, water is 0% transparent and 100% reflective
@@ -80,37 +119,32 @@ void main(void) {
 	// let's say, player's head, objects are reflected on its surface while it's more
 	// difficult to see the refracted image.
 	// This is calculated by checking the dot product of the vector pointing from the
-	// water to the camera (calculated at vertex shader) with the normal of the water
-	// which right now it's asumed to be (0,1,0).
+	// water to the camera (calculated at vertex shader) with the normal of the water.
 	// Then we can apply a reflectivity modifier to configure how reflective the water is
+	// Then ensure that the result is between 0 and 1.
 	vec3 viewVector = normalize(toCameraVector);
-	float refractiveFactor = dot(viewVector, vec3(0.0, 1.0, 0.0));
+	float refractiveFactor = dot(viewVector, normal);
 	refractiveFactor = pow(refractiveFactor, WATER_REFLECTIVITY);
-
-	// Specular lighting: get the normal and do specular lights calculations
-
-	// Get the normal from the distorted coordinates calculated above
-	// The normal is calculated by extracting the color from the normal map texture
-	// and then using the blue color (which is the dominant color on the texture) as
-	// the y coordinate of the normal, while using the red and green colors as the
-	// x and z coordinates. Besides, the y coordinate we want to be always positive
-	// (normal always facing the sky) but the x and z we want it to be from -1 to 1
-	// so we will * 2.0 - 1.0 to get that values.
-	vec4 normalMapColor = texture(normalMap, distortedTexCoords);
-	vec3 normal = vec3(normalMapColor.r*2.0 - 1.0, normalMapColor.b, normalMapColor.g * 2.0 - 1.0);
-	normal = normalize(normal);
+	refractiveFactor = clamp(refractiveFactor, 0.0, 1.0);
 
 	// Specular light calculation
+	// Take into account that the specular light has to be lower on the edges of the water.
+	// Do this by taking into account the water depth effect.
 	vec3 reflectedLightVector = reflect(normalize(fromLightVector), normal);
 	float specular = max(dot(reflectedLightVector, viewVector), 0.0);
 	specular = pow(specular, LIGHT_SHINEDAMPER);
-	vec3 specularHighlights = lightColor * specular * LIGHT_REFLECTIVITY;
+	vec3 specularHighlights = lightColor * specular * LIGHT_REFLECTIVITY * clamp(waterDepth/20.0, 0.0, 1.0);
 
 
 	// Mix the textures using the refraction factor calculated by Fesnel effect
 	out_Color = mix(reflectColor, refractColor, refractiveFactor);
 	// Add blue tint and specular light (specular light with 0.0 alpha)
 	out_Color = mix(out_Color, vec4(0.0, 0.3, 0.5, 1.0), 0.2) + vec4(specularHighlights, 0.0);
+	// Set how transparent the water shall be by setting the alpha component (0=>transparent; 1=>opaque)
+	// we will use the waterDepth to define transparency. We will define 5.0 as the point where
+	// the water start being completely opaque (so water depth of 5 and forward will have an
+	// alpha of 1.0), so we divide waterDepth by 5.0 and clamp to 1.0.
+	out_Color.a = clamp(waterDepth/5.0, 0.0, 1.0);
 
 
 }

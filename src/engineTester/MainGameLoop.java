@@ -197,14 +197,17 @@ public class MainGameLoop {
         //		(0, -1, 0) for clipping what's below the plane
         //		(0,  1, 0) for clipping what's above the plane
         //		D = height, choose a value depending on the height of the water
+        // We also apply an offset to soften the effect once the water depth effect is applied.
+        // do not apply so much an offset or reflection will be get in places it shouldn't
 		Vector4f masterClipPlane = new Vector4f(0, -1, 0, 10000);
-		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight());
+		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight()+1f);
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight());
 
 		WorldClock worldClock = WorldClock.get();
+		//worldClock.getClock().hour=12;
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(30);
+			worldClock.step(40);
 			System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();

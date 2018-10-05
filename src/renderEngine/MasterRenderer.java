@@ -29,7 +29,7 @@ public class MasterRenderer {
 	// Projection matrix 
 	private static final float FOV = 70;
 	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 5000;
+	private static final float FAR_PLANE = 5000.0f;
 	private Matrix4f projectionMatrix;
 
 	// Entity renderer
