@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
+import engineTester.WorldTimeManager.DayPart;
+import engineTester.WorldTimeManager.WorldClock;
 import entities.Camera;
 import models.RawModel;
 import renderEngine.DisplayManager;
@@ -70,16 +72,14 @@ public class SkyboxRenderer {
 	private static String[] NIGHT_TEXTURE_FILES = { "nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack","nightFront" };
 
 	private RawModel cube;
-	private int texture;
+	private int dayTexture;
 	private int nightTexture;
 	private SkyboxShader shader;
-	
-	private float time = 0;
 	
 	
 	public SkyboxRenderer(Loader loader, Matrix4f projectionMatrix) {
 		cube = loader.loadToVAO(VERTICES, 3);
-		texture = loader.loadCubeMap(TEXTURE_FILES);
+		dayTexture = loader.loadCubeMap(TEXTURE_FILES);
 		nightTexture = loader.loadCubeMap(NIGHT_TEXTURE_FILES);
 		shader = new SkyboxShader();
 		shader.start();
@@ -90,33 +90,36 @@ public class SkyboxRenderer {
 	
 	
 	private void bindTextures(){
-		time += DisplayManager.getFrameTimeSeconds() * 1000;
-		time %= 24000;
-		int texture1;
-		int texture2;
-		float blendFactor;		
-		if(time >= 0 && time < 5000){
+
+		WorldClock timeManager = WorldClock.get();
+		DayPart dayPart = DayPart.valueOf(timeManager.getClock());
+		float blendFactor = timeManager.getDayPartProgress();
+
+		int texture1=dayTexture;
+		int texture2=dayTexture;
+		switch(dayPart) {
+		case NIGHT:
 			texture1 = nightTexture;
 			texture2 = nightTexture;
-			blendFactor = (time - 0)/(5000 - 0);
-		}else if(time >= 5000 && time < 8000){
+			break;
+		case DAWN:
 			texture1 = nightTexture;
-			texture2 = texture;
-			blendFactor = (time - 5000)/(8000 - 5000);
-		}else if(time >= 8000 && time < 20000){
-			texture1 = texture;
-			texture2 = texture;
-			blendFactor = (time - 8000)/(20000 - 8000);
-		}else{
-			texture1 = texture;
+			texture2 = dayTexture;
+			break;
+		case MORNING:
+		case NOON:
+		case AFTERNOON:
+			texture1 = dayTexture;
+			texture2 = dayTexture;
+			break;
+		case TWILIGHT:
+			texture1 = dayTexture;
 			texture2 = nightTexture;
-			blendFactor = (time - 20000)/(24000 - 20000);
+			break;
+		default:
+			System.err.println("Wrong day part on skybox bind texture. Asumed day textures.");
 		}
 		
-		// avoid night cycle
-		texture1 = texture;
-		texture2 = texture;
-
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, texture1);
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);

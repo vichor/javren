@@ -71,7 +71,7 @@ void main(void) {
 	}
 	
 	// Apply ambient lighting to the calculated diffuse light
-	totalDiffuseLight = max(totalDiffuseLight, 0.2); // Ambient light made by ensuring difuse light is above 0.2
+	//totalDiffuseLight = max(totalDiffuseLight, 0.02); // Ambient light made by ensuring difuse light is above 0.02
 
 
 	// Texture Transparency management

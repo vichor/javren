@@ -20,7 +20,7 @@ import entities.Light;
 public class WaterRenderer {
 	
 	private static final String DUDVMAP_FILENAME = "water/waterDUDV";
-	private static final String NORMALMAP_FILENAME = "water/normalMap";
+	private static final String NORMALMAP_FILENAME = "water/normal";
 	private static final float WAVE_SPEED = 0.03f;
 
 	private RawModel quad;

@@ -21,6 +21,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.WorldTimeManager.DayPart;
+import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Dragon;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
@@ -28,6 +30,7 @@ import engineTester.gameEntities.Flower;
 import engineTester.gameEntities.GameEntity;
 import engineTester.gameEntities.Grass;
 import engineTester.gameEntities.Lamp;
+import engineTester.gameEntities.Sun;
 import engineTester.gameEntities.Tree;
 import entities.Camera;
 import entities.Entity;
@@ -134,15 +137,14 @@ public class MainGameLoop {
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playertexture"))); //players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(500, 0, -180), 0, 180, 0, 0.6f);
+        Player player = new Player(playerModel, new Vector3f(200, terrain.getHeightOfTerrain(200, -250), -250), 0, 120, 0, 0.6f);
         
         
         // CAMERA
         Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
-		Light sun = new Light(new Vector3f(800,10000,800),new Vector3f(1.25f,1.25f,1.25f));
-		//Light sun = new Light(new Vector3f(0,10000,20000),new Vector3f(1.0f,1.0f,1.0f));
+		Sun sun = new Sun();
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(sun);
 		lights.add(lamp1.getLightSource());
@@ -199,8 +201,13 @@ public class MainGameLoop {
 		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight());
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight());
 
+		WorldClock worldClock = WorldClock.get();
 		while(!Display.isCloseRequested() ) {
 
+			worldClock.step(30);
+			System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
+
+			sun.update();
 			player.move(terrain);
 			camera.move();
 			mousePicker.update();
@@ -264,33 +271,11 @@ public class MainGameLoop {
 		while (!done) {
         	x = random.nextFloat()*radius; 
         	z = random.nextFloat()*(-radius); 
-        	// avoid water area by hardcoded coordinates check
-        	// water areas (x,z)
-        	// (205,-638)  (498,-638)
-        	//     +--------+
-        	//     |        |(498, -315)
-        	//     |        +------+ (670, -315)
-        	//     |               |
-        	//     |               |
-        	//     +---------------+
-        	// (205, -196)       (670, -196)
-        	if ( x<205 ) { 
-        		done = true; 
-        	} else if ( x < 498 ) {
-        		if ( z>-196 || z<-638 ) { 
-        			done = true; 
-        		}
-        	} else if ( x<670 ) {
-        		if ( z>-315 || z<-638 ) {
-        			done = true;
-        		}
-        	} else if (z<-638) {
-        		done = true;
-        	} else if ( x > 670 ) {
+        	y = terrain.getHeightOfTerrain(x, z);
+        	if (y>0) {
         		done = true;
         	}
 		}
-       	y = terrain.getHeightOfTerrain(x, z);
 		return new Vector3f(x,y,z);
 	}
 

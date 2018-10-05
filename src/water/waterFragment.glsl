@@ -15,11 +15,10 @@ uniform sampler2D normalMap;
 uniform float moveFactor;
 uniform vec3 lightColor;
 
-const float WAVESTRENGTH = 0.02;
+const float WAVESTRENGTH = 0.04;
 const float WATER_REFLECTIVITY = 10.0;
-
 const float LIGHT_SHINEDAMPER = 20.0;
-const float LIGHT_REFLECTIVITY = 0.6; // light reflectivity, no water reflectivity
+const float LIGHT_REFLECTIVITY = 0.5;
 
 void main(void) {
 
