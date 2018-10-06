@@ -136,7 +136,7 @@ public class MainGameLoop {
 
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
-        		new ModelTexture(loader.loadTexture("players/playertexture"))); //players/playerTexture")));
+        		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
         Player player = new Player(playerModel, new Vector3f(200, terrain.getHeightOfTerrain(200, -250), -250), 0, 120, 0, 0.6f);
         
         
@@ -198,16 +198,16 @@ public class MainGameLoop {
         //		(0,  1, 0) for clipping what's above the plane
         //		D = height, choose a value depending on the height of the water
         // We also apply an offset to soften the effect once the water depth effect is applied.
-        // do not apply so much an offset or reflection will be get in places it shouldn't
+        // do not apply so much an offset or reflection/refraction will be get in places it shouldn't
 		Vector4f masterClipPlane = new Vector4f(0, -1, 0, 10000);
 		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight()+1f);
-		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight());
+		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
 		WorldClock worldClock = WorldClock.get();
 		//worldClock.getClock().hour=12;
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(40);
+			worldClock.step(5);
 			System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
