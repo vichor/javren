@@ -201,13 +201,13 @@ public class MainGameLoop {
         // do not apply so much an offset or reflection will be get in places it shouldn't
 		Vector4f masterClipPlane = new Vector4f(0, -1, 0, 10000);
 		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight()+1f);
-		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight());
+		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
 		WorldClock worldClock = WorldClock.get();
-		//worldClock.getClock().hour=12;
+		worldClock.getClock().hour=5;
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(40);
+			worldClock.step(20);
 			System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();

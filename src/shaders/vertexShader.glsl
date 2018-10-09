@@ -19,7 +19,7 @@ uniform float numberOfRows;
 uniform vec2 offset;
 uniform vec4 plane;
 
-const float density = 0.00;//35;
+const float density = 0.0015;
 const float gradient = 5.0;
 
 

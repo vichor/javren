@@ -17,8 +17,8 @@ uniform float moveFactor;
 uniform vec3 lightColor;
 
 const float WAVESTRENGTH = 0.04;
-const float WATER_REFLECTIVITY = 10.0;
-const float LIGHT_SHINEDAMPER = 20.0;
+const float WATER_REFLECTIVITY = 1.0;
+const float LIGHT_SHINEDAMPER = 10.0;
 const float LIGHT_REFLECTIVITY = 0.5;
 
 void main(void) {

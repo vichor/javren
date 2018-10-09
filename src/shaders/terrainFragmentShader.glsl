@@ -23,6 +23,9 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
 
+const float celShadeLevels = 3.0;	// we define to use 3 levels of shading
+
+
 void main(void) {
 
 	// MULTITEXTURING THE TERRAIN
@@ -81,6 +84,9 @@ void main(void) {
 		// vector pointing from the surface to the light
 		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
 		float brightness = max(nDotProd, 0.2);	// Ambient light made by ensuring diffuse light is above 0.2
+		// Cel shading: as it is done in entities shader, limit the brightness into several levels
+		float brightnessLevel = floor(brightness * celShadeLevels);
+		brightness = brightnessLevel / celShadeLevels;
 		totalDiffuseLight = totalDiffuseLight + (brightness * lightColor[i])/attenuationFactor;
 
 		// Specular light:
@@ -95,7 +101,7 @@ void main(void) {
 		// 		The light direction, or the vector poiting from light to fragment,
 		// 		is the negative of the vector pointing to the light source.
 		// Then the material damping has to be applied by powering the calculated
-		// specular factor to the shine damper (obtained from an uniform variable).
+		// specular factor to the shine damped (obtained from an uniform variable).
 		// The final specular light will get the shine damping value multiplied by the
 		// reflectivity and the light color.
 
@@ -104,8 +110,10 @@ void main(void) {
 		vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
 		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 		specularFactor = max(specularFactor, 0.0);
-		float damperFactor = pow(specularFactor, shineDamper);
-		totalSpecularLight = totalSpecularLight + (damperFactor * reflectivity * lightColor[i])/attenuationFactor;
+		float dampedFactor = pow(specularFactor, shineDamper);
+		brightnessLevel = floor(dampedFactor * celShadeLevels); // cel shading
+		dampedFactor = brightnessLevel / celShadeLevels;
+		totalSpecularLight = totalSpecularLight + (dampedFactor * reflectivity * lightColor[i])/attenuationFactor;
 	}
 
 

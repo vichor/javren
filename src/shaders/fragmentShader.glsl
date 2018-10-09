@@ -16,6 +16,9 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
 
+const float celShadeLevels = 3.0;	// we define to use 3 levels of shading
+
+
 void main(void) {
 
 
@@ -42,10 +45,27 @@ void main(void) {
 		// we have 4 light sources.
 		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
-		float brightness = max(nDotProd, 0.0);	
+		float brightness = max(nDotProd, 0.0);
+	
+		// Cel Shading
+		// This technique gives a comic-like effect.
+		// Cel shading consists on defining ranges of brightness, so that there is 
+		// a limited amount of brightness levels (instead of being a continuous value
+		// between 0 and 1). So, if we define 3 levels, we can have only 3 possible
+		// brightness. The brightness of a fragment will take the brightness of the 
+		// level it's on (for instance, if there's a brightness level from 0.25 to 0.5
+		// and the calculated brightness is 0.47, the resulting brightness will be 0.25).
+		// To calculate which level belongs a specific fragment, just divide the brightness
+		// by the number of levels; to get the brightness, divide the obtained level by
+		// the number of levels.
+		float brightnessLevel = floor(brightness * celShadeLevels);
+		brightness = brightnessLevel / celShadeLevels;
+	
+		// Difuse Light (cont):
+		// Apply the obtained brightness (once cel shading has been applied) and the 
+		// light properties (like attenuation) to calculate the final diffuse light.
 		totalDiffuseLight = totalDiffuseLight + (brightness * lightColor[i])/attenuationFactor;
-	
-	
+
 		// Specular Light:
 		// this light is the reflected light from a fragment towards the camera.
 		// Depending where the camera is located and where the fragment is pointing
@@ -66,8 +86,10 @@ void main(void) {
 		vec3 reflectedLightDirection = reflect(lightDirection, unitSurfaceNormal);
 		float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
 		specularFactor = max(specularFactor, 0.0);
-		float damperFactor = pow(specularFactor, shineDamper);
-		totalSpecularLight = totalSpecularLight + (damperFactor * reflectivity * lightColor[i])/attenuationFactor;
+		float dampedFactor = pow(specularFactor, shineDamper);
+		brightnessLevel = floor(dampedFactor * celShadeLevels);	// Apply cel shading to specular light as above
+		dampedFactor = brightnessLevel / celShadeLevels;
+		totalSpecularLight = totalSpecularLight + (dampedFactor * reflectivity * lightColor[i])/attenuationFactor;
 	}
 	
 	// Apply ambient lighting to the calculated diffuse light

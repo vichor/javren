@@ -10,6 +10,7 @@ uniform vec3 fogColor;
 
 const float lowerLimit = 0.0;
 const float upperLimit = 30.0;
+const float celShadingLevels = 10.0;
 
 void main(void){
 	// We use two texture cubes for the day and night skies. The factor for
@@ -21,12 +22,19 @@ void main(void){
 
     vec4 textureColor = mix(texture1, texture2, blendFactor);
 
+    // Cel Shading:
+    // do the same as in the entity shader but averaging the texture color
+    float amount = (textureColor.r + textureColor.g + textureColor.b) / 3.0;
+    amount = floor(amount * celShadingLevels) / celShadingLevels;
+    textureColor.rgb = amount * fogColor;
+
 	// Skybox color will come from the skybox texture and will blend into
 	// the fog color to make a seamless transition and help in having a
 	// nice fog effect on the scene. A factor depending on upper and lower
-	// limits will be used to define the blending process.
+	// limits will be used to define the blending process (set factor to 1
+    // to disable fog).
     float factor = (textureCoords.y - lowerLimit) / (upperLimit - lowerLimit);
     factor = clamp(factor, 0.0, 1.0); // factor between 0 and 1
-    out_Color = mix(vec4(fogColor, 1.0), textureColor, 1);//factor);
+    out_Color = mix(vec4(fogColor, 1.0), textureColor, factor);
 
 }
