@@ -7,6 +7,7 @@ Javren is a java render engine built from [ThinMatrix tutorial](https://www.yout
 | ------- |-------------------------------------------- |
 |   0.1   | Entity render system                        |
 |   0.2   | Terrain and environment render system       |
+|   0.3   | Water render system                         |
 
 
 ## Getting started
