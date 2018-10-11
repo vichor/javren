@@ -135,8 +135,10 @@ public class MainGameLoop {
         
         
         // Normal mapped entities
-        GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 20, player.getPosition().z));
+        GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
+        GameEntity standardBarrel = new Barrel(new Vector3f(player.getPosition().x-40, 30, player.getPosition().z));
         gameNormalMappedEntities.add(barrel);
+        gameEntities.add(standardBarrel);
         
         // Lamps
 		Lamp lamp1 = new Lamp(new Vector3f(120, terrain.getHeightOfTerrain(120,  -70), -70), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
@@ -195,11 +197,10 @@ public class MainGameLoop {
         	entities.add(gameEntity.getRenderEntity());
         }
         entities.add(player);
-        
         /* get list of normal mapped render entities */
         List<Entity> normalMappedEntities = new ArrayList<Entity>();
         for (GameEntity gameEntity : gameNormalMappedEntities) {
-        	entities.add(gameEntity.getRenderEntity());
+        	normalMappedEntities.add(gameEntity.getRenderEntity());
         }
         
 
@@ -218,11 +219,12 @@ public class MainGameLoop {
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=10;
-		worldClock.getClock().minute=00;
+		worldClock.getClock().hour=5;
+		//worldClock.getClock().minute=0;
+		//worldClock.getClock().second=0;
 		while(!Display.isCloseRequested() ) {
 
-			//worldClock.step(15);
+			worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			//sun.update();

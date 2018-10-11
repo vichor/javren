@@ -82,7 +82,7 @@ public class NormalMappedObjLoader {
 				texturesArray, normalsArray, tangentsArray);
 		int[] indicesArray = convertIndicesListToArray(indices);
 
-		return loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
+		return loader.loadToVAO(verticesArray, texturesArray, normalsArray, tangentsArray, indicesArray);
 	}
 
 	//NEW 

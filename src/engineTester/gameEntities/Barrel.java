@@ -15,6 +15,7 @@ public class Barrel extends GameEntity {
 		if (texturedModel == null) {
 			texturedModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("objects/barrel", loader),
         		new ModelTexture(loader.loadTexture("objects/barrel")));
+			texturedModel.getTexture().setNormalMap(loader.loadTexture("objects/barrelNormal"));
 		}
 		entity = new Entity(texturedModel, position, 0, 0, 0, 3f);
 		texturedModel.getTexture().setShineDamper(10);

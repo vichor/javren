@@ -27,7 +27,7 @@ public class Sun extends Light {
 	
 	public Sun () {
 		this.position = new Vector3f(200, 500, -100);
-		this.color = new Vector3f(1.25f, 1.250f, 1.250f);
+		this.color = new Vector3f(1f, 1f, 1f);
 	}
 	
 	
