@@ -14,6 +14,7 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
+import normalMappingRenderer.NormalMappingRenderer;
 import shaders.StaticShader;
 import shaders.TerrainShader;
 import skybox.SkyboxRenderer;
@@ -22,9 +23,9 @@ import terrains.Terrain;
 public class MasterRenderer {
 
 	// Fog
-	private static final float SKYCOLOR_RED = 0.5444f;
-	private static final float SKYCOLOR_GREEN = 0.62f;
-	private static final float SKYCOLOR_BLUE = 0.69f;
+	public static final float SKYCOLOR_RED = 0.5444f;
+	public static final float SKYCOLOR_GREEN = 0.62f;
+	public static final float SKYCOLOR_BLUE = 0.69f;
 	
 	// Projection matrix 
 	private static final float FOV = 70;
@@ -34,6 +35,7 @@ public class MasterRenderer {
 
 	// Entity renderer
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
+	private Map<TexturedModel, List<Entity>> normalMapEntities = new HashMap<TexturedModel, List<Entity>>();
 	private StaticShader entityShader;
 	private EntityRenderer entityRenderer;
 	
@@ -44,6 +46,9 @@ public class MasterRenderer {
 	
 	// Skybox renderer
 	private SkyboxRenderer skyboxRenderer;
+	
+	// Normal mapping renderer
+	private NormalMappingRenderer normalMapRenderer;
 	
 	// Wireframe
 	static boolean wireframeMode = false;
@@ -66,6 +71,8 @@ public class MasterRenderer {
 
 		// Skybox renderer setup
 		this.skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
+		
+		this.normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
 	}
 	
 	
@@ -88,13 +95,16 @@ public class MasterRenderer {
 	}
 	
 	
-	public void renderScene(List<Entity> entities, List<Terrain> terrains, 
-			List<Light> lights, Camera camera, Vector4f clipPlane) {
+	public void renderScene(List<Entity> entities, List<Entity> normalEntities,
+			List<Terrain> terrains, List<Light> lights, Camera camera, Vector4f clipPlane) {
 		for(Terrain terrain : terrains) {
 			processTerrain(terrain);
 		}
 		for(Entity entity : entities) {
 			processEntity(entity);
+		}
+		for(Entity entity : normalEntities) {
+			processNormalMapEntity(entity);
 		}
 		render(lights, camera, clipPlane);
 	}
@@ -115,6 +125,10 @@ public class MasterRenderer {
 		entityRenderer.render(entities);
 		entityShader.stop();
 		entities.clear();
+		
+		// Render Normal mapped entities
+		normalMapRenderer.render(normalMapEntities, clipPlane, lights, camera);
+		normalMapEntities.clear();
 		
 		// Render terrain
 		// each cycle, the terrain to be rendered change, so they are removed from the list.
@@ -139,7 +153,7 @@ public class MasterRenderer {
 	
 
 	public void processEntity(Entity entity) {
-		// this method pushes a new entity on the has map to be rendered on next render call
+		// this method pushes a new entity on the hash map to be rendered on next render call
 		TexturedModel entityModel = entity.getModel();
 		List<Entity> batch = entities.get(entityModel);
 		if(batch!=null) {
@@ -148,6 +162,20 @@ public class MasterRenderer {
 			List<Entity> newBatch = new ArrayList<Entity>();
 			newBatch.add(entity);
 			entities.put(entityModel, newBatch);
+		}
+	}
+	
+	
+	public void processNormalMapEntity(Entity entity) {
+		// this method pushes a new entity on the hash map to be rendered on next render call
+		TexturedModel entityModel = entity.getModel();
+		List<Entity> batch = normalMapEntities.get(entityModel);
+		if(batch!=null) {
+			batch.add(entity);
+		}else{
+			List<Entity> newBatch = new ArrayList<Entity>();
+			newBatch.add(entity);
+			normalMapEntities.put(entityModel, newBatch);
 		}
 	}
 	
@@ -171,6 +199,7 @@ public class MasterRenderer {
 	public void cleanUp() {
 		entityShader.cleanUp();
 		terrainShader.cleanUp();
+		normalMapRenderer.cleanUp();
 	}
 	
 	

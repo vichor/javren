@@ -7,12 +7,12 @@ import org.lwjgl.util.vector.Vector3f;
 public class Camera {
 
 	private Vector3f position = new Vector3f(0,0,0);
-	private float pitch = 0;	// rotation X
+	private float pitch = 17.0f;	// rotation X
 	private float yaw = 0;		// rotation Y
 	private float roll = 0;		// rotation Z
 	
 	private Player player;
-	private float distanceFromPlayer =50;
+	private float distanceFromPlayer =155.0f;
 	private float angleAroundPlayer = 0;
 	
 	private static final float POINT_TO_PLAYER_BODY_OFFSET = 5;		// This causes to zoom towards the body, not the feet
@@ -44,6 +44,7 @@ public class Camera {
 		float verticalDistance = calculateVerticalDistance();
 		calculateCameraPosition(horizontalDistance, verticalDistance);
 		this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		//System.out.println(pitch+"\t"+distanceFromPlayer);
 	}
 
 

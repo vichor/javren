@@ -26,8 +26,8 @@ public class Sun extends Light {
 
 	
 	public Sun () {
-		this.position = new Vector3f(400, 100000, -400);
-		this.color = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.position = new Vector3f(200, 500, -100);
+		this.color = new Vector3f(1.25f, 1.250f, 1.250f);
 	}
 	
 	
@@ -39,10 +39,10 @@ public class Sun extends Light {
 	private void updatePosition() {
 		WorldClock clock = WorldClock.get();
 		float progress = clock.getDayProgress();
-		System.out.print("\tprogress = " + progress);
+		//System.out.print("\tprogress = " + progress);
 		position.x = ORBIT_RADIUS * (float)Math.cos(Math.toRadians((progress*360)-90));
 		position.y = ORBIT_HEIGHT * (float)Math.sin(Math.toRadians((progress*360)-90));
-		System.out.println ("\t"+position);
+		//System.out.println ("\t"+position);
 	}
 
 	private void updateColor() {
@@ -85,7 +85,7 @@ public class Sun extends Light {
 		color.x = targetColorRed.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorRed.y-targetColorRed.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
 		color.y = targetColorBlue.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorBlue.y-targetColorBlue.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
 		color.z = targetColorGreen.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorGreen.y-targetColorGreen.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
-		System.out.print("\t"+color);
+		//System.out.print("\t"+color);
 	}
 	
 

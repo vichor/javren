@@ -68,6 +68,7 @@ public class SkyboxRenderer {
 	};	
 	
 	
+	//private static String[] TEXTURE_FILES = { "sRight", "sLeft", "sUp", "sDown", "sBack","sFront" };
 	private static String[] TEXTURE_FILES = { "right", "left", "top", "bottom", "back","front" };
 	private static String[] NIGHT_TEXTURE_FILES = { "nightRight", "nightLeft", "nightTop", "nightBottom", "nightBack","nightFront" };
 
@@ -75,6 +76,8 @@ public class SkyboxRenderer {
 	private int dayTexture;
 	private int nightTexture;
 	private SkyboxShader shader;
+
+	private boolean enabled;
 	
 	
 	public SkyboxRenderer(Loader loader, Matrix4f projectionMatrix) {
@@ -86,13 +89,14 @@ public class SkyboxRenderer {
 		shader.connectTextureUnits();
 		shader.loadProjectionMatrix(projectionMatrix);
 		shader.stop();
+		enabled = true;
 	}
 	
 	
 	private void bindTextures(){
 
 		WorldClock timeManager = WorldClock.get();
-		DayPart dayPart = DayPart.valueOf(timeManager.getClock());
+		DayPart dayPart = timeManager.getDayPart();
 		float blendFactor = timeManager.getDayPartProgress();
 
 		int texture1=dayTexture;
@@ -129,16 +133,18 @@ public class SkyboxRenderer {
 	
 	
 	public void render(Camera camera, float r, float g, float b) {
-		shader.start();
-		shader.loadViewMatrix(camera);
-		shader.loadFogColor(r, g, b);
-		GL30.glBindVertexArray(cube.getVaoID());
-		GL20.glEnableVertexAttribArray(0);
-		bindTextures();
-		GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, cube.getVertexCount());
-		GL20.glDisableVertexAttribArray(0);
-		GL30.glBindVertexArray(0);
-		shader.stop();
+		if (enabled) {
+			shader.start();
+			shader.loadViewMatrix(camera);
+			shader.loadFogColor(r, g, b);
+			GL30.glBindVertexArray(cube.getVaoID());
+			GL20.glEnableVertexAttribArray(0);
+			bindTextures();
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, cube.getVertexCount());
+			GL20.glDisableVertexAttribArray(0);
+			GL30.glBindVertexArray(0);
+			shader.stop();
+		}
 	}
 	
 	

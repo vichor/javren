@@ -16,9 +16,9 @@ uniform sampler2D depthMap;
 uniform float moveFactor;
 uniform vec3 lightColor;
 
-const float WAVESTRENGTH = 0.04;
-const float WATER_REFLECTIVITY = 10.0;
-const float LIGHT_SHINEDAMPER = 20.0;
+const float DISTORTIONWAVESTRENGTH = 0.04;
+const float WATER_REFLECTIVITY = 0.5;
+const float LIGHT_SHINEDAMPER = 50.0;
 const float LIGHT_REFLECTIVITY = 0.5;
 
 void main(void) {
@@ -79,7 +79,7 @@ void main(void) {
 	// it softer.
 	vec2 distortedTexCoordsOffset = texture(dudvMap, vec2(textureCoords.x + moveFactor, textureCoords.y)).rg*0.1;
 	vec2 distortedTexCoords = textureCoords + vec2(distortedTexCoordsOffset.x, distortedTexCoordsOffset.y+moveFactor);
-	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * WAVESTRENGTH * clamp(waterDepth/20.0, 0.0, 1.0);
+	vec2 totalDistortion = (texture(dudvMap, distortedTexCoords).rg * 2.0 - 1.0) * DISTORTIONWAVESTRENGTH * clamp(waterDepth/20.0, 0.0, 1.0);
 
 	// Apply the distortion to the refracted and reflected image
 	refractTexCoords += totalDistortion;
@@ -114,7 +114,7 @@ void main(void) {
 	// When looked from upward, water is 100% transparent and 0% reflective
 	// When looked from the side, water is 0% transparent and 100% reflective
 	// Depending on camera position, the refracted and reflected factors change
-	// so when the camera is looking upsidedown to the water, refraction is applied
+	// so when the camera is looking up-to-down to the water, refraction is applied
 	// and reflection is not (no objects reflected); when the camera is looking from
 	// let's say, player's head, objects are reflected on its surface while it's more
 	// difficult to see the refracted image.
@@ -123,9 +123,9 @@ void main(void) {
 	// Then we can apply a reflectivity modifier to configure how reflective the water is
 	// Then ensure that the result is between 0 and 1.
 	vec3 viewVector = normalize(toCameraVector);
-	float refractiveFactor = dot(viewVector, normal);
-	refractiveFactor = pow(refractiveFactor, WATER_REFLECTIVITY);
-	refractiveFactor = clamp(refractiveFactor, 0.0, 1.0);
+	float reflectiveFactor = dot(viewVector, normal);
+	reflectiveFactor = pow(reflectiveFactor, WATER_REFLECTIVITY);
+	reflectiveFactor = clamp(reflectiveFactor, 0.0, 1.0);
 
 	// Specular light calculation
 	// Take into account that the specular light has to be lower on the edges of the water.
@@ -136,8 +136,8 @@ void main(void) {
 	vec3 specularHighlights = lightColor * specular * LIGHT_REFLECTIVITY * clamp(waterDepth/20.0, 0.0, 1.0);
 
 
-	// Mix the textures using the refraction factor calculated by Fesnel effect
-	out_Color = mix(reflectColor, refractColor, refractiveFactor);
+	// Mix the textures using the refraction factor calculated by Fresnel effect
+	out_Color = mix(refractColor, reflectColor, reflectiveFactor);
 	// Add blue tint and specular light (specular light with 0.0 alpha)
 	out_Color = mix(out_Color, vec4(0.0, 0.3, 0.5, 1.0), 0.2) + vec4(specularHighlights, 0.0);
 	// Set how transparent the water shall be by setting the alpha component (0=>transparent; 1=>opaque)
