@@ -55,6 +55,15 @@ public class Loader {
 	}
 	
 	
+	public int loadToVAO(float[] positions, float[] textureCoords) {
+		int vaoID = createVAO();
+		storeDataInAttributeList(0, 2, positions);
+		storeDataInAttributeList(1, 2, textureCoords);
+		unbindVAO();
+		return vaoID;
+	}
+	
+	
 	public RawModel loadToVAO(float[] positions, int dimensions) {
 		int vaoId= createVAO();
 		storeDataInAttributeList(0, dimensions, positions);
@@ -69,12 +78,21 @@ public class Loader {
 	
 	
 	public int loadTexture(String fileName) {
+		return doLoadTexture(fileName, -0.4f);
+	}
+	
+	public int loadFontTextureAtlas(String fileName) {
+		return doLoadTexture(fileName, 0);
+	}
+	
+	
+	private int doLoadTexture(String fileName, float mipmapBias) {
 		Texture texture = null;
 		try {
 			texture = TextureLoader.getTexture("PNG", new FileInputStream("res/" + fileName + ".png"));
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.4f);
+			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, mipmapBias);
 			
 		} catch (FileNotFoundException e) {
 

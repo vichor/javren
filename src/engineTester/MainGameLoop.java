@@ -9,6 +9,7 @@
  */
 package engineTester;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,9 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
+import fontRendering.TextMaster;
 import guis.GuiTexture;
 import models.TexturedModel;
 import objconverter.OBJLoader;
@@ -67,6 +71,13 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer(loader);
+		
+		
+		// FONT SYSTEM
+		TextMaster.init(loader);
+		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/verdana"), new File("res/fonts/verdana.fnt"));
+		GUIText text = new GUIText("This is a test text!", 4, font, new Vector2f(0,0.85f), 1f, true);
+		text.setColor(1.0f, 0, 0);
 		
 		
 		// TERRAIN
@@ -227,7 +238,7 @@ public class MainGameLoop {
 			worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
-			//sun.update();
+			sun.update();
 			player.move(terrain);
 			camera.move();
 			mousePicker.update();
@@ -271,6 +282,7 @@ public class MainGameLoop {
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera, sun);
 			guiRenderer.render(guis);
+			TextMaster.render();
 
 			DisplayManager.updateDisplay();			
 		}
