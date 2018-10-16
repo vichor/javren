@@ -22,16 +22,15 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import engineTester.WorldTimeManager.DayPart;
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
-import engineTester.gameEntities.Dragon;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flower;
 import engineTester.gameEntities.GameEntity;
 import engineTester.gameEntities.Grass;
 import engineTester.gameEntities.Lamp;
+import engineTester.gameEntities.Rocks;
 import engineTester.gameEntities.Sun;
 import engineTester.gameEntities.Tree;
 import entities.Camera;
@@ -75,9 +74,9 @@ public class MainGameLoop {
 		
 		// FONT SYSTEM
 		TextMaster.init(loader);
-		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/verdana"), new File("res/fonts/verdana.fnt"));
-		GUIText text = new GUIText("This is a test text!", 4, font, new Vector2f(0,0.85f), 1f, true);
-		text.setColor(1.0f, 0, 0);
+		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/candara"), new File("res/fonts/candara.fnt"));
+		GUIText text = new GUIText("This is a test text!", 5, font, new Vector2f(0,0.75f), 1f, true);
+		text.setColor(1.0f, 0.0f, 0.0f);
 		
 		
 		// TERRAIN
@@ -144,6 +143,8 @@ public class MainGameLoop {
         //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -360),-360)));
         //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -370),-370)));
         
+        Rocks rocks = new Rocks();
+        gameEntities.add(rocks);
         
         // Normal mapped entities
         GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
@@ -230,15 +231,15 @@ public class MainGameLoop {
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=5;
+		worldClock.getClock().hour=15;
 		//worldClock.getClock().minute=0;
 		//worldClock.getClock().second=0;
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(15);
+			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
-			sun.update();
+			//sun.update();
 			player.move(terrain);
 			camera.move();
 			mousePicker.update();
