@@ -2,7 +2,7 @@
 
 in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
-in vec3 toLightVector[4];
+in vec3 toLightVector[5];
 in vec3 toCameraVector;
 in float visibility;
 
@@ -10,8 +10,8 @@ in float visibility;
 out vec4 out_Color;
 
 uniform sampler2D textureSampler;
-uniform vec3 lightColor[4];
-uniform vec3 lightAttenuation[4];
+uniform vec3 lightColor[5];
+uniform vec3 lightAttenuation[5];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -27,7 +27,7 @@ void main(void) {
 	// Also deal with the attenuation of the light
 	vec3 totalDiffuseLight = vec3(0.0);
 	vec3 totalSpecularLight = vec3(0.0);
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < 5; i++){
 		// Attenuation:
 		// Defined as 3 component values (stored in a vec3) which depends from the distance
 		// The final brightness of the light will be inverse of the attenuation 
@@ -39,7 +39,7 @@ void main(void) {
 		// Calculate how much light is receiving the fragment by doing the dot 
 		// product of the normalized surface normal vector with the normalized
 		// vector pointing from the surface to the light. Keep in mind that now
-		// we have 4 light sources.
+		// we have 5 light sources.
 		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 		float nDotProd = dot(unitSurfaceNormal, unitVectorToLight);
 		float brightness = max(nDotProd, 0.0);	

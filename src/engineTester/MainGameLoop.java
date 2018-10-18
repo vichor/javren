@@ -26,6 +26,7 @@ import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
+import engineTester.gameEntities.Flashlight;
 import engineTester.gameEntities.Flower;
 import engineTester.gameEntities.GameEntity;
 import engineTester.gameEntities.Grass;
@@ -99,6 +100,8 @@ public class MainGameLoop {
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
         Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
+        //Player player = new Player(playerModel, new Vector3f(0, terrain.getHeightOfTerrain(0, 0), 0), 0, 0, 0, 0.6f);
+        
         
 
 		// ENTITIES DEFINITION
@@ -159,6 +162,10 @@ public class MainGameLoop {
 		gameEntities.add(lamp1);
 		gameEntities.add(lamp2);
 		gameEntities.add(lamp3);
+		
+		// Player flashlight
+        Flashlight flashlight = new Flashlight(player, new Vector3f(2.0f, 2.0f, 0.0f), new Vector3f(1, 0.01f, 0.002f));
+        gameEntities.add(flashlight);
         
         
         // CAMERA
@@ -171,6 +178,7 @@ public class MainGameLoop {
 		lights.add(lamp1.getLightSource());
 		lights.add(lamp2.getLightSource());
 		lights.add(lamp3.getLightSource());
+		lights.add(flashlight.getLightSource());
 		
 		
 		// GUI
@@ -231,7 +239,7 @@ public class MainGameLoop {
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=15;
+		worldClock.getClock().hour=0;
 		//worldClock.getClock().minute=0;
 		//worldClock.getClock().second=0;
 		while(!Display.isCloseRequested() ) {
@@ -239,8 +247,9 @@ public class MainGameLoop {
 			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
-			//sun.update();
+			sun.update();
 			player.move(terrain);
+			flashlight.move();
 			camera.move();
 			mousePicker.update();
 
@@ -283,7 +292,7 @@ public class MainGameLoop {
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera, sun);
 			guiRenderer.render(guis);
-			TextMaster.render();
+			//TextMaster.render();
 
 			DisplayManager.updateDisplay();			
 		}

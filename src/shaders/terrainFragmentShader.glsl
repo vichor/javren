@@ -2,7 +2,7 @@
 
 in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
-in vec3 toLightVector[4];
+in vec3 toLightVector[5];
 in vec3 toCameraVector;
 in float visibility;
 
@@ -17,8 +17,8 @@ uniform sampler2D bTexture;				// Texture to use when the pixel in the blend map
 uniform sampler2D blendMap;				// ... and the blend map texture
 
 
-uniform vec3 lightColor[4];
-uniform vec3 lightAttenuation[4];
+uniform vec3 lightColor[5];
+uniform vec3 lightAttenuation[5];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
@@ -64,7 +64,7 @@ void main(void) {
 	// Diffuse and Specular light calculation. One for each light sources.
 	vec3 totalDiffuseLight = vec3(0.0);
 	vec3 totalSpecularLight = vec3(0.0);
-	for(int i=0; i<4; i++){
+	for(int i=0; i<5; i++){
 		// Vector normalization depending on light source
 		vec3 unitVectorToLight  = normalize(toLightVector[i]);
 
