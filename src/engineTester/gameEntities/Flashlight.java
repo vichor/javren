@@ -23,7 +23,7 @@ public class Flashlight extends GameEntity {
 	
 	public Flashlight(Player player, Vector3f color, Vector3f attenuation) {
 		if (texturedModel == null) {
-	        texturedModel = new TexturedModel(OBJLoader.loadObjModel("lights/Flashlight", loader),
+	        texturedModel = new TexturedModel(OBJLoader.loadObjModel("lights/Flashlight2", loader),
 	        		new ModelTexture(loader.loadTexture("lights/Flashlight")));
 		}
 
