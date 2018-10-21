@@ -13,7 +13,7 @@ import textures.ModelTexture;
 public class Flashlight extends GameEntity {
 	private Player player;
 	private float distanceFromPlayer = 1.250f;
-	private float distanceFromEntity = 2.0f;
+	private float distanceFromEntity = 0.8f;
 	private float heightFromPlayer = 2.35f;
 	
 	private static TexturedModel texturedModel = null;
@@ -23,7 +23,7 @@ public class Flashlight extends GameEntity {
 	
 	public Flashlight(Player player, Vector3f color, Vector3f attenuation) {
 		if (texturedModel == null) {
-	        texturedModel = new TexturedModel(OBJLoader.loadObjModel("lights/Flashlight2", loader),
+	        texturedModel = new TexturedModel(OBJLoader.loadObjModel("lights/flashlight2", loader),
 	        		new ModelTexture(loader.loadTexture("lights/Flashlight")));
 		}
 
@@ -47,8 +47,8 @@ public class Flashlight extends GameEntity {
 		entity.setPosition(position);
 		// place the light source following the flashlight entity. See below move method to get a glimpse
 		// of the maths behind this.
-		float lightSourceOffsetX = distanceFromEntity * (float)Math.sin(Math.toRadians(entity.getRotY()));
-		float lightSourceOffsetZ = distanceFromEntity * (float)Math.cos(Math.toRadians(entity.getRotY()));
+		float lightSourceOffsetX = distanceFromEntity * (float)Math.sin(Math.toRadians(entity.getRotY()+5));
+		float lightSourceOffsetZ = distanceFromEntity * (float)Math.cos(Math.toRadians(entity.getRotY()+5));
 		Vector3f lightPosition = new Vector3f(
 				position.x + lightSourceOffsetX, 
 				position.y, 

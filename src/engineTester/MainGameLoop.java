@@ -90,7 +90,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightmap3");//free_mountain_lake_heightmap");
+		Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
 		terrains.add(terrain);
@@ -164,8 +164,11 @@ public class MainGameLoop {
 		gameEntities.add(lamp3);
 		
 		// Player flashlight
-        Flashlight flashlight = new Flashlight(player, new Vector3f(2.0f, 2.0f, 0.0f), new Vector3f(1, 0.01f, 0.002f));
+        Flashlight flashlight = new Flashlight(player, new Vector3f(2.0f, 2.0f, 0.0f), new Vector3f(1.5f, 0.01f, 0.0012f));
         gameEntities.add(flashlight);
+        GameEntity lightbarrel = new Barrel(flashlight.getLightSource().getPosition());
+        lightbarrel.getRenderEntity().setScale(0.01f);
+        gameEntities.add(lightbarrel);
         
         
         // CAMERA
@@ -244,12 +247,13 @@ public class MainGameLoop {
 		//worldClock.getClock().second=0;
 		while(!Display.isCloseRequested() ) {
 
-			//worldClock.step(15);
+			worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
 			player.move(terrain);
 			flashlight.move();
+			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
 			mousePicker.update();
 
