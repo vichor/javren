@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -44,6 +45,11 @@ import fontRendering.TextMaster;
 import guis.GuiTexture;
 import models.TexturedModel;
 import objconverter.OBJLoader;
+import particles.ComplexParticleSystem;
+import particles.Particle;
+import particles.ParticleMaster;
+import particles.ParticleSystem;
+import particles.SimpleParticleSystem;
 import platform.Library;
 import renderEngine.DisplayManager;
 import renderEngine.GuiRenderer;
@@ -71,6 +77,7 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer(loader);
+		ParticleMaster.init(loader, renderer.getProjectionMatrix());
 		
 		
 		// FONT SYSTEM
@@ -126,15 +133,15 @@ public class MainGameLoop {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Tree(position));
             }
-            if (i%5==0) {
+            if (i%2==0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Grass(position));
             }
-            if (i%7==0) {
+            if (i%3==0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Flower(position));
             }
-            if(i%5==0) {
+            if(i%3==0) {
         		Vector3f position = getNewPosition(random, 800, terrain);
                 gameEntities.add(new Fern(position));
             }
@@ -212,6 +219,20 @@ public class MainGameLoop {
 		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 		
 		
+		// PARTICLE SYSTEMS
+
+		SimpleParticleSystem simpleParticleSystem = new SimpleParticleSystem(50, 25, 0.3f, 4);
+		ComplexParticleSystem complexParticleSystem = new ComplexParticleSystem(50, 25, 0.3f, 4, 1);
+		complexParticleSystem.randomizeRotation();
+		complexParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
+		complexParticleSystem.setLifeError(0.1f);
+		complexParticleSystem.setSpeedError(0.4f);
+		complexParticleSystem.setScaleError(0.8f);
+		List<ParticleSystem> particleSystems = new ArrayList<ParticleSystem>();
+		particleSystems.add(simpleParticleSystem);
+		particleSystems.add(complexParticleSystem);
+		
+
 		// GAME LOOP
 		
         /* get list of render entities needed for render engine */
@@ -220,6 +241,7 @@ public class MainGameLoop {
         	entities.add(gameEntity.getRenderEntity());
         }
         entities.add(player);
+
         /* get list of normal mapped render entities */
         List<Entity> normalMappedEntities = new ArrayList<Entity>();
         for (GameEntity gameEntity : gameNormalMappedEntities) {
@@ -256,6 +278,13 @@ public class MainGameLoop {
 			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
 			mousePicker.update();
+			
+			// Particles
+			for (ParticleSystem particleSystem : particleSystems) {
+				// TODO: create an application level class to join particle system with the position where we want ot generate it
+				particleSystem.generateParticles(player.getPosition());
+			}
+			ParticleMaster.update();
 
 			// Refraction/Reflection needs clipping planes:
 			//    - we want to refract what it's below water level
@@ -293,10 +322,12 @@ public class MainGameLoop {
 			frameBufferObjects.unbindCurrentFrameBuffer();
 
 			// DEFAULT FRAME BUFFER RENDERING
+			
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera, sun);
+			ParticleMaster.renderParticles(camera);
 			guiRenderer.render(guis);
-			//TextMaster.render();
+			TextMaster.render();
 
 			DisplayManager.updateDisplay();			
 		}
@@ -305,6 +336,7 @@ public class MainGameLoop {
 		frameBufferObjects.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();
+		ParticleMaster.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
