@@ -1,7 +1,6 @@
 package water;
 
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import shaders.ShaderProgram;
 import toolbox.Maths;

@@ -10,7 +10,6 @@ import engineTester.WorldTimeManager.DayPart;
 import engineTester.WorldTimeManager.WorldClock;
 import entities.Camera;
 import models.RawModel;
-import renderEngine.DisplayManager;
 import renderEngine.Loader;
 
 public class SkyboxRenderer {

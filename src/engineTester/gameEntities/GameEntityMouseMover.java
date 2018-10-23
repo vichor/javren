@@ -1,8 +1,7 @@
-package engineTester;
+package engineTester.gameEntities;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import engineTester.gameEntities.GameEntity;
 import toolbox.MousePicker;
 
 public class GameEntityMouseMover {

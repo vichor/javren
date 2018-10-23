@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -35,6 +34,7 @@ import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Rocks;
 import engineTester.gameEntities.Sun;
 import engineTester.gameEntities.Tree;
+import engineTester.gameParticles.ParticleSource;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -46,7 +46,6 @@ import guis.GuiTexture;
 import models.TexturedModel;
 import objconverter.OBJLoader;
 import particles.ComplexParticleSystem;
-import particles.Particle;
 import particles.ParticleMaster;
 import particles.ParticleSystem;
 import particles.SimpleParticleSystem;
@@ -219,18 +218,36 @@ public class MainGameLoop {
 		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 		
 		
-		// PARTICLE SYSTEMS
+		// PARTICLE SOURCES
 
-		SimpleParticleSystem simpleParticleSystem = new SimpleParticleSystem(50, 25, 0.3f, 4);
+		// Define the particle systems
+		// TODO:this can be a geiser entity
 		ComplexParticleSystem complexParticleSystem = new ComplexParticleSystem(50, 25, 0.3f, 4, 1);
 		complexParticleSystem.randomizeRotation();
 		complexParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
 		complexParticleSystem.setLifeError(0.1f);
 		complexParticleSystem.setSpeedError(0.4f);
 		complexParticleSystem.setScaleError(0.8f);
-		List<ParticleSystem> particleSystems = new ArrayList<ParticleSystem>();
-		particleSystems.add(simpleParticleSystem);
-		particleSystems.add(complexParticleSystem);
+
+		// TODO: this can be a volcano entity
+		ComplexParticleSystem complexParticleSystem2 = new ComplexParticleSystem(150, 100, 1.3f, 2, 0.75f);
+		complexParticleSystem.randomizeRotation();
+		complexParticleSystem.setDirection(new Vector3f(0.3f, 1, 0.1f), 0.2f);
+		complexParticleSystem.setLifeError(0.2f);
+		complexParticleSystem.setSpeedError(0.6f);
+		complexParticleSystem.setScaleError(0.2f);
+
+		// Create the particle sources (system+position)
+		// TODO: ParticleSources to be included in geiser/volcano entities
+		ParticleSource particleSourceVolcano1 = new ParticleSource(complexParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50),-50));
+		ParticleSource particleSourceVolcano2 = new ParticleSource(complexParticleSystem2, new Vector3f(150,terrain.getHeightOfTerrain(150, -350),-350));
+		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(50, 25, 0.3f, 4), player.getPosition());
+		
+		// create the list of particle sources
+		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
+		particleSources.add(particleSourceOnPlayer);
+		particleSources.add(particleSourceVolcano1);
+		particleSources.add(particleSourceVolcano2);
 		
 
 		// GAME LOOP
@@ -280,9 +297,9 @@ public class MainGameLoop {
 			mousePicker.update();
 			
 			// Particles
-			for (ParticleSystem particleSystem : particleSystems) {
-				// TODO: create an application level class to join particle system with the position where we want ot generate it
-				particleSystem.generateParticles(player.getPosition());
+			particleSourceOnPlayer.setPosition(player.getPosition());
+			for (ParticleSource particleSource : particleSources) {
+				particleSource.step();
 			}
 			ParticleMaster.update();
 
