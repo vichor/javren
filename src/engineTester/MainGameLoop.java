@@ -47,7 +47,7 @@ import models.TexturedModel;
 import objconverter.OBJLoader;
 import particles.ComplexParticleSystem;
 import particles.ParticleMaster;
-import particles.ParticleSystem;
+import particles.ParticleTexture;
 import particles.SimpleParticleSystem;
 import platform.Library;
 import renderEngine.DisplayManager;
@@ -82,7 +82,7 @@ public class MainGameLoop {
 		// FONT SYSTEM
 		TextMaster.init(loader);
 		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/candara"), new File("res/fonts/candara.fnt"));
-		GUIText text = new GUIText("This is a test text!", 5, font, new Vector2f(0,0.75f), 1f, true);
+		GUIText text = new GUIText("This is a test text!", 1, font, new Vector2f(0,0.75f), 1f, true);
 		text.setColor(1.0f, 0.0f, 0.0f);
 		
 		
@@ -105,7 +105,8 @@ public class MainGameLoop {
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
+        Player player = new Player(playerModel, new Vector3f(75, terrain.getHeightOfTerrain(75, -50), -50), 0, 0, 0, 0.6f);
+        //Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
         //Player player = new Player(playerModel, new Vector3f(0, terrain.getHeightOfTerrain(0, 0), 0), 0, 0, 0, 0.6f);
         
         
@@ -156,8 +157,10 @@ public class MainGameLoop {
         gameEntities.add(rocks);
         
         // Normal mapped entities
-        GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
-        GameEntity standardBarrel = new Barrel(new Vector3f(player.getPosition().x-40, 30, player.getPosition().z));
+        //GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
+        GameEntity barrel = new Barrel(new Vector3f(378, 30, -300));
+        GameEntity standardBarrel = new Barrel(new Vector3f(378-40, 30, -300));
+        //GameEntity standardBarrel = new Barrel(new Vector3f(player.getPosition().x-40, 30, player.getPosition().z));
         gameNormalMappedEntities.add(barrel);
         gameEntities.add(standardBarrel);
         
@@ -220,37 +223,45 @@ public class MainGameLoop {
 		
 		// PARTICLE SOURCES
 
+		// Particle textures
+		ParticleTexture starParticleTexture = new ParticleTexture(loader.loadTexture("particles/particleStar"), 1);
+		ParticleTexture fireParticleTexture = new ParticleTexture(loader.loadTexture("particles/fire"), 8);
+		ParticleTexture smokeParticleTexture = new ParticleTexture(loader.loadTexture("particles/smoke"), 5); // TODO: This texture atlas is not square and thus it won't work properly
+		ParticleTexture particleAtlasTexture = new ParticleTexture(loader.loadTexture("particles/particleAtlas"), 4); 
+
 		// Define the particle systems
-		// TODO:this can be a geiser entity
-		ComplexParticleSystem complexParticleSystem = new ComplexParticleSystem(50, 25, 0.3f, 4, 1);
-		complexParticleSystem.randomizeRotation();
-		complexParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
-		complexParticleSystem.setLifeError(0.1f);
-		complexParticleSystem.setSpeedError(0.4f);
-		complexParticleSystem.setScaleError(0.8f);
+		// TODO:this can be a geyser entity, using smoke particle texture and appropriate particle system attributes and configuration
+		ComplexParticleSystem smokeParticleSystem = new ComplexParticleSystem(smokeParticleTexture, 100, 25, 0.3f, 4, 1);
+		smokeParticleSystem.randomizeRotation();
+		smokeParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
+		smokeParticleSystem.setLifeError(0.1f);
+		smokeParticleSystem.setSpeedError(0.4f);
+		smokeParticleSystem.setScaleError(0.8f);
 
 		// TODO: this can be a volcano entity
-		ComplexParticleSystem complexParticleSystem2 = new ComplexParticleSystem(150, 100, 1.3f, 2, 0.75f);
-		complexParticleSystem.randomizeRotation();
-		complexParticleSystem.setDirection(new Vector3f(0.3f, 1, 0.1f), 0.2f);
-		complexParticleSystem.setLifeError(0.2f);
-		complexParticleSystem.setSpeedError(0.6f);
-		complexParticleSystem.setScaleError(0.2f);
+		ComplexParticleSystem fireParticleSystem = new ComplexParticleSystem(fireParticleTexture, 10, 0.5f, 0.001f, 0.5f, 25);
+		//fireParticleSystem.randomizeRotation();
+		fireParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.01f);
+		fireParticleSystem.setLifeError(0.01f);
+		fireParticleSystem.setSpeedError(0.05f);
+		fireParticleSystem.setScaleError(0.01f);
 
 		// Create the particle sources (system+position)
-		// TODO: ParticleSources to be included in geiser/volcano entities
-		ParticleSource particleSourceVolcano1 = new ParticleSource(complexParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50),-50));
-		ParticleSource particleSourceVolcano2 = new ParticleSource(complexParticleSystem2, new Vector3f(150,terrain.getHeightOfTerrain(150, -350),-350));
-		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(50, 25, 0.3f, 4), player.getPosition());
+		// TODO: ParticleSources to be included in geyser/volcano entities
+		ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
+		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50),-50));
+		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 100, 1, 0.1f, 1.6f), new Vector3f(50,40,-25));
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
-		particleSources.add(particleSourceOnPlayer);
-		particleSources.add(particleSourceVolcano1);
+		//particleSources.add(particleSourceOnPlayer);
+		//particleSources.add(particleSourceGeyser);
+		particleSources.add(particleSourceVolcano);
 		particleSources.add(particleSourceVolcano2);
 		
 
-		// GAME LOOP
+		// PREPARE RENDER ENTITIES
 		
         /* get list of render entities needed for render engine */
         List<Entity> entities = new ArrayList<Entity>();
@@ -280,13 +291,18 @@ public class MainGameLoop {
 		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight()+1f);
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
+		// GAME TIME
+
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=0;
+		worldClock.getClock().hour=12;
 		//worldClock.getClock().minute=0;
 		//worldClock.getClock().second=0;
+
+		// GAME LOOP
+
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(15);
+			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();

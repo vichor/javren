@@ -12,7 +12,8 @@ public class SimpleParticleSystem extends ParticleSystem {
     private float gravityComplient; // how gravity affects particles
     private float lifeLength;
      
-    public SimpleParticleSystem(float pps, float speed, float gravityComplient, float lifeLength) {
+    public SimpleParticleSystem(ParticleTexture texture, float pps, float speed, float gravityComplient, float lifeLength) {
+    	super(texture);
         this.pps = pps;
         this.speed = speed;
         this.gravityComplient = gravityComplient;
@@ -39,7 +40,7 @@ public class SimpleParticleSystem extends ParticleSystem {
         Vector3f velocity = new Vector3f(dirX, 1, dirZ);
         velocity.normalise();
         velocity.scale(speed);
-        new Particle(new Vector3f(center), velocity, gravityComplient, lifeLength, 0, 1);
+        new Particle(getTexture(), new Vector3f(center), velocity, gravityComplient, lifeLength, 0, 1);
     }
      
 }

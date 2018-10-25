@@ -19,7 +19,8 @@ public class ComplexParticleSystem extends ParticleSystem {
  
     private Random random = new Random();
  
-    public ComplexParticleSystem(float pps, float speed, float gravityComplient, float lifeLength, float scale) {
+    public ComplexParticleSystem(ParticleTexture texture, float pps, float speed, float gravityComplient, float lifeLength, float scale) {
+    	super(texture);
         this.pps = pps;
         this.averageSpeed = speed;
         this.gravityComplient = gravityComplient;
@@ -89,7 +90,7 @@ public class ComplexParticleSystem extends ParticleSystem {
         velocity.scale(generateValue(averageSpeed, speedError));
         float scale = generateValue(averageScale, scaleError);
         float lifeLength = generateValue(averageLifeLength, lifeError);
-        new Particle(new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
+        new Particle(getTexture(), new Vector3f(center), velocity, gravityComplient, lifeLength, generateRotation(), scale);
     }
  
     private float generateValue(float average, float errorMargin) {

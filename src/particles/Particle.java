@@ -1,5 +1,6 @@
 package particles;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Player;
@@ -16,8 +17,15 @@ public class Particle {
 	
 	private float elapsedTime = 0;
 
-	public Particle(Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation,
+	private ParticleTexture texture;
+	
+	private Vector2f texOffset1 = new Vector2f(); // (x,y) textures coordinates in the texture atlas for current state
+	private Vector2f texOffset2 = new Vector2f(); // (x,y) textures coordinates in the texture atlas for next state
+	private float blend;
+	
+	public Particle(ParticleTexture texture, Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation,
 			float scale) {
+		this.texture = texture;
 		this.position = position;
 		this.velocity = velocity;
 		this.gravityEffect = gravityEffect;
@@ -27,6 +35,12 @@ public class Particle {
 		ParticleMaster.addParticle(this);
 	}
 
+
+	public ParticleTexture getTexture() {
+		return texture;
+	}
+	
+	
 	public Vector3f getPosition() {
 		return position;
 	}
@@ -44,11 +58,45 @@ public class Particle {
 		Vector3f change = new Vector3f(velocity);
 		change.scale(DisplayManager.getFrameTimeSeconds());
 		Vector3f.add(change,  position, position);
+		updateTextureCoordInfo();
 		elapsedTime += DisplayManager.getFrameTimeSeconds();
 		return elapsedTime < lifeLength;
 	}
+
+
+	public Vector2f getTexOffset1() {
+		return texOffset1;
+	}
+
+
+	public Vector2f getTexOffset2() {
+		return texOffset2;
+	}
 	
 	
+	public float getBlend() {
+		return blend;
+	}
+
+
+	private void updateTextureCoordInfo() {
+		float lifeFactor = elapsedTime / lifeLength;
+		int stageCount = texture.getNumberOfRows() * texture.getNumberOfRows();
+		float atlasProgression = lifeFactor * stageCount;       // the int part of this float will be the index of current texture in the atlas; the decimal part will be the progress so far to reach the next texture (and will be used for the blend factor between current texture and next texture)
+		int index1 = (int) Math.floor(atlasProgression);		// current texture index in atlas
+		int index2 = (index1 < stageCount -1) ? index1 + 1 : index1;   // next texture index in atlas; do not allow to go beyond the max
+		blend = atlasProgression % 1; // see comment in atlasProgression, 3 lines above
+		setTextureOffset(texOffset1, index1); // calculate the texture atlas offset coordinates for current texture image
+		setTextureOffset(texOffset2, index2); // calculate the texture atlas offset coordinates for next texture image
+	}
+	
+	
+	private void setTextureOffset(Vector2f offset, int index) {
+		int column = index % texture.getNumberOfRows();
+		int row = index / texture.getNumberOfRows();
+		offset.x = (float) column / texture.getNumberOfRows();
+		offset.y = (float) row / texture.getNumberOfRows();
+	}
 
 
 }
