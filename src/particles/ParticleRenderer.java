@@ -35,6 +35,16 @@ public class ParticleRenderer {
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		prepare();
 		for (ParticleTexture texture : particles.keySet()) {
+			// Configure alpha blending
+			if (texture.usesAdditiveAlphaBlending()) {
+				// use additive alpha blending: to get a pixel color, just add all the colors that pixel is receiving 
+				// instead of putting an entity in front of another. This is good for fireworks, fire and similar effects, 
+				// but not so good for smoke.
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE); 
+			}else {
+				// use standard alpha blending
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA); 
+			}
 			// bind particle texture 
 			GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
@@ -87,10 +97,6 @@ public class ParticleRenderer {
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
-		// use additive alpha blending: to get a pixel color, just add all the colors that pixel is receiving 
-		// instead of putting an entity in front of another. This is good for fireworks and similar effects, 
-		// but not so good for smoke or fire.
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA); 
 		GL11.glDepthMask(false);
 	}
 	

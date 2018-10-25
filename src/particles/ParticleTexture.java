@@ -4,12 +4,18 @@ public class ParticleTexture {
 	
 	private int textureId;
 	private int numberOfRows;
+	private boolean additiveAlphaBlending;
 	
 	
-	public ParticleTexture(int textureId, int numberOfRows) {
-		super();
+	public ParticleTexture(int textureId, int numberOfRows, boolean alpha) {
 		this.textureId = textureId;
 		this.numberOfRows = numberOfRows;
+		this.additiveAlphaBlending = alpha;
+	}
+	public ParticleTexture(int textureId, int numberOfRows) {
+		this.textureId = textureId;
+		this.numberOfRows = numberOfRows;
+		this.additiveAlphaBlending = false;
 	}
 
 
@@ -20,6 +26,11 @@ public class ParticleTexture {
 
 	public int getNumberOfRows() {
 		return numberOfRows;
+	}
+	
+	
+	public boolean usesAdditiveAlphaBlending() {
+		return additiveAlphaBlending;
 	}
 	
 	

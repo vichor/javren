@@ -225,7 +225,7 @@ public class MainGameLoop {
 
 		// Particle textures
 		ParticleTexture starParticleTexture = new ParticleTexture(loader.loadTexture("particles/particleStar"), 1);
-		ParticleTexture fireParticleTexture = new ParticleTexture(loader.loadTexture("particles/fire"), 8);
+		ParticleTexture fireParticleTexture = new ParticleTexture(loader.loadTexture("particles/fire"), 8, true);
 		ParticleTexture smokeParticleTexture = new ParticleTexture(loader.loadTexture("particles/smoke"), 5); // TODO: This texture atlas is not square and thus it won't work properly
 		ParticleTexture particleAtlasTexture = new ParticleTexture(loader.loadTexture("particles/particleAtlas"), 4); 
 
@@ -239,19 +239,19 @@ public class MainGameLoop {
 		smokeParticleSystem.setScaleError(0.8f);
 
 		// TODO: this can be a volcano entity
-		ComplexParticleSystem fireParticleSystem = new ComplexParticleSystem(fireParticleTexture, 10, 0.5f, 0.001f, 0.5f, 25);
-		//fireParticleSystem.randomizeRotation();
+		ComplexParticleSystem fireParticleSystem = new ComplexParticleSystem(fireParticleTexture, 10, 0.01f, 0.001f, 1.5f, 25);
+		fireParticleSystem.randomizeRotation();
 		fireParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.01f);
-		fireParticleSystem.setLifeError(0.01f);
+		fireParticleSystem.setLifeError(0.1f);
 		fireParticleSystem.setSpeedError(0.05f);
 		fireParticleSystem.setScaleError(0.01f);
 
 		// Create the particle sources (system+position)
 		// TODO: ParticleSources to be included in geyser/volcano entities
 		ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
-		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50),-50));
+		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
-		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 100, 1, 0.1f, 1.6f), new Vector3f(50,40,-25));
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
@@ -317,7 +317,7 @@ public class MainGameLoop {
 			for (ParticleSource particleSource : particleSources) {
 				particleSource.step();
 			}
-			ParticleMaster.update();
+			ParticleMaster.update(camera);
 
 			// Refraction/Reflection needs clipping planes:
 			//    - we want to refract what it's below water level

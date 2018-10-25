@@ -3,6 +3,7 @@ package particles;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import entities.Camera;
 import entities.Player;
 import renderEngine.DisplayManager;
 
@@ -22,6 +23,8 @@ public class Particle {
 	private Vector2f texOffset1 = new Vector2f(); // (x,y) textures coordinates in the texture atlas for current state
 	private Vector2f texOffset2 = new Vector2f(); // (x,y) textures coordinates in the texture atlas for next state
 	private float blend;
+	
+	private float distance; // distance from the camera
 	
 	public Particle(ParticleTexture texture, Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation,
 			float scale) {
@@ -52,12 +55,17 @@ public class Particle {
 	public float getScale() {
 		return scale;
 	}
+
+	public float getDistance() {
+		return distance;
+	}
 	
-	protected boolean update() {
+	protected boolean update(Camera camera) {
 		velocity.y += Player.GRAVITY * gravityEffect * DisplayManager.getFrameTimeSeconds();
 		Vector3f change = new Vector3f(velocity);
 		change.scale(DisplayManager.getFrameTimeSeconds());
 		Vector3f.add(change,  position, position);
+		distance = Vector3f.sub(camera.getPosition(), position, null).lengthSquared(); // we use the squared length for greater resolution on distance (more efficient)
 		updateTextureCoordInfo();
 		elapsedTime += DisplayManager.getFrameTimeSeconds();
 		return elapsedTime < lifeLength;
