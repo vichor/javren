@@ -231,7 +231,7 @@ public class MainGameLoop {
 
 		// Define the particle systems
 		// TODO:this can be a geyser entity, using smoke particle texture and appropriate particle system attributes and configuration
-		ComplexParticleSystem smokeParticleSystem = new ComplexParticleSystem(smokeParticleTexture, 100, 25, 0.3f, 4, 1);
+		ComplexParticleSystem smokeParticleSystem = new ComplexParticleSystem(smokeParticleTexture, 10, 25, 0.3f, 4, 1);
 		smokeParticleSystem.randomizeRotation();
 		smokeParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.1f);
 		smokeParticleSystem.setLifeError(0.1f);
@@ -239,7 +239,7 @@ public class MainGameLoop {
 		smokeParticleSystem.setScaleError(0.8f);
 
 		// TODO: this can be a volcano entity
-		ComplexParticleSystem fireParticleSystem = new ComplexParticleSystem(fireParticleTexture, 10, 0.01f, 0.001f, 1.5f, 25);
+		ComplexParticleSystem fireParticleSystem = new ComplexParticleSystem(fireParticleTexture, 50, 0.01f, 0.001f, 1.5f, 25);
 		fireParticleSystem.randomizeRotation();
 		fireParticleSystem.setDirection(new Vector3f(0, 1, 0), 0.01f);
 		fireParticleSystem.setLifeError(0.1f);
@@ -251,7 +251,7 @@ public class MainGameLoop {
 		ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
-		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 2500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();

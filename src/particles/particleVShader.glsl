@@ -1,16 +1,16 @@
 #version 140
 
-in vec2 position;
+in vec2 position;           // global VAO data from vbo 0
 
-uniform mat4 modelViewMatrix;
-uniform vec4 texOffsets;
-uniform mat4 projectionMatrix;
+in mat4 modelViewMatrix;    // from instance data from vbos 1 to 4
+in vec4 texOffsets;         // from instance data from vbo 5
+in float blendFactor;       // from instance data from vbo 6
 
 out vec2 textureCoords1;  // current texture atlas stage
 out vec2 textureCoords2;  // next texture atlas stage
 out float blend;          // blend factor between stages
 
-uniform float blendFactor;
+uniform mat4 projectionMatrix;
 uniform float numberOfRows;
 
 void main(void){

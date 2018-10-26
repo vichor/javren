@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL33;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
@@ -76,6 +77,42 @@ public class Loader {
 		return loadToVAO (data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());
 	}
 	
+	
+	public int createEmptyVbo(int floatCount) {
+		int vbo = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, floatCount*4, GL15.GL_STREAM_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		return vbo;
+	}
+	
+	public void addInstancedAttribute(int vao, int vbo, int attribute, int dataSize, int instancedDataLength, int offset) {
+		GL30.glBindVertexArray(vao);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL20.glVertexAttribPointer(attribute, dataSize, GL11.GL_FLOAT, false, instancedDataLength*4, offset*4); // add the attribute to the vbo
+		GL33.glVertexAttribDivisor(attribute, 1); // per instance attribute who needs to be updated every instance. Different than 1 will skip instances?
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL30.glBindVertexArray(0);
+	}
+	
+	
+	public void updateVbo(int vbo, float[] data, FloatBuffer buffer) {
+		buffer.clear();
+		try {
+			buffer.put(data);
+		} catch (java.nio.BufferOverflowException e) {
+			System.out.println("Too many particle instance data to be loaded for vbo "+vbo);
+			System.out.println("data size   = " + data.length+"\tbuffer size = " + buffer.capacity());
+			System.out.println("You may either: reduce the number of instances of the offending particle system or enlarge the buffer (ParticleRenderer.MAX_INSTANCES).");
+			System.out.flush();
+			throw e;
+		}
+		buffer.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer.capacity()*4, GL15.GL_STREAM_DRAW);
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
 	
 	public int loadTexture(String fileName) {
 		return doLoadTexture(fileName, -0.4f);
