@@ -35,24 +35,10 @@ public class ParticleRenderer {
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
 		prepare();
 		for (ParticleTexture texture : particles.keySet()) {
-			// Configure alpha blending
-			if (texture.usesAdditiveAlphaBlending()) {
-				// use additive alpha blending: to get a pixel color, just add all the colors that pixel is receiving 
-				// instead of putting an entity in front of another. This is good for fireworks, fire and similar effects, 
-				// but not so good for smoke.
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE); 
-			}else {
-				// use standard alpha blending
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA); 
-			}
-			// bind particle texture 
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
+			bindTexture(texture);
 			// draw particle 
 			for (Particle particle : particles.get(texture)) {
 				updateModelViewMatrix(particle.getPosition(), particle.getRotation(), particle.getScale(), viewMatrix);
-				shader.loadTextureCoordInfo(particle.getTexOffset1(), particle.getTexOffset2(), texture.getNumberOfRows(), particle.getBlend());
-				GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 			}
 		}
 		finishRendering();
@@ -60,6 +46,24 @@ public class ParticleRenderer {
 
 	protected void cleanUp(){
 		shader.cleanUp();
+	}
+	
+	private void bindTexture(ParticleTexture texture) {
+		// Configure alpha blending
+		if (texture.usesAdditiveAlphaBlending()) {
+			// use additive alpha blending: to get a pixel color, just add all the colors that pixel is receiving 
+			// instead of putting an entity in front of another. This is good for fireworks, fire and similar effects, 
+			// but not so good for smoke.
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE); 
+		}else {
+			// use standard alpha blending
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA); 
+		}
+		// bind particle texture 
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTextureId());
+		// Uniform loading
+		shader.loadNumberOfRows(texture.getNumberOfRows());
 	}
 	
 	private void updateModelViewMatrix(Vector3f position, float rotation, float scale, Matrix4f viewMatrix) {
