@@ -26,6 +26,8 @@ public class Particle {
 	
 	private float distance; // distance from the camera
 	
+	private Vector3f change = new Vector3f();  // to avoid creating a vector3f in each instance update, define one at particle object level and reuse it. See update method
+	
 	public Particle(ParticleTexture texture, Vector3f position, Vector3f velocity, float gravityEffect, float lifeLength, float rotation,
 			float scale) {
 		this.texture = texture;
@@ -62,7 +64,7 @@ public class Particle {
 	
 	protected boolean update(Camera camera) {
 		velocity.y += Player.GRAVITY * gravityEffect * DisplayManager.getFrameTimeSeconds();
-		Vector3f change = new Vector3f(velocity);
+		change.set(velocity);  // velocity change. Object is Vector3f but reused from call to call to update to save CPU time on creating the object.
 		change.scale(DisplayManager.getFrameTimeSeconds());
 		Vector3f.add(change,  position, position);
 		distance = Vector3f.sub(camera.getPosition(), position, null).lengthSquared(); // we use the squared length for greater resolution on distance (more efficient)
