@@ -13,9 +13,18 @@ public class HeightsGenerator {
 	
 	private Random random = new Random();
 	private int seed;
+	private int xOffset = 0;
+	private int zOffset = 0;
+	
 	
 	public HeightsGenerator() {
 		this.seed = random.nextInt(1000000000);
+	}
+	
+	public HeightsGenerator(int gridX, int gridZ, int vertexCount, int seed) {
+		this.seed = seed;
+		xOffset = gridX * (vertexCount-1);
+		zOffset = gridZ * (vertexCount-1);
 	}
 	
 	
@@ -25,7 +34,7 @@ public class HeightsGenerator {
 		for(int i=0; i<OCTAVES; i++){
 			float freq = (float)(Math.pow(2,  i)/d);
 			float amp = (float)Math.pow(ROUGHNESS, i)*AMPLITUDE;
-			total += getInterpolatedNoise(x*freq, z*freq) * amp;
+			total += getInterpolatedNoise((x+xOffset)*freq, (z+zOffset)*freq) * amp;
 		}
 		return total;
 	}
