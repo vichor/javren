@@ -98,7 +98,7 @@ public class MainGameLoop {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain terrain = new GeneratedTerrain(0, -1, loader, texturePack, blendMap); 
+		Terrain terrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
 		//Terrain terrain = new HeightmapTerrain(0, -1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
 		
 		List<Terrain> terrains = new ArrayList<Terrain>();
@@ -254,7 +254,7 @@ public class MainGameLoop {
 		//ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
-		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 3500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
@@ -384,7 +384,7 @@ public class MainGameLoop {
 		float x=0,y=0,z=0;
 		while (!done) {
         	x = random.nextFloat()*radius; 
-        	z = random.nextFloat()*(-radius); 
+        	z = random.nextFloat()*(radius); 
         	y = terrain.getHeightOfTerrain(x, z);
         	if (y>0.05f) {
         		done = true;

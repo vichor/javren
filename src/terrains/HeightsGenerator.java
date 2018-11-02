@@ -7,9 +7,11 @@ public class HeightsGenerator {
 	// Perlin noise as in http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 	// See also https://en.wikipedia.org/wiki/Perlin_noise for canonical definition of Perlin noise and implementation
 	
-	private static final float AMPLITUDE = 70f; // how big the terrain can be
-	private static final int OCTAVES = 3;	// noise factors to use
-	private static final float ROUGHNESS = 0.3f;
+	private static final float AMPLITUDE = 200f; // how big the terrain can be
+	private static final int OCTAVES = 6;	// smoother noise factors to use
+	private static final float ROUGHNESS = 0.28f;
+	private static final float OFFSET = 0.035f; // terrain height offset in percentage. Heights will go in range [(AMPLITUDE-OFFSET%), (AMPLITUDE+OFFSET%)]
+	                                           // for current values, amplitude will go from [(70-2.1),(70+2.1)]
 	
 	private Random random = new Random();
 	private int seed;
@@ -57,7 +59,7 @@ public class HeightsGenerator {
 		// besides, random generator yields very similar values for consecutive inputs, so we will
 		// have a multiplier to compensate this.
 		random.setSeed( (x*49632) + (z*325176) + seed); 
-		return random.nextFloat() *2f - 1f; // between -1 and 1
+		return ((random.nextFloat()+OFFSET) *2f - 1f); // between -1 and 1
 		
 	}	
 	
