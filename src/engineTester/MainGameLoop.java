@@ -22,6 +22,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.WorldManager.World;
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
 import engineTester.gameEntities.Fern;
@@ -89,26 +90,14 @@ public class MainGameLoop {
 		
 		
 		// TERRAIN
-        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
-        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("terrains/dirt"));
-        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("terrains/pinkFlowers"));
-        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("terrains/path"));
-        
-        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-        
-        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
-        
-		Terrain terrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
-		//Terrain terrain = new HeightmapTerrain(0, -1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
-		
-		List<Terrain> terrains = new ArrayList<Terrain>();
-		terrains.add(terrain);
-		
+		World world = new World(loader);
+		List<Terrain> terrains = world.getTerrains();
+
 
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
-        Player player = new Player(playerModel, new Vector3f(75, terrain.getHeightOfTerrain(75, -50), -50), 0, 0, 0, 0.6f);
+        Player player = new Player(playerModel, new Vector3f(75, world.getHeight(75, -50), -50), 0, 0, 0, 0.6f);
         //Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
         //Player player = new Player(playerModel, new Vector3f(0, terrain.getHeightOfTerrain(0, 0), 0), 0, 0, 0, 0.6f);
         
@@ -129,23 +118,23 @@ public class MainGameLoop {
             //    gameEntities.add(new Dragon(position));
         	//}
         	if (i%3  == 0) {
-        		Vector3f position = getNewPosition(random, 800, terrain);
+        		Vector3f position = getNewPosition(random, 800, world);
                 gameEntities.add(new FirTree(position));
         	}
             if (i%4  == 0) {
-        		Vector3f position = getNewPosition(random, 800, terrain);
+        		Vector3f position = getNewPosition(random, 800, world);
                 gameEntities.add(new Tree(position));
             }
             if (i%2==0) {
-        		Vector3f position = getNewPosition(random, 800, terrain);
+        		Vector3f position = getNewPosition(random, 800, world);
                 gameEntities.add(new Grass(position));
             }
             if (i%3==0) {
-        		Vector3f position = getNewPosition(random, 800, terrain);
+        		Vector3f position = getNewPosition(random, 800, world);
                 gameEntities.add(new Flower(position));
             }
             if(i%3==0) {
-        		Vector3f position = getNewPosition(random, 800, terrain);
+        		Vector3f position = getNewPosition(random, 800, world);
                 gameEntities.add(new Fern(position));
             }
         }
@@ -168,9 +157,9 @@ public class MainGameLoop {
         gameEntities.add(standardBarrel);
         
         // Lamps
-		Lamp lamp1 = new Lamp(new Vector3f(120, terrain.getHeightOfTerrain(120,  -70), -70), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
-		Lamp lamp2 = new Lamp(new Vector3f(170, terrain.getHeightOfTerrain(170, -90), -90),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
-		Lamp lamp3 = new Lamp(new Vector3f(200, terrain.getHeightOfTerrain(200, -120), -120), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp1 = new Lamp(new Vector3f(120, world.getTerrain(120, -70).getHeightOfTerrain(120,  -70), -70), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp2 = new Lamp(new Vector3f(170, world.getTerrain(170, -90).getHeightOfTerrain(170, -90), -90),  new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
+		Lamp lamp3 = new Lamp(new Vector3f(200, world.getTerrain(200, -120).getHeightOfTerrain(200, -120), -120), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
 		gameEntities.add(lamp1);
 		gameEntities.add(lamp2);
 		gameEntities.add(lamp3);
@@ -221,7 +210,7 @@ public class MainGameLoop {
 
 
 		// MOUSE PICKER
-		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		//MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 		
 		
 		// PARTICLE SOURCES
@@ -252,7 +241,7 @@ public class MainGameLoop {
 		// Create the particle sources (system+position)
 		// TODO: ParticleSources to be included in geyser/volcano entities
 		//ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
-		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
+		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,world.getTerrain(50, -50).getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
 		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,-25));
 		
@@ -309,11 +298,11 @@ public class MainGameLoop {
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
-			player.move(terrain);
+			player.move(world.getTerrain(player.getPosition().x, player.getPosition().z));
 			flashlight.move();
 			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
-			mousePicker.update();
+			//mousePicker.update();
 			
 			// Particles
 			particleSourceOnPlayer.setPosition(player.getPosition());
@@ -379,13 +368,14 @@ public class MainGameLoop {
 	}
 	
 	
-	private static Vector3f getNewPosition(Random random, float radius, Terrain terrain) {
+	private static Vector3f getNewPosition(Random random, float radius, World world) {
 		boolean done = false;
 		float x=0,y=0,z=0;
+		Vector2f maxCoords = world.getMaxCoordinates();
 		while (!done) {
-        	x = random.nextFloat()*radius; 
-        	z = random.nextFloat()*(radius); 
-        	y = terrain.getHeightOfTerrain(x, z);
+        	x = random.nextFloat()*maxCoords.x; 
+        	z = random.nextFloat()*maxCoords.x; 
+        	y = world.getTerrain(x, z).getHeightOfTerrain(x, z);
         	if (y>0.05f) {
         		done = true;
         	}

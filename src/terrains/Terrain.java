@@ -32,6 +32,11 @@ public abstract class Terrain {
 
 
 	protected abstract RawModel generateTerrain(Loader loader);
+	
+	
+	public float getSize() {
+		return SIZE;
+	}
 
 
 	public float getX() {
