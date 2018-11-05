@@ -78,7 +78,12 @@ public class World {
 
 	
 	public float getHeight(float x, float z) {
-		return getTerrain(x,z).getHeightOfTerrain(x, z);
+		Terrain terrain = getTerrain(x,z);
+		float height = 0;
+		if (terrain != null) {
+			height = terrain.getHeightOfTerrain(x, z);
+		}
+		return height;
 	}
 	
 	

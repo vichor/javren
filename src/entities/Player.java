@@ -3,6 +3,7 @@ package entities;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
+import engineTester.WorldManager.World;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import terrains.Terrain;
@@ -25,7 +26,7 @@ public class Player extends Entity {
 	}
 
 	
-	public void move(Terrain terrain) {
+	public void move(World world) {
 		// Get move commands
 		checkInputs();
 
@@ -44,7 +45,7 @@ public class Player extends Entity {
 		upwardsSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, upwardsSpeed*DisplayManager.getFrameTimeSeconds(), 0);
 		// Terrain collision detection
-		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+		float terrainHeight = world.getHeight(super.getPosition().x, super.getPosition().z);
 		if (super.getPosition().y < terrainHeight) {
 			upwardsSpeed = 0;
 			isInAir = false;

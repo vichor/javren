@@ -243,7 +243,7 @@ public class MainGameLoop {
 		//ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,world.getTerrain(50, 50).getHeightOfTerrain(50, 50)+5,50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
-		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,40,25));
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,world.getTerrain(50, 25).getHeightOfTerrain(50, 25)+40,25));
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
@@ -298,7 +298,7 @@ public class MainGameLoop {
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
-			player.move(world.getTerrain(player.getPosition().x, player.getPosition().z));
+			player.move(world);
 			flashlight.move();
 			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
