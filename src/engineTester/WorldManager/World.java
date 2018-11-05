@@ -40,8 +40,8 @@ public class World {
 		for (Terrain terrain: terrains) {
 			float terrainX = terrain.getX();
 			float terrainZ = terrain.getZ();
-			if ( (x >= terrainX) && (z <= terrainZ) &&
-				 (x < terrainX+terrain.getSize()) && (z > terrainZ+terrain.getSize()) ) {
+			if ( (x >= terrainX) && (z >= terrainZ) &&
+				 (x < terrainX+terrain.getSize()) && (z < terrainZ+terrain.getSize()) ) {
 				foundTerrain = terrain;
 				break;
 			}
