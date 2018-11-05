@@ -97,7 +97,7 @@ public class MainGameLoop {
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
-        Player player = new Player(playerModel, world.createPosition(75, 50), 0, 0, 0, 0.6f);
+        Player player = new Player(playerModel, world.createPosition(400, 800), 0, 0, 0, 0.6f);
         //Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
         //Player player = new Player(playerModel, new Vector3f(0, terrain.getHeightOfTerrain(0, 0), 0), 0, 0, 0, 0.6f);
         

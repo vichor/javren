@@ -27,14 +27,18 @@ public class World {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
-		Terrain gTerrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
+		Terrain g1Terrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
 		Terrain hTerrain = new HeightmapTerrain(0, 1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
+		Terrain g2Terrain = new GeneratedTerrain(1, 0, loader, texturePack, blendMap); 
+		Terrain g3Terrain = new GeneratedTerrain(1, 1, loader, texturePack, blendMap); 
 		
-		terrains.add(gTerrain);
+		terrains.add(g1Terrain);
+		terrains.add(g2Terrain);
+		terrains.add(g3Terrain);
 		terrains.add(hTerrain);
 	}
 	
-
+	
 	public Terrain getTerrain(float x, float z) {
 		Terrain foundTerrain = null;
 		for (Terrain terrain: terrains) {
@@ -70,8 +74,8 @@ public class World {
 		float xMax = 0;
 		float zMax = 0;
 		for(Terrain terrain: terrains) {
-			xMax = (xMax > terrain.getX()) ? xMax : terrain.getX();
-			zMax = (zMax > terrain.getZ()) ? zMax : terrain.getZ();
+			xMax = (xMax > terrain.getX()+terrain.getSize()) ? xMax : terrain.getX()+terrain.getSize();
+			zMax = (zMax > terrain.getZ()+terrain.getSize()) ? zMax : terrain.getZ()+terrain.getSize();
 		}
 		return new Vector2f(xMax, zMax);
 	}
