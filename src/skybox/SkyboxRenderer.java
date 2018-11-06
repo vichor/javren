@@ -14,7 +14,7 @@ import renderEngine.Loader;
 
 public class SkyboxRenderer {
 	
-	private static final float SIZE = 2500f;
+	private static final float SIZE = 5000f;
 	
 	private static final float[] VERTICES = {        
 		// back quad

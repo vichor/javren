@@ -3,10 +3,10 @@ package entities;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
-import engineTester.WorldManager.World;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import terrains.Terrain;
+import terrains.World;
 
 public class Player extends Entity {
 	

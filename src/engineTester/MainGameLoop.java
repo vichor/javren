@@ -22,7 +22,6 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import engineTester.WorldManager.World;
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
 import engineTester.gameEntities.Fern;
@@ -58,6 +57,7 @@ import renderEngine.MasterRenderer;
 import terrains.GeneratedTerrain;
 import terrains.HeightmapTerrain;
 import terrains.Terrain;
+import terrains.World;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -112,7 +112,8 @@ public class MainGameLoop {
 		
 		// Game entities instances
 		GameEntity.setLoader(loader);
-        for(int i=0;i<500;i++){
+		int entitiesFactor = 250*((int)World.getWorldSideSize().x)+250*((int)World.getWorldSideSize().y);
+        for(int i=0;i<entitiesFactor;i++){
         	//if (i%30 == 0) {
         	//	Vector3f position = getNewPosition(random, terrain);
             //    gameEntities.add(new Dragon(position));

@@ -1,4 +1,4 @@
-package engineTester.WorldManager;
+package terrains;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,16 +6,15 @@ import java.util.List;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import terrains.GeneratedTerrain;
-import terrains.HeightmapTerrain;
 import renderEngine.Loader;
-import terrains.Terrain;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 
 public class World {
 	
 	private List<Terrain> terrains = new ArrayList<Terrain>();
+	private static final int WORLDSIZEX = 8;
+	private static final int WORLDSIZEY = 2;
 	
 	public World(Loader loader) {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
@@ -28,16 +27,17 @@ public class World {
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
 		//Terrain hTerrain = new HeightmapTerrain(0, 1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
-		Terrain g1Terrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
-		Terrain g2Terrain = new GeneratedTerrain(1, 0, loader, texturePack, blendMap); 
-		Terrain g3Terrain = new GeneratedTerrain(0, 1, loader, texturePack, blendMap); 
-		Terrain g4Terrain = new GeneratedTerrain(1, 1, loader, texturePack, blendMap); 
-		
-		terrains.add(g1Terrain);
-		terrains.add(g2Terrain);
-		terrains.add(g3Terrain);
-		terrains.add(g4Terrain);
-		//terrains.add(hTerrain);
+        for (int i=0; i<WORLDSIZEX; i++) {
+        	for (int j=0; j<WORLDSIZEY; j++) {
+        		System.out.println("Generating terrain");
+        		terrains.add(new GeneratedTerrain(i, j, loader, texturePack, blendMap));
+        	}
+        }
+	}
+	
+	
+	public static Vector2f getWorldSideSize() {
+		return new Vector2f(WORLDSIZEX, WORLDSIZEY);
 	}
 	
 	

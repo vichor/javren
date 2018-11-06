@@ -7,8 +7,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
-import engineTester.WorldManager.World;
 import terrains.Terrain;
+import terrains.World;
 import entities.Camera;
 
 public class MousePicker {

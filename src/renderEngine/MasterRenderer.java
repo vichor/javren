@@ -28,9 +28,9 @@ public class MasterRenderer {
 	public static final float SKYCOLOR_BLUE = 0.69f;
 	
 	// Projection matrix 
-	private static final float FOV = 70;
+	private static final float FOV = 120;
 	private static final float NEAR_PLANE = 0.1f;
-	private static final float FAR_PLANE = 5000.0f;
+	private static final float FAR_PLANE = 8000.0f;
 	private Matrix4f projectionMatrix;
 
 	// Entity renderer
