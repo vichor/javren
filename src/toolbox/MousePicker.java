@@ -7,6 +7,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.WorldManager.World;
 import terrains.Terrain;
 import entities.Camera;
 
@@ -26,15 +27,15 @@ public class MousePicker {
 	
 	// if using pack of terrains, this has to be terrains[][] and the constructor
 	// needs to be updated.
-	private Terrain terrain;
+	private World world;
 	private Vector3f currentTerrainPoint;
 
 
-	public MousePicker(Camera camera, Matrix4f projection, Terrain terrain) {
+	public MousePicker(Camera camera, Matrix4f projection, World world) {
 		this.camera = camera;
 		projectionMatrix = projection;
 		viewMatrix = Maths.createViewMatrix(camera);
-		this.terrain = terrain;
+		this.world = world;
 	}
 	
 	public Vector3f getCurrentTerrainPoint() {
@@ -163,7 +164,7 @@ public class MousePicker {
 		// int x = worldX / Terrain.SIZE
 		// int y = worldY / Terrain.SIZE
 		// return terrains[x][z];
-		return terrain;
+		return world.getTerrain(worldX, worldZ);
 	}
 
 }

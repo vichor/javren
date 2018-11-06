@@ -114,7 +114,7 @@ public class MainGameLoop {
 		GameEntity.setLoader(loader);
         for(int i=0;i<500;i++){
         	//if (i%30 == 0) {
-        	//	Vector3f position = getNewPosition(random, 800, terrain);
+        	//	Vector3f position = getNewPosition(random, terrain);
             //    gameEntities.add(new Dragon(position));
         	//}
         	if (i%3  == 0) {
@@ -138,15 +138,9 @@ public class MainGameLoop {
                 gameEntities.add(new Fern(position));
             }
         }
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -320),-320)));
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -330),-330)));
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -340),-340)));
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -350),-350)));
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -360),-360)));
-        //gameEntities.add(new FirTree(new Vector3f(205,terrain.getHeightOfTerrain(205, -370),-370)));
         
-        Rocks rocks = new Rocks();
-        gameEntities.add(rocks);
+        //Rocks rocks = new Rocks();
+        //gameEntities.add(rocks);
         
         // Normal mapped entities
         //GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
@@ -210,7 +204,7 @@ public class MainGameLoop {
 
 
 		// MOUSE PICKER
-		//MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		MousePicker mousePicker = new MousePicker(camera, renderer.getProjectionMatrix(), world);
 		
 		
 		// PARTICLE SOURCES
@@ -243,7 +237,10 @@ public class MainGameLoop {
 		//ParticleSource particleSourceGeyser = new ParticleSource(smokeParticleSystem, new Vector3f(50,terrain.getHeightOfTerrain(50, -50)+5,-50));
 		ParticleSource particleSourceVolcano = new ParticleSource(fireParticleSystem, new Vector3f(50,world.getTerrain(50, 50).getHeightOfTerrain(50, 50)+5,50));
 		ParticleSource particleSourceOnPlayer = new ParticleSource(new SimpleParticleSystem(starParticleTexture, 50, 25, 0.3f, 4), player.getPosition());
-		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), new Vector3f(50,world.getTerrain(50, 25).getHeightOfTerrain(50, 25)+40,25));
+		Vector3f volcanoPosition = world.getMaxHeightCoordinate();
+		volcanoPosition.y += 5;
+		System.out.println(volcanoPosition);
+		ParticleSource particleSourceVolcano2 = new ParticleSource(new SimpleParticleSystem(particleAtlasTexture, 500, 5.5f, 0.08f, 6.6f), volcanoPosition);
 		
 		// create the list of particle sources
 		List<ParticleSource> particleSources = new ArrayList<ParticleSource>();
@@ -302,8 +299,13 @@ public class MainGameLoop {
 			flashlight.move();
 			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
-			//mousePicker.update();
+			mousePicker.update();
 			
+			Vector3f terrainPoint = mousePicker.getCurrentTerrainPoint();
+			if (terrainPoint != null) {
+				lamp1.setPosition(terrainPoint);
+			}
+
 			// Particles
 			particleSourceOnPlayer.setPosition(player.getPosition());
 			for (ParticleSource particleSource : particleSources) {

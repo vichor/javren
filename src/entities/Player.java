@@ -20,6 +20,8 @@ public class Player extends Entity {
 	private float upwardsSpeed = 0;
 
 	private boolean isInAir = false;
+	
+	private boolean pDown = false;
 
 	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
@@ -86,6 +88,19 @@ public class Player extends Entity {
 		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 			jump();
 		}
+		
+		if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
+			if (!pDown) {
+				pDown = true;
+				debugShowPosition();
+			}
+		}else { 
+			pDown = false; 
+		}
+	}
+	
+	private void debugShowPosition() {
+		System.out.println(getPosition());
 	}
 	
 }

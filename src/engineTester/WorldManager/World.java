@@ -27,15 +27,17 @@ public class World {
         
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("maps/blendMap"));
         
+		//Terrain hTerrain = new HeightmapTerrain(0, 1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
 		Terrain g1Terrain = new GeneratedTerrain(0, 0, loader, texturePack, blendMap); 
-		Terrain hTerrain = new HeightmapTerrain(0, 1, loader, texturePack, blendMap, "maps/heightMap3");//free_mountain_lake_heightmap");
 		Terrain g2Terrain = new GeneratedTerrain(1, 0, loader, texturePack, blendMap); 
-		Terrain g3Terrain = new GeneratedTerrain(1, 1, loader, texturePack, blendMap); 
+		Terrain g3Terrain = new GeneratedTerrain(0, 1, loader, texturePack, blendMap); 
+		Terrain g4Terrain = new GeneratedTerrain(1, 1, loader, texturePack, blendMap); 
 		
 		terrains.add(g1Terrain);
 		terrains.add(g2Terrain);
 		terrains.add(g3Terrain);
-		terrains.add(hTerrain);
+		terrains.add(g4Terrain);
+		//terrains.add(hTerrain);
 	}
 	
 	
@@ -79,6 +81,18 @@ public class World {
 		}
 		return new Vector2f(xMax, zMax);
 	}
+	
+	public Vector3f getMaxHeightCoordinate() {
+		Vector3f maxHeightCoordinate = new Vector3f();
+		for(Terrain terrain: terrains) {
+			Vector3f terrainMaxHeightCoordinate = terrain.getMaxHeightCoordinate();
+			if (terrainMaxHeightCoordinate.y > maxHeightCoordinate.y) {
+				maxHeightCoordinate = terrainMaxHeightCoordinate;
+			}
+		}
+		return maxHeightCoordinate;
+		
+	}
 
 	
 	public float getHeight(float x, float z) {
@@ -94,5 +108,5 @@ public class World {
 	public Vector3f createPosition(float x, float z) {
 		return new Vector3f(x, getHeight(x,z), z);
 	}
-
+	
 }

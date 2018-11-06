@@ -102,6 +102,30 @@ public abstract class Terrain {
 		}
 		return height;
 	}
+	
+
+	public Vector3f getMaxHeightCoordinate() {
+		float maxHeight=0;
+		int maxHeightX=0;
+		int maxHeightZ=0;
+		// find the max height
+		for (int i=0; i<heights.length;i++) {
+			for (int j=0; j<heights[i].length; j++) {
+				if (heights[i][j] > maxHeight) {
+					maxHeight = heights[i][j];
+					maxHeightX = i;
+					maxHeightZ = j;
+				}
+			}
+		}
+		// now get the world coordinate for the height stored in (maxHeightI, maxHeightJ)
+		float gridSquareSize = SIZE / ((float)heights.length - 1); 
+		float terrainX = maxHeightX * gridSquareSize; 
+		float terrainZ = maxHeightZ * gridSquareSize; 
+		float worldX = this.x + terrainX;
+		float worldZ = this.z + terrainZ;
+		return new Vector3f(worldX, getHeightOfTerrain(worldX, worldZ), worldZ);
+	}
 
 	
 }
