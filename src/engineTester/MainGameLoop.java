@@ -29,6 +29,7 @@ import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flashlight;
 import engineTester.gameEntities.Flower;
 import engineTester.gameEntities.GameEntity;
+import engineTester.gameEntities.GameEntityMouseMover;
 import engineTester.gameEntities.Grass;
 import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Rocks;
@@ -284,7 +285,7 @@ public class MainGameLoop {
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=12;
+		worldClock.getClock().hour=5;
 		//worldClock.getClock().minute=0;
 		//worldClock.getClock().second=0;
 
@@ -292,7 +293,7 @@ public class MainGameLoop {
 
 		while(!Display.isCloseRequested() ) {
 
-			//worldClock.step(15);
+			worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
@@ -302,11 +303,6 @@ public class MainGameLoop {
 			camera.move();
 			mousePicker.update();
 			
-			Vector3f terrainPoint = mousePicker.getCurrentTerrainPoint();
-			if (terrainPoint != null) {
-				lamp1.setPosition(terrainPoint);
-			}
-
 			// Particles
 			particleSourceOnPlayer.setPosition(player.getPosition());
 			for (ParticleSource particleSource : particleSources) {
@@ -323,7 +319,7 @@ public class MainGameLoop {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			
 			// Some app layer stuff: move lamp1 with mouse and manage wireframe mode
-			//GameEntityMouseMover.update(mousePicker, lamp1);
+			GameEntityMouseMover.update(mousePicker, lamp1);
 			WireframeToggler.checkAndToggle();
 
 			// FRAME BUFFER OBJECTS RENDERING

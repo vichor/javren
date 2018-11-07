@@ -13,8 +13,8 @@ import textures.TerrainTexturePack;
 public class World {
 	
 	private List<Terrain> terrains = new ArrayList<Terrain>();
-	private static final int WORLDSIZEX = 8;
-	private static final int WORLDSIZEY = 2;
+	private static final int WORLDSIZEX = 4;
+	private static final int WORLDSIZEY = 4;
 	
 	public World(Loader loader) {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrains/grassy"));
