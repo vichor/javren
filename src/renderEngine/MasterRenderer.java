@@ -28,7 +28,7 @@ public class MasterRenderer {
 	public static final float SKYCOLOR_BLUE = 0.69f;
 	
 	// Projection matrix 
-	private static final float FOV = 120;
+	private static final float FOV = 80;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 8000.0f;
 	private Matrix4f projectionMatrix;
@@ -182,11 +182,11 @@ public class MasterRenderer {
 
 	private void createProjectionMatrix() {
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
-		
-		projectionMatrix = new Matrix4f();
+
+	    projectionMatrix = new Matrix4f();
 		projectionMatrix.m00 = x_scale;
 		projectionMatrix.m11 = y_scale;
 		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
