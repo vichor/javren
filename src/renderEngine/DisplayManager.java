@@ -62,4 +62,11 @@ public class DisplayManager {
 		// in ms, *1000
 		return Sys.getTime()*1000/Sys.getTimerResolution();
 	}
+
+	/**
+	 * @return The aspect ratio of the display (width:height ratio).
+	 */
+	public static double getAspectRatio() {
+		return (float) Display.getWidth() / (float) Display.getHeight();
+	}
 }
