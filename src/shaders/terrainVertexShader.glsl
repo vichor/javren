@@ -9,12 +9,14 @@ out vec3 surfaceNormal;
 out vec3 toLightVector[5];
 out vec3 toCameraVector;
 out float visibility;
+out vec4 shadowCoords;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition[5];
 uniform vec4 plane;
+uniform mat4 toShadowMapSpace;
 
 const float density = 0.00;//35;
 const float gradient = 5.0;
@@ -25,6 +27,11 @@ void main(void) {
 	vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
 	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCamera;
+
+	// Shadow calculations
+	// Application program calculates the matrix to transform into shadow
+	// map space and we just need to multiply it to the position
+	shadowCoords = toShadowMapSpace * worldPosition;
 
 	// Clip plane management
 	gl_ClipDistance[0] = dot(worldPosition, plane);

@@ -5,6 +5,7 @@ in vec3 surfaceNormal;
 in vec3 toLightVector[5];
 in vec3 toCameraVector;
 in float visibility;
+in vec4 shadowCoords;
 
 out vec4 out_Color;
 
@@ -22,8 +23,21 @@ uniform vec3 lightAttenuation[5];
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColor;
+uniform sampler2D shadowMap;
 
 void main(void) {
+
+	// SHADOWING
+
+	// Check if the terrain fragment is seen by the light or it's behind another object
+	// if it's behind an object, then it will receive less light
+	float objectNearestLight = texture(shadowMap, shadowCoords.xy).r; // check from the shadow map where we are just using the red component
+	float lightFactor = 1.0; // how light this terrain should be
+	if (shadowCoords.z > objectNearestLight){
+		// it's behind an object
+		lightFactor = 0.6;
+	}
+
 
 	// MULTITEXTURING THE TERRAIN
 
@@ -107,6 +121,9 @@ void main(void) {
 		float damperFactor = pow(specularFactor, shineDamper);
 		totalSpecularLight = totalSpecularLight + (damperFactor * reflectivity * lightColor[i])/attenuationFactor;
 	}
+
+	// Limit diffuse light and apply shadow light factor limitation
+	totalDiffuseLight = max(totalDiffuseLight, 0.4) * lightFactor;
 
 
 	// FRAGMENT COLOR:

@@ -287,11 +287,6 @@ public class MainGameLoop {
 		//worldClock.getClock().second=0;
 
 		
-		// Shadow debug
-		GuiTexture shadowTexture = new GuiTexture(renderer.getShadowMapTexture(), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f));
-		guis.add(shadowTexture);
-		
-		
 		// GAME LOOP
 
 		while(!Display.isCloseRequested() ) {
