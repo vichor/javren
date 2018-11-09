@@ -48,7 +48,7 @@ void main(void) {
 	// plane values from the projection matrix (we will use hardcoded values, so remember
 	// to update here if MasterRenderer gets updated).
 	float near = 0.1;
-	float far = 5000.0;
+	float far = 8000.0;
 	float depth = texture(depthMap, refractTexCoords).r; // information is on the first coordinate, we can ignore the other twos.
 	float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
 
