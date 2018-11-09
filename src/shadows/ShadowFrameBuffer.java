@@ -102,7 +102,7 @@ public class ShadowFrameBuffer {
 	private static int createFrameBuffer() {
 		int frameBuffer = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBuffer);
-		GL11.glDrawBuffer(GL11.GL_NONE);
+		GL11.glDrawBuffer(GL11.GL_NONE); // no drawing as there is no color to draw, just depth calculations into FBO
 		GL11.glReadBuffer(GL11.GL_NONE);
 		return frameBuffer;
 	}
@@ -125,7 +125,7 @@ public class ShadowFrameBuffer {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, texture, 0);
+		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, texture, 0); // only depth is needed, no color
 		return texture;
 	}
 }

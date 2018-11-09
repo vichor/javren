@@ -17,6 +17,7 @@ import models.TexturedModel;
 import normalMappingRenderer.NormalMappingRenderer;
 import shaders.StaticShader;
 import shaders.TerrainShader;
+import shadows.ShadowMapMasterRenderer;
 import skybox.SkyboxRenderer;
 import terrains.Terrain;
 
@@ -50,11 +51,14 @@ public class MasterRenderer {
 	// Normal mapping renderer
 	private NormalMappingRenderer normalMapRenderer;
 	
+	// Shadow map renderer
+	private ShadowMapMasterRenderer shadowMapRenderer;
+	
 	// Wireframe
 	static boolean wireframeMode = false;
 	
 	
-	public MasterRenderer(Loader loader) {
+	public MasterRenderer(Loader loader, Camera camera) {
 		// don't render back faces
 		enableCulling();
 		
@@ -73,6 +77,9 @@ public class MasterRenderer {
 		this.skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 		
 		this.normalMapRenderer = new NormalMappingRenderer(projectionMatrix);
+		
+		// Shadow
+		this.shadowMapRenderer = new ShadowMapMasterRenderer(camera);
 	}
 	
 	
@@ -199,6 +206,21 @@ public class MasterRenderer {
 		entityShader.cleanUp();
 		terrainShader.cleanUp();
 		normalMapRenderer.cleanUp();
+		shadowMapRenderer.cleanUp();
+	}
+	
+
+	public void renderShadowMap(List<Entity> entityList, Light sun) {
+		for (Entity entity:entityList) {
+			processEntity(entity);
+		}
+		shadowMapRenderer.render(entities, sun);
+		entities.clear();
+	}
+	
+	
+	public int getShadowMapTexture() {
+		return shadowMapRenderer.getShadowMap();
 	}
 	
 	

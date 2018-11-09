@@ -76,12 +76,9 @@ public class MainGameLoop {
 		// SETUP PLATFORM ENVIRONMENT
 		Library.LibraryPathConfiguration(Paths.get("lib", "natives"));
 
-		// RENDER SYSTEM CREATION
+		// RENDER SYSTEM FRAMEWORK
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
-		MasterRenderer renderer = new MasterRenderer(loader);
-		ParticleMaster.init(loader, renderer.getProjectionMatrix());
-		
 		
 		// FONT SYSTEM
 		TextMaster.init(loader);
@@ -89,20 +86,22 @@ public class MainGameLoop {
 		GUIText text = new GUIText("This is a test text!", 1, font, new Vector2f(0,0.75f), 1f, true);
 		text.setColor(1.0f, 0.0f, 0.0f);
 		
-		
 		// TERRAIN
 		World world = new World(loader);
 		List<Terrain> terrains = world.getTerrains();
-
 
         // PLAYER
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
         Player player = new Player(playerModel, world.createPosition(400, 800), 0, 0, 0, 0.6f);
-        //Player player = new Player(playerModel, new Vector3f(348, terrain.getHeightOfTerrain(348, -380), -380), 0, 120, 0, 0.6f);
-        //Player player = new Player(playerModel, new Vector3f(0, terrain.getHeightOfTerrain(0, 0), 0), 0, 0, 0, 0.6f);
-        
-        
+
+        // CAMERA
+        Camera camera = new Camera(player);
+		
+        // RENDER SYSTEM
+		MasterRenderer renderer = new MasterRenderer(loader, camera);
+		ParticleMaster.init(loader, renderer.getProjectionMatrix());
+		
 
 		// ENTITIES DEFINITION
 		
@@ -168,8 +167,6 @@ public class MainGameLoop {
         gameEntities.add(lightbarrel);
         
         
-        // CAMERA
-        Camera camera = new Camera(player);
 		
 		// ENVIRONMENT / LIGHTS
 		Sun sun = new Sun();
@@ -195,11 +192,11 @@ public class MainGameLoop {
 
 		// Frame Buffers
 		// Create the frame buffer object which is linked with a texture. 
-		WaterFrameBuffers frameBufferObjects = new WaterFrameBuffers();
+		WaterFrameBuffers waterBuffers = new WaterFrameBuffers();
 
 		// Render system
 		WaterShader waterShader = new WaterShader();
-		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), frameBufferObjects);
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterBuffers);
 		List<WaterTile> waters = new ArrayList<WaterTile>();
 		WaterTile water = new WaterTile(400, -400, 0);
 		waters.add(water);
@@ -289,6 +286,12 @@ public class MainGameLoop {
 		//worldClock.getClock().minute=0;
 		//worldClock.getClock().second=0;
 
+		
+		// Shadow debug
+		GuiTexture shadowTexture = new GuiTexture(renderer.getShadowMapTexture(), new Vector2f(0.5f, 0.5f), new Vector2f(0.5f, 0.5f));
+		guis.add(shadowTexture);
+		
+		
 		// GAME LOOP
 
 		while(!Display.isCloseRequested() ) {
@@ -309,6 +312,9 @@ public class MainGameLoop {
 				particleSource.step();
 			}
 			ParticleMaster.update(camera);
+			
+			// Shadows
+			renderer.renderShadowMap(entities, sun);
 
 			// Refraction/Reflection needs clipping planes:
 			//    - we want to refract what it's below water level
@@ -329,7 +335,7 @@ public class MainGameLoop {
 			// when compared with render coordinates)
 			
 			// render reflection texture
-			frameBufferObjects.bindReflectionFrameBuffer();
+			waterBuffers.bindReflectionFrameBuffer();
 			float distance = 2 * (camera.getPosition().y - water.getHeight());
 			camera.getPosition().y -= distance;
 			camera.invertPitchAndRoll();
@@ -338,12 +344,12 @@ public class MainGameLoop {
 			camera.getPosition().y += distance;
 
 			// render refraction texture
-			frameBufferObjects.bindRefractionFrameBuffer();
+			waterBuffers.bindRefractionFrameBuffer();
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, clipPlaneRefraction);
 
 			// unbind fbo
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);  // drivers may ignore this call so the masterClipPlane has to define a really high height
-			frameBufferObjects.unbindCurrentFrameBuffer();
+			waterBuffers.unbindCurrentFrameBuffer();
 
 			// DEFAULT FRAME BUFFER RENDERING
 			
@@ -357,7 +363,7 @@ public class MainGameLoop {
 		}
 		
 		// closing
-		frameBufferObjects.cleanUp();
+		waterBuffers.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();
 		ParticleMaster.cleanUp();

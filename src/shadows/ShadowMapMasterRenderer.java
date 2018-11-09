@@ -19,6 +19,12 @@ import models.TexturedModel;
  * texture. This is the only class in the shadows package which needs to be
  * referenced from outside the shadows package.
  * 
+ * The render is performed from the Sun position point of view, so the view matrix
+ * will be defined by sun position.
+ * 
+ * The render uses an ortographic (cuboid/rectangular) projection so a cuboid projection
+ * matrix will be used instead of a frustum one. The ShadowBox represents this cuboid 
+ * 
  */
 public class ShadowMapMasterRenderer {
 
@@ -138,7 +144,7 @@ public class ShadowMapMasterRenderer {
 		Matrix4f.mul(projectionMatrix, lightViewMatrix, projectionViewMatrix);
 		shadowFbo.bindFrameBuffer();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT); // just using depth buffer and no color buffer
 		shader.start();
 	}
 
@@ -159,6 +165,11 @@ public class ShadowMapMasterRenderer {
 	 * at the center of the "view cuboid". The created view matrix determines
 	 * where and how the "view cuboid" is positioned in the world. The size of
 	 * the view cuboid, however, is determined by the projection matrix.
+	 * 
+	 * In other words, the cuboid will look in the same direction as the light
+	 * and place it in the correct place in the scene. To do so, it calculates 
+	 * the pitch and yaw based on the viewing direction and then creates a view 
+	 * matrix based on that.
 	 * 
 	 * @param direction
 	 *            - the light direction, and therefore the direction that the
