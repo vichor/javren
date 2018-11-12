@@ -35,7 +35,10 @@ void main(void) {
 	float lightFactor = 1.0; // how light this terrain should be
 	if (shadowCoords.z > objectNearestLight){
 		// it's behind an object
-		lightFactor = 0.6;
+		// lightFactor will be multiplied to diffuse light. So, no shadowing means factor of 1; shadowing means 1 - shadow effect.
+		// the effect is limited by how much the fragment is inside the transition period of the fog effect.
+		// 0.4 constant controls the darkness of the shadow.
+		lightFactor = 1.0 - (shadowCoords.w * 0.4); // the factor depends on how far in the shadow transition period the fragment is
 	}
 
 

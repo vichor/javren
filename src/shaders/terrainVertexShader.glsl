@@ -20,6 +20,8 @@ uniform mat4 toShadowMapSpace;
 
 const float density = 0.00;//35;
 const float gradient = 5.0;
+const float SHADOWDISTANCE = 150.0; // better uniform as it has to match the shadow distance in shadowbox class
+const float TRANSITIONDISTANCE = 10.0;
 
 void main(void) {
 
@@ -72,10 +74,16 @@ void main(void) {
 	toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 
 
-	// Fog
+	// FOG
 	// Fog increases following an exponential formula depending on a density
 	// and a gradient. These two parameters simulates how thick the fog is.
-	float distance = length(positionRelativeToCamera.xyz);
+	float distance = length(positionRelativeToCamera.xyz); // distance of this vertex from the camera
 	visibility = exp(-pow((distance*density), gradient));
 	visibility = clamp(visibility, 0.0, 1.0);
+
+	// Fog effect on shadows as well to prevent magically appearing/disappearing of shadows
+	// depending on shadow box dimensions
+	float transitionPeriodDistance = distance - (SHADOWDISTANCE - TRANSITIONDISTANCE); // how far the vertex is in the transition period
+	transitionPeriodDistance = transitionPeriodDistance / TRANSITIONDISTANCE; // normalize: 0 will be at the start of the transition period; 1 will be at the end
+	shadowCoords.w = clamp(1.0-transitionPeriodDistance, 0.0, 1.0); // store the transition period progress on w component of the shadow coords
 }
