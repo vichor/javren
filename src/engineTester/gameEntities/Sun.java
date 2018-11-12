@@ -9,8 +9,8 @@ import entities.Light;
 
 public class Sun extends Light {
 	
-	private static final int ORBIT_RADIUS = 800;
-	private static final int ORBIT_HEIGHT = 1000;
+	private static final int ORBIT_RADIUS = 100000;
+	private static final int ORBIT_HEIGHT = 100000;
 
 	private static final int RED_COMPONENT = 0;
 	private static final int BLUE_COMPONENT = 1;
@@ -26,7 +26,7 @@ public class Sun extends Light {
 
 	
 	public Sun () {
-		this.position = new Vector3f(200, 500, -100);
+		this.position = new Vector3f(ORBIT_RADIUS, ORBIT_HEIGHT, -10000);
 		this.color = new Vector3f(1f, 1f, 1f);
 	}
 	

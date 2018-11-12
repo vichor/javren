@@ -28,7 +28,7 @@ import models.TexturedModel;
  */
 public class ShadowMapMasterRenderer {
 
-	private static final int SHADOW_MAP_SIZE = 2048;
+	private static final int SHADOW_MAP_SIZE = 4096;
 
 	private ShadowFrameBuffer shadowFbo;
 	private ShadowShader shader;
@@ -36,7 +36,10 @@ public class ShadowMapMasterRenderer {
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f lightViewMatrix = new Matrix4f();
 	private Matrix4f projectionViewMatrix = new Matrix4f();
-	private Matrix4f offset = createOffset();
+	private Matrix4f offset = createOffset(); // the shadow map is rendered and thus uses opengl coordinate 
+	                                          // system ( (0,0) is at the center) but the shadows will be 
+	                                          // read on the shaders as textures and this means that (0,0) 
+	                                          // is at the bottom left. This offset converts one in another
 
 	private ShadowMapEntityRenderer entityRenderer;
 
