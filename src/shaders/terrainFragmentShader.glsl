@@ -25,21 +25,40 @@ uniform float reflectivity;
 uniform vec3 skyColor;
 uniform sampler2D shadowMap;
 
+const int pcfCount = 2;		// the distance with respect to the pixel to shadow that will be taken into account while doing pcf calculations
+const float totalTexels = (pcfCount * 2.0 + 1.0) * (pcfCount * 2.0 + 1.0);
+
 void main(void) {
 
 	// SHADOWING
 
-	// Check if the terrain fragment is seen by the light or it's behind another object
-	// if it's behind an object, then it will receive less light
-	float objectNearestLight = texture(shadowMap, shadowCoords.xy).r; // check from the shadow map where we are just using the red component
-	float lightFactor = 1.0; // how light this terrain should be
-	if (shadowCoords.z > objectNearestLight){
-		// it's behind an object
-		// lightFactor will be multiplied to diffuse light. So, no shadowing means factor of 1; shadowing means 1 - shadow effect.
-		// the effect is limited by how much the fragment is inside the transition period of the fog effect.
-		// 0.4 constant controls the darkness of the shadow.
-		lightFactor = 1.0 - (shadowCoords.w * 0.4); // the factor depends on how far in the shadow transition period the fragment is
+	float mapSize = 4096; // TODO: make this uniform
+	float texelSize = 1.0/mapSize;
+	float total = 0.0;
+	
+	// sample all texels in the pcf shadow area
+	// During PCF we are sampling an area around the pixel we want to calculate its shadow and perform then a percentage calculation
+	// of how many are shadowed and how many are not. The final shadow level of a pixel will be defined by this percentage.
+	for (int x=-pcfCount; x <= pcfCount; x++){
+		for (int y=-pcfCount; y <= pcfCount; y++){
+			// sample the shadow map and extract the pixel of the object found in it applying the iteration offset
+			vec2 offset = vec2(x,y) * texelSize;
+			float objectNearestLight = texture(shadowMap, shadowCoords.xy + offset).r;
+			// Check if the terrain fragment is seen by the light or it's behind another object
+			// if it's behind an object, then it will receive shadow casted by the object and we increse the total number 
+			if (shadowCoords.z > objectNearestLight){
+				total += 1.0;
+			}
+		}
 	}
+		
+	// normalize total value between 1 and 0.
+	total /= totalTexels;
+
+	// lightFactor will be multiplied to diffuse light. So, no shadowing means factor of 1; shadowing means 1 - shadow effect.
+	// the effect is limited by how much the fragment is inside the transition period of the fog effect.
+	// total value constant controls the darkness of the shadow.
+	float lightFactor = 1.0 - (total * shadowCoords.w); // how light this terrain should be
 
 
 	// MULTITEXTURING THE TERRAIN
@@ -126,7 +145,7 @@ void main(void) {
 	}
 
 	// Limit diffuse light and apply shadow light factor limitation
-	totalDiffuseLight = max(totalDiffuseLight, 0.4) * lightFactor;
+	totalDiffuseLight = max(totalDiffuseLight * lightFactor, 0.4);
 
 
 	// FRAGMENT COLOR:
