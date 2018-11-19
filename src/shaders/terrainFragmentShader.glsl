@@ -46,7 +46,8 @@ void main(void) {
 			float objectNearestLight = texture(shadowMap, shadowCoords.xy + offset).r;
 			// Check if the terrain fragment is seen by the light or it's behind another object
 			// if it's behind an object, then it will receive shadow casted by the object and we increse the total number 
-			if (shadowCoords.z > objectNearestLight){
+			// We add a slight bias to the check to ensure the very same object pixel which is casting the shadow does not get shadowed by himself.
+			if (shadowCoords.z > objectNearestLight+0.0002f){
 				total += 1.0;
 			}
 		}
