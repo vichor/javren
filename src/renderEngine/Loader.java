@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GLContext;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
@@ -115,7 +117,7 @@ public class Loader {
 	}
 	
 	public int loadTexture(String fileName) {
-		return doLoadTexture(fileName, -0.4f);
+		return doLoadTexture(fileName, 0); // removed mipmap level of detail bias once we have anisotropic: -0.4f);
 	}
 	
 	public int loadFontTextureAtlas(String fileName) {
@@ -130,6 +132,12 @@ public class Loader {
 			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
 			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
 			GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, mipmapBias);
+			// Configure anistropic filtering if available
+			if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+				// either use 4 or the maximum allowed by the driver
+				float amount = Math.min(4f,  GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+				GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+			}
 			
 		} catch (FileNotFoundException e) {
 
