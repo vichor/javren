@@ -82,7 +82,7 @@ public class MainGameLoop {
 		
 		// FONT SYSTEM
 		TextMaster.init(loader);
-		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/candara"), new File("res/fonts/candara.fnt"));
+		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/candara"), "candara");
 		GUIText text = new GUIText("This is a test text!", 1, font, new Vector2f(0,0.75f), 1f, true);
 		text.setColor(1.0f, 0.0f, 0.0f);
 		

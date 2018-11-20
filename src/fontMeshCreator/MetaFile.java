@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,9 +47,9 @@ public class MetaFile {
 	 * @param file
 	 *            - the font file.
 	 */
-	protected MetaFile(File file) {
+	protected MetaFile(String fileName) {
 		this.aspectRatio = DisplayManager.getAspectRatio();
-		openFile(file);
+		openFile(fileName);
 		loadPaddingData();
 		loadLineSizes();
 		int imageWidth = getValueOfVariable("scaleW");
@@ -133,9 +134,11 @@ public class MetaFile {
 	 * @param file
 	 *            - the font file.
 	 */
-	private void openFile(File file) {
+	private void openFile(String fileName) {
+
 		try {
-			reader = new BufferedReader(new FileReader(file));
+			InputStreamReader in = new InputStreamReader(Class.class.getResourceAsStream("/res/fonts/"+fileName+".fnt"));
+			reader = new BufferedReader(in);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Couldn't read font meta file!");
