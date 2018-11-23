@@ -51,6 +51,8 @@ import particles.ParticleMaster;
 import particles.ParticleTexture;
 import particles.SimpleParticleSystem;
 import platform.Library;
+import postProcessing.Fbo;
+import postProcessing.PostProcessing;
 import renderEngine.DisplayManager;
 import renderEngine.GuiRenderer;
 import renderEngine.Loader;
@@ -279,6 +281,11 @@ public class MainGameLoop {
 		Vector4f clipPlaneReflection = new Vector4f(0,  1, 0, -water.getHeight()+1f);
 		Vector4f clipPlaneRefraction = new Vector4f(0, -1, 0, water.getHeight()+1f);
 
+		// FBO for post processing
+		
+		Fbo fbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
+		PostProcessing.init(loader);
+		
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
@@ -346,11 +353,17 @@ public class MainGameLoop {
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);  // drivers may ignore this call so the masterClipPlane has to define a really high height
 			waterBuffers.unbindCurrentFrameBuffer();
 
-			// DEFAULT FRAME BUFFER RENDERING
+			// FRAME BUFFER RENDERING
 			
+			fbo.bindFrameBuffer();
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera, sun);
 			ParticleMaster.renderParticles(camera);
+			fbo.unbindFrameBuffer();
+			
+			// Apply post processing to fbo
+			PostProcessing.doPostProcessing(fbo.getColorTexture());
+			
 			guiRenderer.render(guis);
 			TextMaster.render();
 
@@ -358,6 +371,8 @@ public class MainGameLoop {
 		}
 		
 		// closing
+		PostProcessing.cleanUp();
+		fbo.cleanUp();
 		waterBuffers.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();

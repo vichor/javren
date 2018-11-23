@@ -24,7 +24,7 @@ public class ImageRenderer {
 	}
 
 	protected int getOutputTexture() {
-		return fbo.getColourTexture();
+		return fbo.getColorTexture();
 	}
 
 	protected void cleanUp() {
