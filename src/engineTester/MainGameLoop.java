@@ -147,8 +147,8 @@ public class MainGameLoop {
         
         // Normal mapped entities
         //GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
-        GameEntity barrel = new Barrel(new Vector3f(378, 30, -300));
-        GameEntity standardBarrel = new Barrel(new Vector3f(378-40, 30, -300));
+        GameEntity barrel = new Barrel(world.createPosition(378, 300));
+        GameEntity standardBarrel = new Barrel(world.createPosition(378-40, 300));
         //GameEntity standardBarrel = new Barrel(new Vector3f(player.getPosition().x-40, 30, player.getPosition().z));
         gameNormalMappedEntities.add(barrel);
         gameEntities.add(standardBarrel);
@@ -283,14 +283,15 @@ public class MainGameLoop {
 
 		// FBO for post processing
 		
-		Fbo fbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
+		Fbo multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight() );
+		Fbo outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
 		PostProcessing.init(loader);
 		
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=4;
-		worldClock.getClock().minute=45;
+		worldClock.getClock().hour=12;
+		//worldClock.getClock().minute=45;
 		//worldClock.getClock().second=0;
 
 		
@@ -298,7 +299,7 @@ public class MainGameLoop {
 
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(15);
+			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();
@@ -355,14 +356,15 @@ public class MainGameLoop {
 
 			// FRAME BUFFER RENDERING
 			
-			fbo.bindFrameBuffer();
+			multisampleFbo.bindFrameBuffer();
 			renderer.renderScene(entities, normalMappedEntities, terrains, lights, camera, masterClipPlane);
 			waterRenderer.render(waters, camera, sun);
 			ParticleMaster.renderParticles(camera);
-			fbo.unbindFrameBuffer();
+			multisampleFbo.unbindFrameBuffer();
+			multisampleFbo.resolveToFbo(outputFbo);
 			
 			// Apply post processing to fbo
-			PostProcessing.doPostProcessing(fbo.getColorTexture());
+			PostProcessing.doPostProcessing(outputFbo.getColorTexture());
 			
 			guiRenderer.render(guis);
 			TextMaster.render();
@@ -371,8 +373,9 @@ public class MainGameLoop {
 		}
 		
 		// closing
+		outputFbo.cleanUp();
 		PostProcessing.cleanUp();
-		fbo.cleanUp();
+		multisampleFbo.cleanUp();
 		waterBuffers.cleanUp();
 		waterShader.cleanUp();
 		guiRenderer.cleanUp();

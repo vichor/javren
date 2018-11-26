@@ -8,8 +8,8 @@ public class HeightsGenerator {
 	// See also https://en.wikipedia.org/wiki/Perlin_noise for canonical definition of Perlin noise and implementation
 	
 	private static final float AMPLITUDE = 400f; // how big the terrain can be
-	private static final int OCTAVES = 6;	// smoother noise factors to use
-	private static final float ROUGHNESS = 0.35f;
+	private static final int OCTAVES = 7;	// smoother noise factors to use
+	private static final float ROUGHNESS = 0.342f;
 	private static final float OFFSET = 0.055f; // terrain height offset in percentage. Heights will go in range [(AMPLITUDE-OFFSET%), (AMPLITUDE+OFFSET%)]
 	                                           // for current values, amplitude will go from [(70-2.1),(70+2.1)]
 	
