@@ -78,7 +78,6 @@ public class Fbo {
 	 * Binds the current FBO to be read from (not used in tutorial 43).
 	 */
 	public void bindToRead() {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, frameBuffer);
 		GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
 	}
