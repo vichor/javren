@@ -24,7 +24,7 @@ public class Fbo {
 	private int depthTexture;
 
 	private int depthBuffer;
-	private int colourBuffer;
+	private int colorBuffer;
 
 	/**
 	 * Creates an FBO of a specified width and height, with the desired type of
@@ -52,7 +52,7 @@ public class Fbo {
 		GL11.glDeleteTextures(colorTexture);
 		GL11.glDeleteTextures(depthTexture);
 		GL30.glDeleteRenderbuffers(depthBuffer);
-		GL30.glDeleteRenderbuffers(colourBuffer);
+		GL30.glDeleteRenderbuffers(colorBuffer);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class Fbo {
 	}
 
 	/**
-	 * @return The ID of the texture containing the colour buffer of the FBO.
+	 * @return The ID of the texture containing the color buffer of the FBO.
 	 */
 	public int getColorTexture() {
 		return colorTexture;
@@ -97,7 +97,7 @@ public class Fbo {
 	}
 
 	/**
-	 * Creates the FBO along with a colour buffer texture attachment, and
+	 * Creates the FBO along with a color buffer texture attachment, and
 	 * possibly a depth buffer.
 	 * 
 	 * @param type
@@ -117,7 +117,7 @@ public class Fbo {
 
 	/**
 	 * Creates a new frame buffer object and sets the buffer to which drawing
-	 * will occur - colour attachment 0. This is the attachment where the colour
+	 * will occur - color attachment 0. This is the attachment where the color
 	 * buffer texture is.
 	 * 
 	 */
@@ -128,7 +128,7 @@ public class Fbo {
 	}
 
 	/**
-	 * Creates a texture and sets it as the colour buffer attachment for this
+	 * Creates a texture and sets it as the color buffer attachment for this
 	 * FBO.
 	 */
 	private void createTextureAttachment() {

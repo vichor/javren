@@ -15,10 +15,10 @@ public class PostProcessing {
 	private static final float[] POSITIONS = { -1, 1, -1, -1, 1, 1, 1, -1 };	
 	private static RawModel quad;
 	private static ContrastChanger contrastChanger;
-	// two stages of blurring... the first one will use a smaller image (for performance reasons) 
-	// an even smaller image. Using 2 stages is fancy for creating huge blurring without 
-	// modifying the blur class and shaders and not compromisong performance by making them use
-	// lots of pixels.
+	// two stages of blurring... each stage will render to a small image (for performance reasons) 
+	// the first one really small compared to display size; the second will render to half the size. 
+	// Using 2 stages is fancy for creating huge blurring without modifying the blur class and shaders 
+	// while not compromising performance by making them use lots of pixels.
 	private static HorizontalBlur hBlur1;
 	private static HorizontalBlur hBlur2;
 	private static VerticalBlur vBlur1;
