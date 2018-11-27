@@ -9,7 +9,9 @@ in float visibility;
 
 out vec4 out_Color;
 
-uniform sampler2D textureSampler;
+uniform sampler2D modelTexture;
+uniform sampler2D specularMap;
+uniform float usesSpecularMap;
 uniform vec3 lightColor[5];
 uniform vec3 lightAttenuation[5];
 uniform float shineDamper;
@@ -81,9 +83,19 @@ void main(void) {
 	// has no way of knowing it's a background to be discarded. We can easily fix 
 	// this by checking the color pulled from the texture file and command here
 	// to discard it if one of its components do not reach a specific value.
-	vec4 textureColor = texture(textureSampler, pass_textureCoords);
+	vec4 textureColor = texture(modelTexture, pass_textureCoords);
 	if (textureColor.a < 0.5){
 		discard;
+	}
+	
+	// Specular map
+	// Specular maps indicate how shiny each of the pixel on a model is. The fragment
+	// shader uses it to modify the specular light that a specific fragment receives.
+	// Specular light information is stored in the red component of the specular map
+	// (see the files *Specular.png)
+	if (usesSpecularMap > 0.5){
+	    vec4 mapInfo = texture(specularMap, pass_textureCoords);
+	    totalSpecularLight *= mapInfo.r;
 	}
 	
 

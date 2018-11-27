@@ -31,6 +31,10 @@ public class StaticShader extends ShaderProgram {
 	private int location_numberOfRows;
 	private int location_offset;
 	private int location_plane;
+	// TODO: Add shadow management (shadowMap, toShadowMapSpace)
+	private int location_specularMap;
+	private int location_usesSpecularMap;
+	private int location_modelTexture;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -55,6 +59,9 @@ public class StaticShader extends ShaderProgram {
 		location_numberOfRows = super.getUniformLocation("numberOfRows");
 		location_offset = super.getUniformLocation("offset");
 		location_plane = super.getUniformLocation("plane");
+		location_specularMap = super.getUniformLocation("specularMap");
+		location_usesSpecularMap = super.getUniformLocation("usesSpecularMap");
+		location_modelTexture = super.getUniformLocation("modelTexture");
 		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
@@ -64,6 +71,18 @@ public class StaticShader extends ShaderProgram {
 			location_lightColor[i] = super.getUniformLocation("lightColor["+i+"]");
 			location_lightAttenuation[i] = super.getUniformLocation("lightAttenuation["+i+"]");
 		}
+	}
+	
+	
+	public void connectTextureUnits() {
+		super.loadInt(location_modelTexture, 0);
+		super.loadInt(location_specularMap, 1);
+		// TODO: connect shadowMap to 5
+	}
+	
+	
+	public void loadUsesSpecularMap(boolean usesSpecular) {
+		super.loadBoolean(location_usesSpecularMap, usesSpecular);
 	}
 	
 	

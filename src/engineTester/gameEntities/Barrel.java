@@ -15,7 +15,12 @@ public class Barrel extends GameEntity {
 		if (texturedModel == null) {
 			texturedModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("objects/barrel", loader),
         		new ModelTexture(loader.loadTexture("objects/barrel")));
+			// barrel uses normal maps
 			texturedModel.getTexture().setNormalMap(loader.loadTexture("objects/barrelNormal"));
+			// barrel uses specular map just because I want to test specular maps with normal mapped objects
+			texturedModel.getTexture().setShineDamper(5);
+			texturedModel.getTexture().setReflectivity(0.5f);
+			texturedModel.getTexture().setSpecularMap(loader.loadTexture("objects/barrelSpecular"));
 		}
 		entity = new Entity(texturedModel, position, 0, 0, 0, 3f);
 		texturedModel.getTexture().setShineDamper(10);

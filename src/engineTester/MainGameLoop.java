@@ -24,6 +24,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
+import engineTester.gameEntities.CherryTree;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
 import engineTester.gameEntities.Flashlight;
@@ -120,6 +121,10 @@ public class MainGameLoop {
         	//	Vector3f position = getNewPosition(random, terrain);
             //    gameEntities.add(new Dragon(position));
         	//}
+        	if (i%2 == 0) {
+        		Vector3f position = getNewPosition(random, world);
+        		gameEntities.add(new CherryTree(position));
+        	}
         	if (i%3  == 0) {
         		Vector3f position = getNewPosition(random, world);
                 gameEntities.add(new FirTree(position));
