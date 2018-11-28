@@ -33,6 +33,7 @@ import engineTester.gameEntities.GameEntity;
 import engineTester.gameEntities.GameEntityMouseMover;
 import engineTester.gameEntities.Grass;
 import engineTester.gameEntities.Lamp;
+import engineTester.gameEntities.Lantern;
 import engineTester.gameEntities.Rocks;
 import engineTester.gameEntities.Sun;
 import engineTester.gameEntities.Tree;
@@ -121,9 +122,13 @@ public class MainGameLoop {
         	//	Vector3f position = getNewPosition(random, terrain);
             //    gameEntities.add(new Dragon(position));
         	//}
-        	if (i%2 == 0) {
+        	if (i%2 == 1) {
         		Vector3f position = getNewPosition(random, world);
         		gameEntities.add(new CherryTree(position));
+        	}
+        	if (i%20 == 1) {
+        		Vector3f position = getNewPosition(random, world);
+        		gameEntities.add(new Lantern(position));
         	}
         	if (i%3  == 0) {
         		Vector3f position = getNewPosition(random, world);
@@ -295,7 +300,7 @@ public class MainGameLoop {
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=12;
+		worldClock.getClock().hour=5;
 		//worldClock.getClock().minute=45;
 		//worldClock.getClock().second=0;
 
@@ -304,7 +309,7 @@ public class MainGameLoop {
 
 		while(!Display.isCloseRequested() ) {
 
-			//worldClock.step(15);
+			worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();

@@ -96,6 +96,13 @@ void main(void) {
 	if (usesSpecularMap > 0.5){
 	    vec4 mapInfo = texture(specularMap, pass_textureCoords);
 	    totalSpecularLight *= mapInfo.r;
+	    	    
+	    // glow effect
+	    // It will use green component of the specular map, so if there is green above
+	    // a given value (0.5) the diffuse light will be set to full brightness (1,1,1) 
+	    if (mapInfo.g > 0.5) {
+			totalDiffuseLight = vec3(1.0);
+	    }
 	}
 	
 

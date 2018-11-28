@@ -13,7 +13,7 @@ import textures.ModelTexture;
 public class CherryTree extends GameEntity {
 	
 	private static TexturedModel texturedModel=null;
-	private static final float SIZE_RANDOMIZER_FACTOR = 0.25f;
+	private static final float SIZE_RANDOMIZER_FACTOR = 0.10f;
 	
 	
 	public CherryTree(Vector3f position) {
@@ -23,10 +23,10 @@ public class CherryTree extends GameEntity {
 			texturedModel.getTexture().setHasTransparency(true);
 			texturedModel.getTexture().setShineDamper(10);
 			texturedModel.getTexture().setReflectivity(0.5f);
-			texturedModel.getTexture().setSpecularMap(loader.loadTexture("vegetation/cherrySpecular"));
+			texturedModel.getTexture().setBumpMap(loader.loadTexture("vegetation/cherrySpecular"));
 		}
 		Random random = new Random();
-		float size = 5f + ((random.nextFloat()*SIZE_RANDOMIZER_FACTOR)-(SIZE_RANDOMIZER_FACTOR/2f));
+		float size = 2f + ((random.nextFloat()*SIZE_RANDOMIZER_FACTOR)-(SIZE_RANDOMIZER_FACTOR/2f));
         entity = new Entity(texturedModel, position, 0, 0, 0, size);
 	}
 	

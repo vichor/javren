@@ -21,7 +21,10 @@ public class ModelTexture {
 	}
 	
 	
-	public void setSpecularMap(int sm) {
+	public void setBumpMap(int sm) {
+		// a Bump Map is used to simulate different effects on the surface of a model (bumps, wrinkles, cracks and so on)
+		// specular maps is a typical instance of a bump map and so the name of the attribute
+		// TODO: consider renaming the attribute and everything into bump mapping
 		specularMap = sm;
 		useSpecularMap = true;
 	}
