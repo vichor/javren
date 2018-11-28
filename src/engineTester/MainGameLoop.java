@@ -300,7 +300,8 @@ public class MainGameLoop {
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
-		worldClock.getClock().hour=5;
+		worldClock.getClock().hour=12;
+		worldClock.step(1);
 		//worldClock.getClock().minute=45;
 		//worldClock.getClock().second=0;
 
@@ -309,7 +310,7 @@ public class MainGameLoop {
 
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(15);
+			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 			sun.update();

@@ -19,9 +19,9 @@ public class Sun extends Light {
     /* Color components for day parts:                         RED                        BLUE                       GREEN        */
 	private static final Vector2f NIGHT_COLOR[] 	= { new Vector2f(0.0f,  0.0f),  new Vector2f(0.0f, 0.0f),  new Vector2f(0.0f, 0.0f) };
 	private static final Vector2f DAWN_COLOR[] 		= { new Vector2f(0.0f,  0.80f), new Vector2f(0.0f, 0.65f), new Vector2f(0.0f, 0.15f) };
-	private static final Vector2f MORNING_COLOR[] 	= { new Vector2f(0.80f, 1.00f), new Vector2f(0.65f, 1.00f), new Vector2f(0.15f, 1.00f) };
-	private static final Vector2f NOON_COLOR[] 		= { new Vector2f(1.00f, 1.00f), new Vector2f(1.00f, 1.00f), new Vector2f(1.00f, 1.00f) };
-	private static final Vector2f AFTERNOON_COLOR[] = { new Vector2f(1.00f, 1.00f), new Vector2f(1.00f, 0.20f), new Vector2f(1.00f, 0.00f) };
+	private static final Vector2f MORNING_COLOR[] 	= { new Vector2f(0.80f, 1.20f), new Vector2f(0.65f, 1.20f), new Vector2f(0.15f, 1.20f) };
+	private static final Vector2f NOON_COLOR[] 		= { new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f) };
+	private static final Vector2f AFTERNOON_COLOR[] = { new Vector2f(1.20f, 1.00f), new Vector2f(1.20f, 0.20f), new Vector2f(1.20f, 0.00f) };
 	private static final Vector2f TWILIGHT_COLOR[] 	= { new Vector2f(1.00f, 0.0f),  new Vector2f(0.20f, 0.0f), new Vector2f(0.00f, 0.0f) };
 
 	
