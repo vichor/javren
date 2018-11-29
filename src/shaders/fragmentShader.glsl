@@ -7,7 +7,8 @@ in vec3 toCameraVector;
 in float visibility;
 
 
-out vec4 out_Color;
+layout (location = 0) out vec4 out_Color;
+layout (location = 1) out vec4 out_BrightColor;
 
 uniform sampler2D modelTexture;
 uniform sampler2D specularMap;
@@ -93,6 +94,7 @@ void main(void) {
 	// shader uses it to modify the specular light that a specific fragment receives.
 	// Specular light information is stored in the red component of the specular map
 	// (see the files *Specular.png)
+	out_BrightColor = vec4(0.0);
 	if (usesSpecularMap > 0.5){
 	    vec4 mapInfo = texture(specularMap, pass_textureCoords);
 	    totalSpecularLight *= mapInfo.r;
@@ -102,6 +104,7 @@ void main(void) {
 	    // a given value (0.5) the diffuse light will be set to full brightness (1,1,1) 
 	    if (mapInfo.g > 0.5) {
 			totalDiffuseLight = vec3(1.0);
+	    	out_BrightColor = textureColor + vec4(totalSpecularLight, 1.0);
 	    }
 	}
 	
@@ -118,4 +121,5 @@ void main(void) {
 	// visibility factor to blur the final color of the fragment from the
 	// calculated color (based on light and texture) to the sky color.
 	out_Color = mix(vec4(skyColor, 1.0), fragmentColor, visibility);
+	
 }

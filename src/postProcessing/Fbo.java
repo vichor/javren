@@ -2,11 +2,14 @@
 package postProcessing;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class Fbo {
@@ -20,13 +23,14 @@ public class Fbo {
 
 	private int frameBuffer;
 	
-	private boolean multisample = false;
+	private boolean multisampleAndMultitarget = false;
 
 	private int colorTexture;
 	private int depthTexture;
 
 	private int depthBuffer;
 	private int colorBuffer;
+	private int colorBuffer2;
 
 	/**
 	 * Creates an FBO of a specified width and height, with the desired type of
@@ -54,7 +58,7 @@ public class Fbo {
 	public Fbo(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.multisample = true;
+		this.multisampleAndMultitarget = true;
 		initialiseFrameBuffer(DEPTH_RENDER_BUFFER);
 	}
 
@@ -67,6 +71,7 @@ public class Fbo {
 		GL11.glDeleteTextures(depthTexture);
 		GL30.glDeleteRenderbuffers(depthBuffer);
 		GL30.glDeleteRenderbuffers(colorBuffer);
+		GL30.glDeleteRenderbuffers(colorBuffer2);
 	}
 
 	/**
@@ -120,8 +125,9 @@ public class Fbo {
 	 */
 	private void initialiseFrameBuffer(int type) {
 		createFrameBuffer();
-		if(multisample) {
-			createMultisamplecolorAttachment();
+		if(multisampleAndMultitarget) {
+			colorBuffer = createMultisamplecolorAttachment(GL30.GL_COLOR_ATTACHMENT0);
+			colorBuffer2 = createMultisamplecolorAttachment(GL30.GL_COLOR_ATTACHMENT1);
 		}else {
 			createTextureAttachment();
 		}
@@ -142,7 +148,20 @@ public class Fbo {
 	private void createFrameBuffer() {
 		frameBuffer = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBuffer);
-		GL11.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
+		drawColorBuffers();
+	}
+	
+	/**
+	 * Checks which color buffers need to be drawn and draw them
+	 */
+	private void drawColorBuffers() {
+		IntBuffer drawBuffers = BufferUtils.createIntBuffer(2);
+		drawBuffers.put(GL30.GL_COLOR_ATTACHMENT0);
+		if (this.multisampleAndMultitarget){
+			drawBuffers.put(GL30.GL_COLOR_ATTACHMENT1);
+		}
+		drawBuffers.flip();
+		GL20.glDrawBuffers(drawBuffers);
 	}
 
 	/**
@@ -177,12 +196,13 @@ public class Fbo {
 	}
 	
 	
-	private void createMultisamplecolorAttachment() {
-		colorBuffer = GL30.glGenRenderbuffers();
-		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, colorBuffer);
+	private int createMultisamplecolorAttachment(int attachment) {
+		int colorBuf = GL30.glGenRenderbuffers();
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, colorBuf);
 		GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, 4, GL11.GL_RGBA8, width, height);
-		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RENDERBUFFER,
-				colorBuffer);
+		GL30.glFramebufferRenderbuffer(GL30.GL_FRAMEBUFFER, attachment, GL30.GL_RENDERBUFFER,
+				colorBuf);
+		return colorBuf;
 	}
 
 	/**
@@ -192,7 +212,7 @@ public class Fbo {
 	private void createDepthBufferAttachment() {
 		depthBuffer = GL30.glGenRenderbuffers();
 		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, depthBuffer);
-		if (!multisample) {
+		if (!multisampleAndMultitarget) {
 			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER, GL14.GL_DEPTH_COMPONENT24, width, height);
 		}else {
 			GL30.glRenderbufferStorageMultisample(GL30.GL_RENDERBUFFER, 4, GL14.GL_DEPTH_COMPONENT24, width, height);
@@ -201,9 +221,10 @@ public class Fbo {
 				depthBuffer);
 	}
 
-	public void resolveToFbo(Fbo output) {
+	public void resolveToFbo(int readBuffer, Fbo output) {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, output.frameBuffer);
 		GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.frameBuffer);
+		GL11.glReadBuffer(readBuffer);
 		GL30.glBlitFramebuffer(0, 0, width, height, 0, 0, output.width, output.height, 
 				GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_NEAREST);
 		unbindFrameBuffer();
