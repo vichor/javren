@@ -294,14 +294,14 @@ public class MainGameLoop {
 		// FBO for post processing
 		
 		Fbo multisampleFbo = new Fbo(Display.getWidth(), Display.getHeight() );
-		Fbo outputFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
+		Fbo colorFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
+		Fbo brightFbo = new Fbo(Display.getWidth(), Display.getHeight(), Fbo.DEPTH_TEXTURE);
 		PostProcessing.init(loader);
 		
 		// GAME TIME
 
 		WorldClock worldClock = WorldClock.get();
 		worldClock.getClock().hour=12;
-		worldClock.step(1);
 		//worldClock.getClock().minute=45;
 		//worldClock.getClock().second=0;
 
@@ -372,10 +372,12 @@ public class MainGameLoop {
 			waterRenderer.render(waters, camera, sun);
 			ParticleMaster.renderParticles(camera);
 			multisampleFbo.unbindFrameBuffer();
-			multisampleFbo.resolveToFbo(GL30.GL_COLOR_ATTACHMENT1, outputFbo);
+			multisampleFbo.resolveToFbo(GL30.GL_COLOR_ATTACHMENT0, colorFbo);
+			multisampleFbo.resolveToFbo(GL30.GL_COLOR_ATTACHMENT1, brightFbo);
 			
 			// Apply post processing to fbo
-			PostProcessing.doPostProcessing(outputFbo.getColorTexture());
+			PostProcessing.doPostProcessing(colorFbo.getColorTexture(), colorFbo.getColorTexture());
+			PostProcessing.doPostProcessing(colorFbo.getColorTexture(), brightFbo.getColorTexture());
 			
 			guiRenderer.render(guis);
 			TextMaster.render();
@@ -384,7 +386,8 @@ public class MainGameLoop {
 		}
 		
 		// closing
-		outputFbo.cleanUp();
+		colorFbo.cleanUp();
+		brightFbo.cleanUp();
 		PostProcessing.cleanUp();
 		multisampleFbo.cleanUp();
 		waterBuffers.cleanUp();

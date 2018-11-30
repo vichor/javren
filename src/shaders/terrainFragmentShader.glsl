@@ -7,7 +7,8 @@ in vec3 toCameraVector;
 in float visibility;
 in vec4 shadowCoords;
 
-out vec4 out_Color;
+layout (location = 0) out vec4 out_Color;
+layout (location = 1) out vec4 out_BrightColor;
 
 // To use blend maps we need different textures and thus one sampler for
 // each of the texture is needed.
@@ -159,4 +160,5 @@ void main(void) {
 	// FOG
 	out_Color = mix(vec4(skyColor, 1.0), fragmentColor, visibility);
 
+	out_BrightColor = vec4(0.0);
 }

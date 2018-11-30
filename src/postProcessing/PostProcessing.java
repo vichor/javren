@@ -31,13 +31,12 @@ public class PostProcessing {
 		combine = new CombineFilter();
 	}
 	
-	public static void doPostProcessing(int colorTexture){
-		start();
-		brightFilter.render(colorTexture);
-		hBlur.render(brightFilter.getOutputTexture());
+	public static void doPostProcessing(int colorTexture, int brightTexture){
+		startPostProcess();
+		hBlur.render(brightTexture);
 		vBlur.render(hBlur.getOutputTexture());
 		combine.render(colorTexture, vBlur.getOutputTexture());
-		end();
+		endPostProcess();
 	}
 	
 	public static void cleanUp(){
@@ -48,13 +47,13 @@ public class PostProcessing {
 		combine.cleanUp();
 	}
 	
-	private static void start(){
+	private static void startPostProcess(){
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 	
-	private static void end(){
+	private static void endPostProcess(){
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);

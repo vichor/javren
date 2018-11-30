@@ -5,7 +5,8 @@ in vec2 textureCoords;
 in vec3 toCameraVector;
 in vec3 fromLightVector;
 
-out vec4 out_Color;
+layout (location = 0) out vec4 out_Color;
+layout (location = 1) out vec4 out_BrightColor;
 
 uniform sampler2D reflectionTexture;
 uniform sampler2D refractionTexture;
@@ -146,5 +147,6 @@ void main(void) {
 	// alpha of 1.0), so we divide waterDepth by 5.0 and clamp to 1.0.
 	out_Color.a = clamp(waterDepth/5.0, 0.0, 1.0);
 
+	out_BrightColor = vec4(0.0);
 
 }

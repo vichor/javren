@@ -1,7 +1,8 @@
 #version 400
 
 in vec3 textureCoords;
-out vec4 out_Color;
+layout (location = 0) out vec4 out_Color;
+layout (location = 1) out vec4 out_BrightColor;
 
 uniform samplerCube cubeMap;
 uniform samplerCube cubeMap2;
@@ -10,6 +11,7 @@ uniform vec3 fogColor;
 
 const float lowerLimit = 0.0;
 const float upperLimit = 30.0;
+
 
 void main(void){
 	// We use two texture cubes for the day and night skies. The factor for
@@ -28,5 +30,8 @@ void main(void){
     float factor = (textureCoords.y - lowerLimit) / (upperLimit - lowerLimit);
     factor = clamp(factor, 0.0, 1.0); // factor between 0 and 1
     out_Color = mix(vec4(fogColor, 1.0), textureColor, 1);//factor);
+    
+    // Sky has static low brightness 
+    out_BrightColor=vec4(0.25);
 
 }
