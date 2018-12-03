@@ -180,5 +180,14 @@ public class GUIText {
 	protected String getTextString() {
 		return textString;
 	}
+	
+	/**
+	 * Changes the text of this GUI
+	 */
+	public void setTextString(String text) {
+		this.remove();
+		this.textString = text;
+		TextMaster.loadText(this);
+	}
 
 }

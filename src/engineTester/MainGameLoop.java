@@ -36,6 +36,7 @@ import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Lantern;
 import engineTester.gameEntities.Rocks;
 import engineTester.gameEntities.Sun;
+import engineTester.gameEntities.TextFPS;
 import engineTester.gameEntities.Tree;
 import engineTester.gameParticles.ParticleSource;
 import entities.Camera;
@@ -86,9 +87,12 @@ public class MainGameLoop {
 		
 		// FONT SYSTEM
 		TextMaster.init(loader);
+		/*
 		FontType font = new FontType(loader.loadFontTextureAtlas("fonts/candara"), "candara");
 		GUIText text = new GUIText("This is a test text!", 1, font, new Vector2f(0,0.75f), 1f, true);
 		text.setColor(1.0f, 0.0f, 0.0f);
+		*/
+		TextFPS textFps = new TextFPS(loader);
 		
 		// TERRAIN
 		World world = new World(loader);
@@ -312,6 +316,7 @@ public class MainGameLoop {
 
 			//worldClock.step(15);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
+			textFps.updateFps();
 
 			sun.update();
 			player.move(world);
