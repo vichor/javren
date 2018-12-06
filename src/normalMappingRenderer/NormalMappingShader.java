@@ -21,7 +21,7 @@ public class NormalMappingShader extends ShaderProgram{
 	private int location_projectionMatrix;
 	private int location_viewMatrix;
 	private int location_lightPositionEyeSpace[];
-	private int location_lightColour[];
+	private int location_lightColor[];
 	private int location_attenuation[];
 	private int location_shineDamper;
 	private int location_reflectivity;
@@ -63,11 +63,11 @@ public class NormalMappingShader extends ShaderProgram{
 		location_usesSpecularMap = super.getUniformLocation("usesSpecularMap");
 		
 		location_lightPositionEyeSpace = new int[MAX_LIGHTS];
-		location_lightColour = new int[MAX_LIGHTS];
+		location_lightColor = new int[MAX_LIGHTS];
 		location_attenuation = new int[MAX_LIGHTS];
 		for(int i=0;i<MAX_LIGHTS;i++){
 			location_lightPositionEyeSpace[i] = super.getUniformLocation("lightPositionEyeSpace[" + i + "]");
-			location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
+			location_lightColor[i] = super.getUniformLocation("lightColor[" + i + "]");
 			location_attenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
 		}
 	}
@@ -76,6 +76,7 @@ public class NormalMappingShader extends ShaderProgram{
 		super.loadInt(location_modelTexture, 0);
 		super.loadInt(location_normalMapTexture, 1);
 		super.loadInt(location_specularMap, 2);
+		// TODO: Connect shadow map to 5 (5??)
 	}
 	
 
@@ -113,11 +114,11 @@ public class NormalMappingShader extends ShaderProgram{
 		for(int i=0;i<MAX_LIGHTS;i++){
 			if(i<lights.size()){
 				super.loadVector(location_lightPositionEyeSpace[i], getEyeSpacePosition(lights.get(i), viewMatrix));
-				super.loadVector(location_lightColour[i], lights.get(i).getColor());
+				super.loadVector(location_lightColor[i], lights.get(i).getColor());
 				super.loadVector(location_attenuation[i], lights.get(i).getAttenuation());
 			}else{
 				super.loadVector(location_lightPositionEyeSpace[i], new Vector3f(0, 0, 0));
-				super.loadVector(location_lightColour[i], new Vector3f(0, 0, 0));
+				super.loadVector(location_lightColor[i], new Vector3f(0, 0, 0));
 				super.loadVector(location_attenuation[i], new Vector3f(1, 0, 0));
 			}
 		}

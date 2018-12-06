@@ -77,7 +77,7 @@ public class StaticShader extends ShaderProgram {
 	public void connectTextureUnits() {
 		super.loadInt(location_modelTexture, 0);
 		super.loadInt(location_specularMap, 1);
-		// TODO: connect shadowMap to 5
+		// TODO: connect shadowMap to 5 (5??)
 	}
 	
 	

@@ -9,7 +9,6 @@
  */
 package engineTester;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +23,7 @@ import org.lwjgl.util.vector.Vector4f;
 
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
+import engineTester.gameEntities.Boulder;
 import engineTester.gameEntities.CherryTree;
 import engineTester.gameEntities.Fern;
 import engineTester.gameEntities.FirTree;
@@ -60,13 +60,9 @@ import renderEngine.DisplayManager;
 import renderEngine.GuiRenderer;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
-import terrains.GeneratedTerrain;
-import terrains.HeightmapTerrain;
 import terrains.Terrain;
 import terrains.World;
 import textures.ModelTexture;
-import textures.TerrainTexture;
-import textures.TerrainTexturePack;
 import toolbox.MousePicker;
 import water.WaterFrameBuffers;
 import water.WaterRenderer;
@@ -126,7 +122,12 @@ public class MainGameLoop {
         	//	Vector3f position = getNewPosition(random, terrain);
             //    gameEntities.add(new Dragon(position));
         	//}
-        	if (i%2 == 1) {
+        	if (i%5 == 1) {
+        		Vector3f position = getNewPosition(random, world);
+        		//gameNormalMappedEntities.add(new Boulder(position));
+        		gameNormalMappedEntities.add(new Boulder(position));
+        	}
+        	if (i%5 == 1) {
         		Vector3f position = getNewPosition(random, world);
         		gameEntities.add(new CherryTree(position));
         	}
@@ -163,6 +164,8 @@ public class MainGameLoop {
         //GameEntity barrel = new Barrel(new Vector3f(player.getPosition().x, 30, player.getPosition().z));
         GameEntity barrel = new Barrel(world.createPosition(378, 300));
         GameEntity standardBarrel = new Barrel(world.createPosition(378-40, 300));
+        barrel.getRenderEntity().getPosition().y += 20;
+        standardBarrel.getRenderEntity().getPosition().y += 20;
         //GameEntity standardBarrel = new Barrel(new Vector3f(player.getPosition().x-40, 30, player.getPosition().z));
         gameNormalMappedEntities.add(barrel);
         gameEntities.add(standardBarrel);
@@ -306,7 +309,7 @@ public class MainGameLoop {
 
 		WorldClock worldClock = WorldClock.get();
 		worldClock.getClock().hour=12;
-		//worldClock.getClock().minute=45;
+		//worldClock.getClock().minute=50;
 		//worldClock.getClock().second=0;
 
 		
@@ -314,7 +317,7 @@ public class MainGameLoop {
 
 		while(!Display.isCloseRequested() ) {
 
-			//worldClock.step(15);
+			worldClock.step(5);
 			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 			textFps.updateFps();
 
