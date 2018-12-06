@@ -31,8 +31,8 @@ public class ParticleShader extends ShaderProgram {
 		super.bindAttribute(6, "blendFactor");
 	}
 	
-	protected void loadNumberOfRows(float numberOfRows) {
-		super.loadFloat(location_numberOfRows, numberOfRows); // TODO: why number of rows is float?
+	protected void loadNumberOfRows(int numberOfRows) {
+		super.loadInt(location_numberOfRows, numberOfRows); 
 	}
 	
 	protected void loadProjectionMatrix(Matrix4f projectionMatrix) {

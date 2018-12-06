@@ -1,4 +1,4 @@
-package engineTester.gameEntities;
+package engineTester.GUIs;
 
 import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector2f;
@@ -10,11 +10,11 @@ import renderEngine.Loader;
 
 public class TextFPS {
 	
-	String text;
-	GUIText guiText;
+	private String text;
+	private GUIText guiText;
     
-    int fps; 			/** frames per second */
-    long lastFps; 		/** last fps time */
+    private int fps; 			/** frames per second */
+    private long lastFps; 		/** last fps time */
 	
 	public TextFPS(Loader loader) {
 		lastFps = getTime();

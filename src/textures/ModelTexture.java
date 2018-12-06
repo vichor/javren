@@ -4,7 +4,7 @@ public class ModelTexture {
 	
 	private int textureID;
 	private int normalMap;
-	private int specularMap;
+	private int bumpMap;
 
 	private float reflectivity = 0;
 	private float shineDamper = 1;
@@ -12,7 +12,7 @@ public class ModelTexture {
 	
 	private boolean hasTransparency = false;
 	private boolean useFakeLighting = false;
-	private boolean useSpecularMap = false;
+	private boolean usesBumpMap = false;
 	
 	private int numberOfRows = 1;
 	
@@ -24,19 +24,18 @@ public class ModelTexture {
 	public void setBumpMap(int sm) {
 		// a Bump Map is used to simulate different effects on the surface of a model (bumps, wrinkles, cracks and so on)
 		// specular maps is a typical instance of a bump map and so the name of the attribute
-		// TODO: consider renaming the attribute and everything into bump mapping
-		specularMap = sm;
-		useSpecularMap = true;
+		bumpMap = sm;
+		usesBumpMap = true;
 	}
 	
 	
 	public boolean hasSpecularMap() {
-		return useSpecularMap;
+		return usesBumpMap;
 	}
 	
 	
 	public int getSpecularMap() {
-		return specularMap;
+		return bumpMap;
 	}
 	
 

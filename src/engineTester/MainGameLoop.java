@@ -21,6 +21,8 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.GUIs.PlayerInfo;
+import engineTester.GUIs.TextFPS;
 import engineTester.WorldTimeManager.WorldClock;
 import engineTester.gameEntities.Barrel;
 import engineTester.gameEntities.Boulder;
@@ -36,7 +38,6 @@ import engineTester.gameEntities.Lamp;
 import engineTester.gameEntities.Lantern;
 import engineTester.gameEntities.Rocks;
 import engineTester.gameEntities.Sun;
-import engineTester.gameEntities.TextFPS;
 import engineTester.gameEntities.Tree;
 import engineTester.gameParticles.ParticleSource;
 import entities.Camera;
@@ -98,6 +99,7 @@ public class MainGameLoop {
         TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("players/person", loader), //players/person", loader), 
         		new ModelTexture(loader.loadTexture("players/playerTexture"))); //players/playerTexture")));
         Player player = new Player(playerModel, world.createPosition(400, 800), 0, 0, 0, 0.6f);
+		PlayerInfo playerInfo = new PlayerInfo(loader, player);
 
         // CAMERA
         Camera camera = new Camera(player);
@@ -123,8 +125,7 @@ public class MainGameLoop {
             //    gameEntities.add(new Dragon(position));
         	//}
         	if (i%5 == 1) {
-        		Vector3f position = getNewPosition(random, world);
-        		//gameNormalMappedEntities.add(new Boulder(position));
+        		Vector3f position = getNewPosition(random, world, true);
         		gameNormalMappedEntities.add(new Boulder(position));
         	}
         	if (i%5 == 1) {
@@ -323,6 +324,7 @@ public class MainGameLoop {
 
 			sun.update();
 			player.move(world);
+			playerInfo.update();
 			flashlight.move();
 			lightbarrel.setPosition(flashlight.getLightSource().getPosition());
 			camera.move();
@@ -409,6 +411,10 @@ public class MainGameLoop {
 	
 	
 	private static Vector3f getNewPosition(Random random, World world) {
+		return getNewPosition(random, world, false);
+	}
+
+	private static Vector3f getNewPosition(Random random, World world, boolean underWaterAllowed) {
 		boolean done = false;
 		float x=0,y=0,z=0;
 		Vector2f maxCoords = world.getMaxCoordinates();
@@ -417,7 +423,7 @@ public class MainGameLoop {
         	x = random.nextFloat()*maxCoords.x; 
         	z = random.nextFloat()*maxCoords.y; 
         	position = world.createPosition(x, z);
-        	if (position.y>0.05f) {
+        	if (underWaterAllowed || position.y>0.05f) {
         		done = true;
         	}
 		}
@@ -425,3 +431,5 @@ public class MainGameLoop {
 	}
 
 }
+
+
