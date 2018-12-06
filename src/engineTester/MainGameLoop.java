@@ -21,6 +21,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import engineTester.GUIs.ClockInfo;
 import engineTester.GUIs.PlayerInfo;
 import engineTester.GUIs.TextFPS;
 import engineTester.WorldTimeManager.WorldClock;
@@ -312,15 +313,17 @@ public class MainGameLoop {
 		worldClock.getClock().hour=12;
 		//worldClock.getClock().minute=50;
 		//worldClock.getClock().second=0;
+		ClockInfo clockGUI = new ClockInfo(loader);
 
 		
 		// GAME LOOP
 
 		while(!Display.isCloseRequested() ) {
 
-			worldClock.step(5);
-			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 			textFps.updateFps();
+
+			worldClock.step(25);
+			clockGUI.update();
 
 			sun.update();
 			player.move(world);
