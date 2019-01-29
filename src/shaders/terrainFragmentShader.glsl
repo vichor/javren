@@ -147,7 +147,7 @@ void main(void) {
 	}
 
 	// Limit diffuse light and apply shadow light factor limitation
-	totalDiffuseLight = max(totalDiffuseLight * lightFactor, 0.4);
+	totalDiffuseLight = max(totalDiffuseLight * lightFactor, 0.0);
 
 
 	// FRAGMENT COLOR:

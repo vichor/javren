@@ -21,7 +21,6 @@ public class ClockInfo {
 		guiTextDayPart= new GUIText(daypart, 1.1f, font, new Vector2f(0.88f,0.0285f), 1f, false);
 		guiTextDayPart.setColor(0.5f, 0.6f, 0.7f);
 	}
-			//System.out.print("It is " + worldClock + " [" + 100.0f*worldClock.getDayPartProgress() + "% completed] --> ");
 
 	
 	public void update() {

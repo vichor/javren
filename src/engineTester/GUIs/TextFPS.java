@@ -41,7 +41,7 @@ public class TextFPS {
 	public void updateFps() {
 	    if (getTime() - lastFps > 1000) {
 	    	float r, g, b;
-	    	if (fps > 60) {
+	    	if (fps > 58) {
 	    		r = 0; g = 1.0f; b = 0;
 	    	} else if (fps > 15) {
 	    		r = 1.0f; g = 1.0f; b = 0;

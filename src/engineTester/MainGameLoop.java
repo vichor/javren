@@ -322,7 +322,7 @@ public class MainGameLoop {
 
 			textFps.updateFps();
 
-			worldClock.step(25);
+			worldClock.step(30);
 			clockGUI.update();
 
 			sun.update();

@@ -16,7 +16,7 @@ public class GeneratedTerrain extends Terrain {
 
 	private static final float SIZE = 800;
 	private static final int SEED = new Random().nextInt(1000000000);
-	private static final int VERTEX_COUNT = 128;
+	private static final int VERTEX_COUNT = 64;
 
 	private HeightsGenerator generator;
 	

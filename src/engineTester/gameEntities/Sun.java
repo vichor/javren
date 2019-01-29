@@ -16,14 +16,19 @@ public class Sun extends Light {
 	private static final int BLUE_COMPONENT = 1;
 	private static final int GREEN_COMPONENT = 2;
 	
-    /* Color components for day parts:                         RED                        BLUE                       GREEN        */
-	private static final Vector2f NIGHT_COLOR[] 	= { new Vector2f(0.0f,  0.0f),  new Vector2f(0.0f, 0.0f),  new Vector2f(0.0f, 0.0f) };
-	private static final Vector2f DAWN_COLOR[] 		= { new Vector2f(0.0f,  0.80f), new Vector2f(0.0f, 0.65f), new Vector2f(0.0f, 0.15f) };
-	private static final Vector2f MORNING_COLOR[] 	= { new Vector2f(0.80f, 1.20f), new Vector2f(0.65f, 1.20f), new Vector2f(0.15f, 1.20f) };
-	private static final Vector2f NOON_COLOR[] 		= { new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f) };
-	private static final Vector2f AFTERNOON_COLOR[] = { new Vector2f(1.20f, 1.00f), new Vector2f(1.20f, 0.20f), new Vector2f(1.20f, 0.00f) };
-	private static final Vector2f TWILIGHT_COLOR[] 	= { new Vector2f(1.00f, 0.0f),  new Vector2f(0.20f, 0.0f), new Vector2f(0.00f, 0.0f) };
-
+	/* Day is divided into parts. Each day part has a start and an end color. The Sun will change its color linearly from start to end
+	 * Colors are expressed with the 3 components in a 2D vector. The first dimension of the vector contains the start value for the
+	 * color component; the second dimension of the vector contains the end value for the color component
+	 */
+    /* Color components for day parts:                         RED                        BLUE                       GREEN               */
+	private static final Vector2f COLORS[][] 	= {   /*           start, end                  start, end                 start, end     */
+				/* Night     */                     { new Vector2f(0.0f,  0.0f),  new Vector2f(0.0f, 0.0f),   new Vector2f(0.0f, 0.0f)   },
+				/* Dawn      */                     { new Vector2f(0.0f,  0.80f), new Vector2f(0.0f, 0.65f),  new Vector2f(0.0f, 0.15f)  },
+				/* Morning   */                     { new Vector2f(0.80f, 1.20f), new Vector2f(0.65f, 1.20f), new Vector2f(0.15f, 1.20f) },
+				/* Noon      */                     { new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f), new Vector2f(1.20f, 1.20f) },
+				/* Afternoon */                     { new Vector2f(1.20f, 1.00f), new Vector2f(1.20f, 0.20f), new Vector2f(1.20f, 0.00f) },
+				/* Twilight  */                     { new Vector2f(1.00f, 0.0f),  new Vector2f(0.20f, 0.0f),  new Vector2f(0.00f, 0.0f)  } 
+											  	  };
 	
 	public Sun () {
 		this.position = new Vector3f(ORBIT_RADIUS, ORBIT_HEIGHT, -10000);
@@ -48,45 +53,13 @@ public class Sun extends Light {
 	private void updateColor() {
 		WorldClock clock = WorldClock.get();
 		DayPart dayPart = clock.getDayPart();
-		Vector2f targetColorRed = NOON_COLOR[RED_COMPONENT];
-		Vector2f targetColorBlue = NOON_COLOR[BLUE_COMPONENT];
-		Vector2f targetColorGreen = NOON_COLOR[GREEN_COMPONENT];
-		switch (dayPart) {
-		case NIGHT: 
-			targetColorRed = NIGHT_COLOR[RED_COMPONENT]; 
-			targetColorBlue = NIGHT_COLOR[BLUE_COMPONENT]; 
-			targetColorGreen = NIGHT_COLOR[GREEN_COMPONENT]; 
-			break;
-		case DAWN: 
-			targetColorRed = DAWN_COLOR[RED_COMPONENT]; 
-			targetColorBlue = DAWN_COLOR[BLUE_COMPONENT]; 
-			targetColorGreen = DAWN_COLOR[GREEN_COMPONENT]; 
-			break;
-		case MORNING: 
-			targetColorRed = MORNING_COLOR[RED_COMPONENT]; 
-			targetColorBlue = MORNING_COLOR[BLUE_COMPONENT]; 
-			targetColorGreen = MORNING_COLOR[GREEN_COMPONENT]; 
-			break;
-		case AFTERNOON: 
-			targetColorRed = AFTERNOON_COLOR[RED_COMPONENT]; 
-			targetColorBlue = AFTERNOON_COLOR[BLUE_COMPONENT]; 
-			targetColorGreen = AFTERNOON_COLOR[GREEN_COMPONENT]; 
-			break;
-		case TWILIGHT: 
-			targetColorRed = TWILIGHT_COLOR[RED_COMPONENT]; 
-			targetColorBlue = TWILIGHT_COLOR[BLUE_COMPONENT]; 
-			targetColorGreen = TWILIGHT_COLOR[GREEN_COMPONENT]; 
-			break;
-		case NOON: 
-			break;
-		default:
-			System.err.println("Wrong day part: " + dayPart);
-		}
+		Vector2f targetColorRed = COLORS[dayPart.index][RED_COMPONENT]; 
+		Vector2f targetColorBlue = COLORS[dayPart.index][BLUE_COMPONENT]; 
+		Vector2f targetColorGreen = COLORS[dayPart.index][GREEN_COMPONENT]; 
 		color.x = targetColorRed.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorRed.y-targetColorRed.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
 		color.y = targetColorBlue.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorBlue.y-targetColorBlue.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
 		color.z = targetColorGreen.x + (clock.getClock().toSeconds() - dayPart.start.toSeconds())*(targetColorGreen.y-targetColorGreen.x)/(dayPart.end.toSeconds()-dayPart.start.toSeconds());
 		//System.out.print("\t"+color);
 	}
-	
 
 }
